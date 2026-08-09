@@ -130,7 +130,47 @@ and point-in-time recovery — worth revisiting once revenue justifies it.
 
 ---
 
-## 5. Testing
+## 5. Email digest setup
+
+A once-daily email (8:00 AM Asia/Manila) to every active owner/core-team user, listing
+overdue opportunity follow-ups, stale opportunities, overdue tasks, overdue milestones,
+overdue invoices, and what's due in the next 7 days — the same data the dashboard shows, just
+pushed to your inbox so you don't have to remember to check. Free at this scale (see the cost
+breakdown you already discussed). Setup, in order:
+
+1. **Create a [Resend](https://resend.com) account** (free tier: ~3,000 emails/month). For
+   real production sending you'd verify your own domain there; for now you can send from
+   Resend's shared `onboarding@resend.dev` address, which works without any domain setup.
+2. Grab your Resend **API key** from the dashboard.
+3. **Deploy the Edge Function:**
+   ```bash
+   npx supabase login
+   npx supabase link --project-ref <your-project-ref>
+   npx supabase functions deploy daily-digest
+   ```
+4. **Set the function's secrets** (Resend key, and optionally your live site URL so digest
+   emails link back to the dashboard):
+   ```bash
+   npx supabase secrets set RESEND_API_KEY=<your-resend-api-key>
+   npx supabase secrets set APP_URL=https://website-implementation.brianlc-veraque.workers.dev
+   ```
+5. **Store your service role key in Supabase Vault** (this is what lets the scheduled job
+   call the function — never put the raw key in a migration file or commit it):
+   - Supabase dashboard → **Project Settings → Vault** → New secret
+   - Name: `service_role_key`, Value: your service role key (same one from `.env.local`)
+6. **Run the last migration** (`supabase/migrations/0005_digest_cron.sql`) in the SQL editor,
+   same routine as the earlier migrations — this schedules the daily job via `pg_cron`.
+7. To test immediately instead of waiting until 8 AM:
+   ```bash
+   npx supabase functions invoke daily-digest
+   ```
+
+To change who receives it: it's automatic — anyone with an **active** `owner` or `core_team`
+role in Settings → Users & Access gets it. No separate recipient list to maintain.
+
+---
+
+## 6. Testing
 
 ```bash
 npm test         # Vitest unit tests (pure logic: date/currency formatting, status mapping)
@@ -165,7 +205,7 @@ again after any RLS policy change.
 
 ---
 
-## 6. User guide (core team)
+## 7. User guide (core team)
 
 - **Dashboard**: what needs attention (overdue) and what's coming up, at a glance.
 - **Clients**: search/filter by status; click a row for full detail, contacts, and linked
@@ -181,7 +221,7 @@ again after any RLS policy change.
 - **Settings** (owner only): activate new signups and assign roles, manage the service
   catalogue, and export data.
 
-## 7. Administrator guide (owner)
+## 8. Administrator guide (owner)
 
 - **New team member**: they sign up at `/login` (Google or email); their account is created
   inactive. Go to **Settings → Users & Access**, set their role, and check Active.
@@ -195,34 +235,36 @@ again after any RLS policy change.
 
 ---
 
-## 8. Known limitations (be upfront about these)
+## 9. Known limitations (be upfront about these)
 
 - **No automatic backups** on the Supabase free tier — see §4. This is the single biggest
   operational risk of the free-tier setup.
 - **Column-level restriction on consultant rates** relies on row-level RLS (a temp consultant
   can only ever query their own consultant row, so they can never see anyone else's rate) —
   this is correct but worth knowing it's row-level reasoning, not a column-permission grant.
-- **No email/SMS notifications** — everything is in-app only (dashboard flags), per the
-  scope decision in SPEC.md §4.1/§4.2.
+- **The email digest (§5) sends one shared email to all owner/core-team recipients**, not a
+  personalized email per assignee — reasonable at 2-person scale, would need per-person
+  filtering to make sense for a larger team.
 - **No drag-and-drop on the opportunity board** — stage changes happen via a dropdown on each
   card, a deliberate simplification to avoid a fragile hand-rolled drag-and-drop implementation.
-- **RLS was never exercised against a live database during this build** — no Supabase project
-  was available in the build environment. Run `supabase/tests/rls_checks.sql` before relying on
-  this in production, and re-run it after any policy change.
+- **RLS has been verified against the live production database** — real login, dashboard, and
+  role-restricted access were all confirmed working end-to-end after deployment. The formal
+  per-role SQL test script (`supabase/tests/rls_checks.sql`) still hasn't been run, though — do
+  that before making any further RLS policy changes, to catch regressions.
 - **Public landing page ships with no named clients** per your instruction — only sector/service
   categories are shown until you explicitly approve specific engagements for publication.
 - Proposal tracking is fields on an Opportunity, not a standalone versioned module; the
   consultant pool is a simple table, not a searchable marketplace. Both were deliberate MVP
   scope cuts — see SPEC.md §4.2 for the Phase 2 versions.
 
-## 9. Phase 2 roadmap
+## 10. Phase 2 roadmap
 
 See SPEC.md §4.2 for the full list. Highest-value next additions, roughly in order:
 1. Full financial monitoring (receivables aging, project contribution margin)
-2. Notification engine (email digests of overdue items)
-3. Standalone Proposal module with versioning
-4. Marketing content calendar and campaign tracking
-5. Searchable consultant marketplace
-6. Expanded reporting with CSV export across all tables
-7. Public landing page content expansion (once specific case studies are approved for
+2. Standalone Proposal module with versioning
+3. Marketing content calendar and campaign tracking
+4. Searchable consultant marketplace
+5. Expanded reporting with CSV export across all tables
+6. Public landing page content expansion (once specific case studies are approved for
    publication)
+7. Per-person email digest filtering, once the team grows past 2 people

@@ -85,7 +85,8 @@ want reinstated.
 - Marketing content calendar + campaign tracking
 - Searchable consultant marketplace (filters by expertise/location/rate/availability)
 - Full financial monitoring: receivables aging, project contribution margin, cash-flow-by-month
-- Notification engine (email digests; in-app flags already ship in MVP)
+- ~~Notification engine (email digests)~~ — built post-MVP; see README.md §5. Currently one
+  shared daily digest to all owner/core-team recipients; per-person filtering is still Phase 2.
 - Expanded report catalogue with filters + CSV export across all tables
 - Structured Risk / Issue / Decision logs per project (MVP covers this with a project Notes field)
 - Formal audit-log module beyond the basic accountability fields in MVP
