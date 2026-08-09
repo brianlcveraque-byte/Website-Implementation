@@ -1,5 +1,13 @@
-// Seed / demo data for local setup and evaluation.
-// Run once against a fresh Supabase project, after applying /supabase/migrations:
+// Production-facing seed script.
+//
+// Loads the real service catalogue, the demo login accounts, real client
+// engagements pulled from the owner's actual monitoring sheet (see below),
+// and ONE clearly-labeled synthetic "Demo —" trio kept specifically to
+// showcase features the real data doesn't currently exercise: the won→
+// project conversion, invoicing/payments, and temp-consultant RLS isolation.
+//
+// Safe to re-run: it clears prior business data (clients through documents)
+// before reinserting, but never touches auth accounts.
 //
 //   node --env-file=.env.local scripts/seed.mjs
 //
@@ -51,7 +59,6 @@ async function upsertDemoUser(email, fullName, role) {
   });
   let userId;
   if (createError) {
-    // Already exists — look it up instead of failing the whole seed run.
     const { data: list } = await supabase.auth.admin.listUsers();
     const existing = list.users.find((u) => u.email === email);
     if (!existing) throw createError;
@@ -66,6 +73,30 @@ async function upsertDemoUser(email, fullName, role) {
   return userId;
 }
 
+async function clearBusinessData() {
+  // Dependency order matters — children before parents. Leaves app_users,
+  // auth accounts, and the service catalogue untouched.
+  const tables = [
+    "payments",
+    "documents",
+    "invoices",
+    "tasks",
+    "milestones",
+    "project_assignments",
+    "projects",
+    "opportunity_stage_history",
+    "opportunities",
+    "contacts",
+    "clients",
+    "consultants",
+    "public_inquiries",
+  ];
+  for (const table of tables) {
+    const { error } = await supabase.from(table).delete().not("id", "is", null);
+    if (error) throw new Error(`Clearing ${table}: ${error.message}`);
+  }
+}
+
 async function main() {
   console.log("Seeding services…");
   await supabase.from("services").upsert(
@@ -75,138 +106,311 @@ async function main() {
   const { data: services } = await supabase.from("services").select("*");
   const serviceByName = Object.fromEntries(services.map((s) => [s.name, s]));
 
-  console.log("Creating demo users (password: %s)…", DEMO_PASSWORD);
+  console.log("Creating login accounts (password: %s)…", DEMO_PASSWORD);
   const ownerId = await upsertDemoUser("owner@strategnosis.demo", "Demo Owner", "owner");
   const coreId = await upsertDemoUser("core@strategnosis.demo", "Demo Core Team", "core_team");
   const tempId = await upsertDemoUser("consultant@strategnosis.demo", "Demo Temp Consultant", "temp_consultant");
 
-  console.log("Seeding clients & contacts…");
-  const clientsData = [
-    { org_name: "Sample General Hospital", org_type: "Hospital", sector: "Healthcare", status: "active_client", source: "Referral" },
-    { org_name: "Metro Cooperative Development Council", org_type: "Cooperative", sector: "Cooperative", status: "prospect", source: "Speaking engagement" },
-    { org_name: "Provincial Health Office", org_type: "Government", sector: "Government", status: "prospect", source: "Procurement invitation" },
-    { org_name: "St. Luke Faith Academy", org_type: "Educational institution", sector: "Education", status: "previous_client", source: "Direct inquiry" },
-    { org_name: "Community Health Alliance", org_type: "NGO", sector: "Development", status: "dormant", source: "Professional network" },
-  ];
-  const clientIds = {};
-  for (const c of clientsData) {
-    const { data, error } = await supabase
-      .from("clients")
-      .insert({ ...c, relationship_owner: ownerId, created_by: ownerId, updated_by: ownerId })
-      .select()
-      .single();
-    if (error) throw error;
-    clientIds[c.org_name] = data.id;
-    await supabase.from("contacts").insert({
-      client_id: data.id,
-      name: `Contact Person, ${c.org_name}`,
-      position: "Administrator",
-      email: `contact@${c.org_name.toLowerCase().replace(/[^a-z]+/g, "")}.demo`,
-      is_primary: true,
-    });
-  }
+  console.log("Clearing prior business data…");
+  await clearBusinessData();
 
-  console.log("Seeding opportunities…");
   const today = new Date();
   const inDays = (n) => new Date(today.getTime() + n * 86400000).toISOString().slice(0, 10);
 
-  const opportunitiesData = [
+  // ────────────────────────────────────────────────────────────────────
+  // Real clients & projects, drawn from the owner's actual monitoring
+  // sheet ("Monitoring Tool (8-6-2026).xlsx"). Milestone/task titles and
+  // dates are the real logged activities, kept as-is.
+  // ────────────────────────────────────────────────────────────────────
+  const realEngagements = [
     {
-      title: "Strategic Plan Refresh 2027-2031",
-      client_id: clientIds["Sample General Hospital"],
-      service: "Strategic Management and Planning",
-      stage: "won",
-      estimated_value: 850000,
-      probability_pct: 100,
-      next_action: "Kickoff meeting",
-      next_action_due: inDays(3),
-      source: "Referral",
+      client: {
+        org_name: "PVS GmbH",
+        org_type: "Private company",
+        sector: "Healthcare / Engineering",
+        status: "active_client",
+        source: "Direct engagement",
+      },
+      project: {
+        name: "Hospital Wastewater Management Systems Feasibility Study",
+        service: "Feasibility Studies",
+        status: "in_progress",
+        contract_amount: 12000000,
+      },
+      milestones: [
+        { title: "Initial meeting with team and Sir Ricky", status: "completed", due_date: "2026-04-23" },
+        { title: "Hospital Visit (RMC); approval to proceed", status: "completed", due_date: "2026-07-27" },
+        { title: "Monitoring Tool for Data (per hospital)", status: "completed" },
+        { title: "Write-shop (Manila/Tagaytay/Laguna, August 1st week)", status: "not_started", due_date: inDays(4) },
+      ],
+      tasks: [
+        { title: "Ongoing coordination with hospital engineers (Engr. Frank, Sotolombo, Christine); follow-up with Dr. Molina on write-up", status: "in_progress", priority: "high", due_date: inDays(2) },
+      ],
     },
     {
-      title: "Competency-Based HR Framework",
-      client_id: clientIds["Metro Cooperative Development Council"],
-      service: "Competency-Based HR Systems",
-      stage: "proposal_submitted",
-      estimated_value: 420000,
-      probability_pct: 50,
-      next_action: "Follow up on proposal decision",
-      next_action_due: inDays(5),
-      source: "Speaking engagement",
+      client: {
+        org_name: "Philippine Army Finance Center Producers Integrated Cooperative (PAFCPIC)",
+        org_type: "Cooperative",
+        sector: "Cooperative",
+        status: "active_client",
+        source: "Referral",
+      },
+      project: {
+        name: "Competency-Based HR & Organizational Development Engagement",
+        service: "Competency-Based HR Systems",
+        status: "in_progress",
+        contract_amount: 1000000,
+      },
+      milestones: [
+        { title: "Proposal for Reskilling (OD)", status: "completed" },
+        { title: "Next Phase for CBHRS — Policy Integration", status: "not_started", due_date: inDays(20) },
+        { title: "WAVES program — next batch (on hold until 2027)", status: "deferred" },
+      ],
+      tasks: [
+        { title: "Dates for Next Batch WAVES", status: "in_progress", priority: "medium" },
+        { title: "Revise job descriptions", status: "completed" },
+      ],
     },
     {
-      title: "Hospital Feasibility Study",
-      client_id: clientIds["Provincial Health Office"],
-      service: "Feasibility Studies",
-      stage: "negotiation",
-      estimated_value: 1200000,
-      probability_pct: 60,
-      next_action: "Revise budget per client comments",
-      next_action_due: inDays(-2),
-      source: "Procurement invitation",
+      client: {
+        org_name: "Cooperative Development Authority (CDA)",
+        org_type: "Government agency",
+        sector: "Government",
+        status: "active_client",
+        source: "Direct engagement",
+      },
+      project: {
+        name: "Strategic Performance Management System & Succession Planning",
+        service: "Succession Planning",
+        status: "in_progress",
+      },
+      milestones: [
+        { title: "SPMS pre-workshop (Cebu engagement)", status: "completed", due_date: "2026-07-09" },
+        { title: "Succession Planning sample output & presentation", status: "completed" },
+        { title: "Continuation SPMS; finalize submissions", status: "in_progress", due_date: inDays(6) },
+      ],
+      tasks: [
+        { title: "OPCR video tutorial", status: "completed" },
+        { title: "IPCR video revision (more detail with example)", status: "completed" },
+      ],
     },
     {
-      title: "Leadership Development Series",
-      client_id: clientIds["St. Luke Faith Academy"],
-      service: "Leadership and Management Development",
-      stage: "qualification",
-      estimated_value: 300000,
-      probability_pct: 30,
-      next_action: "Discovery call",
-      next_action_due: inDays(10),
-      source: "Direct inquiry",
+      client: {
+        org_name: "Cardinal Santos Medical Center (CSMC)",
+        org_type: "Hospital",
+        sector: "Healthcare",
+        status: "active_client",
+        source: "Previous engagement",
+      },
+      project: {
+        name: "Implementation Planning & Executive Coaching",
+        service: "Leadership and Management Development",
+        status: "in_progress",
+      },
+      milestones: [
+        { title: "Executive coaching report and feedback", status: "completed", due_date: "2026-06-01" },
+        { title: "Presentation materials — ethical decision making & wisdom/philosophy coaching", status: "not_started", due_date: inDays(10) },
+      ],
+      tasks: [
+        { title: "Implementation website", status: "in_progress", priority: "medium" },
+        { title: "Awaiting FGD/KII schedule for participants' expectations", status: "awaiting_client", priority: "medium" },
+        { title: "Proposal on Labor Law/Code / Employee Relations", status: "in_progress", priority: "low" },
+      ],
     },
     {
-      title: "M&E Framework for Health Program",
-      client_id: clientIds["Community Health Alliance"],
-      service: "Monitoring and Evaluation",
-      stage: "lost",
-      estimated_value: 200000,
-      probability_pct: 0,
-      next_action: "N/A",
-      next_action_due: inDays(-30),
-      source: "Professional network",
-      reason_lost: "Client secured internal funding instead.",
+      client: {
+        org_name: "Philippine Tax Academy (PTA)",
+        org_type: "Government agency",
+        sector: "Government / Education",
+        status: "active_client",
+        source: "Direct engagement",
+      },
+      project: {
+        name: "Competency-Based HR Management Project",
+        service: "Competency-Based HR Systems",
+        status: "in_progress",
+        contract_amount: 2000000,
+      },
+      milestones: [
+        { title: "End of quarter report", status: "completed" },
+        { title: "Recommendation on instructional designs", status: "completed" },
+        { title: "Initial analysis of CNA 2025 results", status: "completed" },
+      ],
+      tasks: [
+        { title: "Coaching and Mentoring presentation & workshops", status: "deferred", priority: "low" },
+        { title: "Canva training", status: "deferred", priority: "low" },
+      ],
+    },
+    {
+      client: {
+        org_name: "North Philippine Union Conference — Smoke-Free Program (NPUC)",
+        org_type: "Faith-based institution",
+        sector: "Faith-based",
+        status: "active_client",
+        source: "Grant program",
+      },
+      project: {
+        name: "Smoke-Free Program Grant Management",
+        service: "Program and Project Planning",
+        status: "in_progress",
+      },
+      milestones: [
+        { title: "Signature of contract", status: "completed" },
+        { title: "Financial report", status: "completed" },
+        { title: "Bay FCTC training with provincial/regional DOH and TCN (main resource person)", status: "not_started", due_date: inDays(25) },
+      ],
+      tasks: [
+        { title: "Reimbursement request", status: "in_progress", priority: "medium" },
+        { title: "Next round proposal — Calamba/Binan", status: "not_started", priority: "medium" },
+      ],
+    },
+    {
+      client: {
+        org_name: "National Institutes for Health (DOH-NIH)",
+        org_type: "Government agency",
+        sector: "Government / Research",
+        status: "active_client",
+        source: "Research grant",
+      },
+      project: {
+        name: "Dual Use of Conventional Tobacco and E-Cigarettes/Vapes/HTPs Research",
+        service: "Research and Policy Studies",
+        status: "in_progress",
+      },
+      milestones: [
+        { title: "Close of project documents", status: "completed" },
+        { title: "Debriefing session with HPP team", status: "completed" },
+        { title: "Second manuscript structure (under review)", status: "in_progress", due_date: inDays(8) },
+      ],
+      tasks: [
+        { title: "Encoding of student answers", status: "in_progress", priority: "medium" },
+        { title: "Address feedback on technical report", status: "completed" },
+      ],
     },
   ];
 
-  const oppIds = {};
-  for (const o of opportunitiesData) {
-    const { service, ...rest } = o;
-    const { data, error } = await supabase
-      .from("opportunities")
+  console.log("Seeding real clients, projects, milestones, and tasks…");
+  for (const engagement of realEngagements) {
+    const { data: client, error: clientError } = await supabase
+      .from("clients")
+      .insert({ ...engagement.client, relationship_owner: ownerId, created_by: ownerId, updated_by: ownerId })
+      .select()
+      .single();
+    if (clientError) throw clientError;
+
+    const { data: project, error: projectError } = await supabase
+      .from("projects")
       .insert({
-        ...rest,
-        service_id: serviceByName[service]?.id,
-        owner_id: ownerId,
+        name: engagement.project.name,
+        client_id: client.id,
+        service_id: serviceByName[engagement.project.service]?.id ?? null,
+        project_manager_id: ownerId,
+        status: engagement.project.status,
+        health_status: "green",
+        contract_amount: engagement.project.contract_amount ?? null,
         created_by: ownerId,
         updated_by: ownerId,
       })
       .select()
       .single();
-    if (error) throw error;
-    oppIds[o.title] = data.id;
+    if (projectError) throw projectError;
+
+    for (const m of engagement.milestones) {
+      await supabase.from("milestones").insert({
+        project_id: project.id,
+        title: m.title,
+        status: m.status,
+        due_date: m.due_date ?? null,
+        completion_pct: m.status === "completed" ? 100 : m.status === "in_progress" ? 50 : 0,
+        responsible_id: ownerId,
+      });
+    }
+
+    for (const t of engagement.tasks) {
+      await supabase.from("tasks").insert({
+        project_id: project.id,
+        title: t.title,
+        status: t.status,
+        priority: t.priority,
+        due_date: t.due_date ?? null,
+        assigned_to: ownerId,
+        created_by: ownerId,
+      });
+    }
   }
 
-  console.log("Converting the won opportunity into a project…");
-  const { data: projectId, error: convertError } = await supabase.rpc("convert_opportunity_to_project", {
-    p_opportunity_id: oppIds["Strategic Plan Refresh 2027-2031"],
-  });
-  if (convertError) throw convertError;
-
-  await supabase
-    .from("projects")
-    .update({
-      project_manager_id: coreId,
-      status: "in_progress",
-      health_status: "green",
-      start_date: inDays(-10),
-      end_date: inDays(120),
-      contract_reference: "SGH-2027-001",
+  // ────────────────────────────────────────────────────────────────────
+  // Real pipeline opportunities — from the sheet's own revenue-projection
+  // table ("Target Projects/Organizations"), not yet won.
+  // ────────────────────────────────────────────────────────────────────
+  console.log("Seeding real pipeline opportunities…");
+  const { data: hospitalClient } = await supabase
+    .from("clients")
+    .insert({
+      org_name: "Prospective Hospitals & Clinics",
+      org_type: "Hospital",
+      sector: "Healthcare",
+      status: "prospect",
+      source: "Professional network",
+      relationship_owner: ownerId,
+      created_by: ownerId,
+      updated_by: ownerId,
     })
-    .eq("id", projectId);
+    .select()
+    .single();
 
-  console.log("Seeding consultants…");
-  const { data: consultant1 } = await supabase
+  await supabase.from("opportunities").insert({
+    title: "Hospitals & Clinics — Consulting Engagement",
+    client_id: hospitalClient.id,
+    service_id: serviceByName["Healthcare and Hospital Management Consulting"]?.id ?? null,
+    stage: "qualification",
+    estimated_value: 900000,
+    probability_pct: 30,
+    owner_id: ownerId,
+    created_by: ownerId,
+    updated_by: ownerId,
+    next_action: "Scope specific hospital/clinic targets and initiate outreach",
+    next_action_due: inDays(14),
+    source: "Professional network",
+  });
+
+  const { data: onboardingClient } = await supabase
+    .from("clients")
+    .insert({
+      org_name: "Onboarding Website/Software Client (TBD)",
+      org_type: "Private company",
+      sector: "Technology",
+      status: "prospect",
+      source: "Direct inquiry",
+      relationship_owner: ownerId,
+      created_by: ownerId,
+      updated_by: ownerId,
+    })
+    .select()
+    .single();
+
+  await supabase.from("opportunities").insert({
+    title: "Onboarding Website/Software Development",
+    client_id: onboardingClient.id,
+    service_id: serviceByName["Business Process Review"]?.id ?? null,
+    stage: "qualification",
+    estimated_value: 1000000,
+    probability_pct: 30,
+    owner_id: ownerId,
+    created_by: ownerId,
+    updated_by: ownerId,
+    next_action: "Firm up scope and timeline with prospective client",
+    next_action_due: inDays(14),
+    source: "Direct inquiry",
+  });
+
+  // ────────────────────────────────────────────────────────────────────
+  // ONE clearly-synthetic "Demo —" trio: showcases won→project conversion,
+  // invoicing/payments, and temp-consultant RLS isolation — none of which
+  // the real data above currently demonstrates.
+  // ────────────────────────────────────────────────────────────────────
+  console.log("Seeding the labeled demo showcase (won→project, billing, temp-consultant view)…");
+  const { data: demoConsultant } = await supabase
     .from("consultants")
     .insert({
       full_name: "Demo Temp Consultant",
@@ -224,26 +428,63 @@ async function main() {
     .select()
     .single();
 
-  await supabase.from("consultants").insert({
-    full_name: "Sample Facilitator",
-    title: "Leadership Facilitator",
-    expertise: ["Leadership and Management Development", "Training, Facilitation, Coaching, and Mentoring"],
-    rate: 8000,
-    rate_currency: "PHP",
-    availability: "By engagement",
-    location: "Cavite",
-    travel_availability: true,
-    active: true,
+  const { data: demoClient } = await supabase
+    .from("clients")
+    .insert({
+      org_name: "Demo — Sample Prospect Co.",
+      org_type: "Private company",
+      sector: "Demonstration",
+      status: "prospect",
+      source: "Demo",
+      notes: "Synthetic example kept to demonstrate the won→project, billing, and temp-consultant features.",
+      relationship_owner: ownerId,
+      created_by: ownerId,
+      updated_by: ownerId,
+    })
+    .select()
+    .single();
+
+  const { data: demoOpp } = await supabase
+    .from("opportunities")
+    .insert({
+      title: "Demo — Sample Engagement",
+      client_id: demoClient.id,
+      stage: "negotiation",
+      estimated_value: 500000,
+      probability_pct: 80,
+      owner_id: ownerId,
+      created_by: ownerId,
+      updated_by: ownerId,
+      next_action: "Finalize terms",
+      next_action_due: inDays(3),
+      source: "Demo",
+    })
+    .select()
+    .single();
+
+  const { data: demoProjectId } = await supabase.rpc("convert_opportunity_to_project", {
+    p_opportunity_id: demoOpp.id,
   });
 
-  console.log("Seeding milestones, tasks, team, documents…");
-  const { data: milestone1 } = await supabase
+  await supabase
+    .from("projects")
+    .update({
+      name: "Demo — Sample Engagement",
+      project_manager_id: coreId,
+      status: "in_progress",
+      health_status: "green",
+      start_date: inDays(-5),
+      end_date: inDays(60),
+    })
+    .eq("id", demoProjectId);
+
+  const { data: demoMilestone } = await supabase
     .from("milestones")
     .insert({
-      project_id: projectId,
-      title: "Discovery workshops complete",
+      project_id: demoProjectId,
+      title: "Demo — Discovery phase complete",
       responsible_id: coreId,
-      due_date: inDays(14),
+      due_date: inDays(7),
       status: "in_progress",
       completion_pct: 40,
       billing_trigger: true,
@@ -251,67 +492,32 @@ async function main() {
     .select()
     .single();
 
-  await supabase.from("milestones").insert({
-    project_id: projectId,
-    title: "Draft strategic plan submitted",
-    responsible_id: ownerId,
-    due_date: inDays(45),
-    status: "not_started",
-    completion_pct: 0,
-    billing_trigger: true,
-    client_acceptance_required: true,
+  await supabase.from("tasks").insert({
+    project_id: demoProjectId,
+    milestone_id: demoMilestone.id,
+    title: "Demo — Compile discovery notes (assigned to the temp consultant login)",
+    assigned_to: tempId,
+    priority: "high",
+    due_date: inDays(-1),
+    status: "in_progress",
+    created_by: coreId,
   });
 
-  await supabase.from("tasks").insert([
-    {
-      project_id: projectId,
-      milestone_id: milestone1.id,
-      title: "Compile stakeholder interview notes",
-      assigned_to: tempId,
-      priority: "high",
-      due_date: inDays(-1),
-      status: "in_progress",
-      created_by: coreId,
-    },
-    {
-      project_id: projectId,
-      milestone_id: milestone1.id,
-      title: "Draft SWOT summary",
-      assigned_to: coreId,
-      priority: "medium",
-      due_date: inDays(4),
-      status: "not_started",
-      created_by: coreId,
-    },
-  ]);
-
   await supabase.from("project_assignments").insert([
-    { project_id: projectId, user_id: coreId, role_on_project: "Project coordinator" },
-    { project_id: projectId, consultant_id: consultant1.id, role_on_project: "Research associate" },
+    { project_id: demoProjectId, user_id: coreId, role_on_project: "Project coordinator" },
+    { project_id: demoProjectId, consultant_id: demoConsultant.id, role_on_project: "Research associate" },
   ]);
 
-  await supabase.from("documents").insert([
-    {
-      label: "Signed engagement contract",
-      category: "Contract",
-      external_link: "https://drive.google.com/example-contract",
-      linked_entity_type: "project",
-      linked_entity_id: projectId,
-      uploaded_by: ownerId,
-    },
-  ]);
-
-  console.log("Seeding an invoice with a partial payment…");
-  const { data: invoice } = await supabase
+  const { data: demoInvoice } = await supabase
     .from("invoices")
     .insert({
-      invoice_ref: "INV-DEMO-001",
-      client_id: clientIds["Sample General Hospital"],
-      project_id: projectId,
-      milestone_id: milestone1.id,
+      invoice_ref: "DEMO-INV-001",
+      client_id: demoClient.id,
+      project_id: demoProjectId,
+      milestone_id: demoMilestone.id,
       due_date: inDays(15),
-      amount: 300000,
-      tax_note: "Excluding tax — shouldered by client per contract.",
+      amount: 250000,
+      tax_note: "Demo — excluding tax, shouldered by client per contract.",
       status: "submitted",
       created_by: coreId,
     })
@@ -319,26 +525,19 @@ async function main() {
     .single();
 
   await supabase.rpc("record_payment", {
-    p_invoice_id: invoice.id,
-    p_amount: 150000,
+    p_invoice_id: demoInvoice.id,
+    p_amount: 100000,
     p_payment_date: inDays(-2),
     p_method: "Bank transfer",
     p_created_by: coreId,
   });
 
-  console.log("Seeding a public inquiry…");
-  await supabase.from("public_inquiries").insert({
-    name: "Prospective Client",
-    organization: "Sample Rural Health Unit",
-    email: "inquiry@example.com",
-    message: "We're interested in a workforce planning engagement for our regional office.",
-    service_interest: "Workforce Planning and Organizational Design",
-  });
-
-  console.log("\nDone. Demo logins (password: %s):", DEMO_PASSWORD);
+  console.log("\nDone. Login accounts (password: %s):", DEMO_PASSWORD);
   console.log("  owner@strategnosis.demo       (Owner)");
   console.log("  core@strategnosis.demo        (Core Team)");
   console.log("  consultant@strategnosis.demo  (Temporary Consultant)");
+  console.log("\n7 real client engagements seeded from the monitoring sheet, plus 2 real");
+  console.log("pipeline opportunities, plus one labeled 'Demo —' showcase trio.");
 }
 
 main().catch((err) => {
