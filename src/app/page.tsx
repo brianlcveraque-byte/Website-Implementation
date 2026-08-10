@@ -196,23 +196,24 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Why Strategnosis — color-blocked band */}
-        <section className="bg-indigo-950 py-16 sm:py-20">
+        {/* Why Strategnosis — bright color-blocked band, deliberately NOT dark
+            (the rest of the page is; this is the one section built to pop) */}
+        <section className="bg-amber-400 py-16 sm:py-20">
           <div className="mx-auto max-w-5xl px-4 text-center">
             <Reveal>
-              <p className="font-serif text-4xl font-light text-white sm:text-5xl">
+              <p className="font-serif text-4xl font-light text-slate-900 sm:text-5xl">
                 Not a report handed over.
               </p>
-              <p className="mx-auto mt-3 max-w-xl text-lg text-indigo-200">
+              <p className="mx-auto mt-3 max-w-xl text-lg text-slate-800">
                 Strategy through implementation and evaluation — hands-on, start to finish.
               </p>
             </Reveal>
             <div className="mt-12 grid gap-8 sm:grid-cols-4">
               {PROCESS.map((p, i) => (
                 <Reveal key={p.step} delayMs={i * 90}>
-                  <p className="font-serif text-3xl font-light text-indigo-300">{p.step}</p>
-                  <p className="mt-1 text-base font-semibold text-white">{p.title}</p>
-                  <p className="mt-1 text-sm text-indigo-300">{p.text}</p>
+                  <p className="font-serif text-3xl font-light text-slate-900/60">{p.step}</p>
+                  <p className="mt-1 text-base font-semibold text-slate-900">{p.title}</p>
+                  <p className="mt-1 text-sm text-slate-800">{p.text}</p>
                 </Reveal>
               ))}
             </div>
@@ -256,16 +257,16 @@ export default function LandingPage() {
         </section>
 
         {/* Closing CTA band */}
-        <section className="relative overflow-hidden bg-indigo-800 py-20">
-          <Image src="/photos/facilitation-workshop.jpg" alt="" fill aria-hidden className="object-cover opacity-25 mix-blend-luminosity" sizes="100vw" />
-          <div aria-hidden className="pointer-events-none absolute inset-0 bg-indigo-800/85" />
+        <section className="relative overflow-hidden bg-indigo-600 py-20">
+          <Image src="/photos/facilitation-workshop.jpg" alt="" fill aria-hidden className="object-cover opacity-20 mix-blend-luminosity" sizes="100vw" />
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-indigo-600/80" />
           <Reveal>
             <div className="relative mx-auto max-w-2xl px-4 text-center">
               <p className="font-serif text-4xl font-light text-white sm:text-5xl">Let&apos;s talk.</p>
-              <p className="mx-auto mt-3 max-w-xl text-lg text-indigo-100">
+              <p className="mx-auto mt-3 max-w-xl text-lg text-indigo-50">
                 Tell us about your organization&apos;s need.
               </p>
-              <a href="#contact" className="mt-6 inline-block rounded-md bg-white px-6 py-3 text-sm font-semibold text-indigo-700 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl">
+              <a href="#contact" className="mt-6 inline-block rounded-md bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-900 shadow-lg transition-all hover:-translate-y-0.5 hover:bg-amber-300 hover:shadow-xl">
                 Get in touch
               </a>
             </div>
