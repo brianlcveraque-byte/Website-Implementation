@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { InquiryForm } from "@/components/public/InquiryForm";
-import { ProductPreview } from "@/components/public/ProductPreview";
+import { ExpertiseShowcase } from "@/components/public/ExpertiseShowcase";
 import { Reveal } from "@/components/public/Reveal";
 import { ServiceIcon } from "@/components/public/ServiceIcon";
 import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
@@ -187,7 +187,7 @@ export default function LandingPage() {
               </Reveal>
             </div>
             <Reveal delayMs={220} className="hidden lg:block">
-              <ProductPreview />
+              <ExpertiseShowcase />
             </Reveal>
           </div>
         </section>
