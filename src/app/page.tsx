@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { InquiryForm } from "@/components/public/InquiryForm";
+import { ProductPreview } from "@/components/public/ProductPreview";
 import { Reveal } from "@/components/public/Reveal";
 import { ServiceIcon } from "@/components/public/ServiceIcon";
 import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
@@ -133,55 +134,60 @@ export default function LandingPage() {
             aria-hidden
             className="pointer-events-none absolute -right-24 -top-24 h-[420px] w-[420px] opacity-[0.06] invert sm:h-[560px] sm:w-[560px]"
           />
-          <div className="relative mx-auto max-w-4xl px-4 py-24 text-center sm:py-32">
-            <Reveal>
-              <span className="inline-block rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium tracking-wide text-indigo-300 uppercase">
-                Management &amp; Organizational Development Consultancy
-              </span>
-            </Reveal>
-            <Reveal delayMs={80}>
-              <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                Management consultancy for institutions that need to{" "}
-                <span className="bg-gradient-to-r from-indigo-400 to-fuchsia-400 bg-clip-text text-transparent">
-                  get complex change right
+          <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:py-28 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+            <div className="text-center lg:text-left">
+              <Reveal>
+                <span className="inline-block rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium tracking-wide text-indigo-300 uppercase">
+                  Management &amp; Organizational Development Consultancy
                 </span>
-                .
-              </h1>
-            </Reveal>
-            <Reveal delayMs={140}>
-              <p className="mx-auto mt-5 max-w-2xl text-base text-slate-300 sm:text-lg">
-                Strategnosis Solutions OPC provides strategic planning, organizational development,
-                HR systems, and healthcare management consulting to government, healthcare,
-                education, cooperative, and development-sector institutions in the Philippines and
-                abroad.
-              </p>
-            </Reveal>
-            <Reveal delayMs={200}>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <a
-                  href="#contact"
-                  className="rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-600/30"
-                >
-                  Discuss an engagement
-                </a>
-                <a
-                  href="#services"
-                  className="rounded-md border border-slate-700 px-6 py-3 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-500 hover:text-white"
-                >
-                  See service areas
-                </a>
-              </div>
-            </Reveal>
-            <Reveal delayMs={260}>
-              <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-3 gap-6 border-t border-white/10 pt-8">
-                {STATS.map((s) => (
-                  <div key={s.label}>
-                    <dt className="sr-only">{s.label}</dt>
-                    <dd className="text-2xl font-semibold text-white sm:text-3xl">{s.value}</dd>
-                    <p className="mt-1 text-xs text-slate-400 sm:text-sm">{s.label}</p>
-                  </div>
-                ))}
-              </dl>
+              </Reveal>
+              <Reveal delayMs={80}>
+                <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
+                  Management consultancy for institutions that need to{" "}
+                  <span className="bg-gradient-to-r from-indigo-400 to-fuchsia-400 bg-clip-text text-transparent">
+                    get complex change right
+                  </span>
+                  .
+                </h1>
+              </Reveal>
+              <Reveal delayMs={140}>
+                <p className="mx-auto mt-5 max-w-xl text-base text-slate-300 sm:text-lg lg:mx-0">
+                  Strategnosis Solutions OPC provides strategic planning, organizational
+                  development, HR systems, and healthcare management consulting to government,
+                  healthcare, education, cooperative, and development-sector institutions in the
+                  Philippines and abroad.
+                </p>
+              </Reveal>
+              <Reveal delayMs={200}>
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+                  <a
+                    href="#contact"
+                    className="rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-600/30"
+                  >
+                    Discuss an engagement
+                  </a>
+                  <a
+                    href="#services"
+                    className="rounded-md border border-slate-700 px-6 py-3 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-500 hover:text-white"
+                  >
+                    See service areas
+                  </a>
+                </div>
+              </Reveal>
+              <Reveal delayMs={260}>
+                <dl className="mx-auto mt-16 grid max-w-md grid-cols-3 gap-6 border-t border-white/10 pt-8 lg:mx-0">
+                  {STATS.map((s) => (
+                    <div key={s.label}>
+                      <dt className="sr-only">{s.label}</dt>
+                      <dd className="text-2xl font-semibold text-white sm:text-3xl">{s.value}</dd>
+                      <p className="mt-1 text-xs text-slate-400 sm:text-sm">{s.label}</p>
+                    </div>
+                  ))}
+                </dl>
+              </Reveal>
+            </div>
+            <Reveal delayMs={220} className="hidden lg:block">
+              <ProductPreview />
             </Reveal>
           </div>
         </section>
