@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { InquiryForm } from "@/components/public/InquiryForm";
 import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
@@ -24,25 +25,46 @@ const QUALIFICATIONS = [
   "International lecturer and facilitator",
 ];
 
+const STATS = [
+  { value: "20+", label: "Years in management consultancy" },
+  { value: SECTORS.length.toString(), label: "Sectors served" },
+  { value: SERVICE_CATEGORIES.length.toString(), label: "Service areas" },
+];
+
 export default function LandingPage() {
   return (
     <>
-      <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <span className="font-semibold">Strategnosis Solutions OPC</span>
-          <nav className="flex items-center gap-5 text-sm">
-            <a href="#services" className="hidden text-slate-600 hover:text-slate-900 dark:text-slate-300 sm:inline">
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+          <Image
+            src="/brand/logo-light.png"
+            alt="Strategnosis Solutions OPC"
+            width={160}
+            height={67}
+            className="h-9 w-auto dark:hidden"
+            priority
+          />
+          <Image
+            src="/brand/logo-dark.png"
+            alt="Strategnosis Solutions OPC"
+            width={160}
+            height={67}
+            className="hidden h-9 w-auto dark:block"
+            priority
+          />
+          <nav className="flex items-center gap-6 text-sm">
+            <a href="#services" className="hidden font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white sm:inline">
               Services
             </a>
-            <a href="#about" className="hidden text-slate-600 hover:text-slate-900 dark:text-slate-300 sm:inline">
+            <a href="#about" className="hidden font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white sm:inline">
               About
             </a>
-            <a href="#contact" className="hidden text-slate-600 hover:text-slate-900 dark:text-slate-300 sm:inline">
+            <a href="#contact" className="hidden font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white sm:inline">
               Contact
             </a>
             <Link
               href="/login"
-              className="rounded-md bg-slate-900 px-3 py-1.5 font-medium text-white dark:bg-white dark:text-slate-900"
+              className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-500"
             >
               Team sign in
             </Link>
@@ -51,56 +73,109 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="mx-auto max-w-5xl px-4 py-16 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Management consultancy for institutions that need to get complex change right.
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-slate-600 dark:text-slate-300">
-            Strategnosis Solutions OPC provides strategic planning, organizational development,
-            HR systems, and healthcare management consulting to government, healthcare,
-            education, cooperative, and development-sector institutions in the Philippines and
-            abroad.
-          </p>
-          <a
-            href="#contact"
-            className="mt-6 inline-block rounded-md bg-slate-900 px-5 py-2.5 text-sm font-medium text-white dark:bg-white dark:text-slate-900"
-          >
-            Discuss an engagement
-          </a>
+        <section className="relative overflow-hidden bg-slate-950">
+          <div
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.35),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(99,102,241,0.25),transparent_40%)]"
+            aria-hidden
+          />
+          <Image
+            src="/brand/icon-badge.png"
+            alt=""
+            width={640}
+            height={640}
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-24 h-[420px] w-[420px] opacity-[0.07] invert sm:h-[560px] sm:w-[560px]"
+          />
+          <div className="relative mx-auto max-w-4xl px-4 py-24 text-center sm:py-32">
+            <span className="inline-block rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium tracking-wide text-indigo-300 uppercase">
+              Management &amp; Organizational Development Consultancy
+            </span>
+            <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+              Management consultancy for institutions that need to get complex change right.
+            </h1>
+            <p className="mx-auto mt-5 max-w-2xl text-base text-slate-300 sm:text-lg">
+              Strategnosis Solutions OPC provides strategic planning, organizational development,
+              HR systems, and healthcare management consulting to government, healthcare,
+              education, cooperative, and development-sector institutions in the Philippines and
+              abroad.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="#contact"
+                className="rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition-colors hover:bg-indigo-500"
+              >
+                Discuss an engagement
+              </a>
+              <a
+                href="#services"
+                className="rounded-md border border-slate-700 px-6 py-3 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-500 hover:text-white"
+              >
+                See service areas
+              </a>
+            </div>
+            <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-3 gap-6 border-t border-white/10 pt-8">
+              {STATS.map((s) => (
+                <div key={s.label}>
+                  <dt className="sr-only">{s.label}</dt>
+                  <dd className="text-2xl font-semibold text-white sm:text-3xl">{s.value}</dd>
+                  <p className="mt-1 text-xs text-slate-400 sm:text-sm">{s.label}</p>
+                </div>
+              ))}
+            </dl>
+          </div>
         </section>
 
-        <section id="services" className="border-t border-slate-200 bg-white py-16 dark:border-slate-800 dark:bg-slate-950">
-          <div className="mx-auto max-w-5xl px-4">
-            <h2 className="text-xl font-semibold">Service areas</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Healthcare and hospital management consulting is our deepest specialization,
-              built across dozens of engagements.
-            </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {SERVICE_CATEGORIES.map((s) => (
+        <section id="services" className="border-b border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-950">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="max-w-2xl">
+              <h2 className="text-sm font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
+                Service areas
+              </h2>
+              <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
+                Eighteen service areas, one deep specialization.
+              </p>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                Healthcare and hospital management consulting is our deepest specialization,
+                built across dozens of engagements across the Philippines, Africa, and Southeast
+                Asia.
+              </p>
+            </div>
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {SERVICE_CATEGORIES.map((s, i) => (
                 <div
                   key={s.name}
-                  className="rounded-lg border border-slate-200 p-4 dark:border-slate-800"
+                  className="group rounded-xl border border-slate-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-900"
                 >
-                  <h3 className="text-sm font-semibold">{s.name}</h3>
-                  <p className="mt-1 text-sm text-slate-500">{s.description}</p>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-sm font-semibold text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-3 text-sm font-semibold text-slate-900 dark:text-white">{s.name}</h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{s.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="about" className="py-16">
-          <div className="mx-auto max-w-5xl px-4">
-            <h2 className="text-xl font-semibold">Principal consultant</h2>
-            <div className="mt-6 grid gap-8 sm:grid-cols-[2fr_3fr]">
+        <section id="about" className="bg-slate-50 py-20 dark:bg-slate-900/40">
+          <div className="mx-auto max-w-6xl px-4">
+            <h2 className="text-sm font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
+              Principal consultant
+            </h2>
+            <div className="mt-6 grid gap-10 sm:grid-cols-[auto_2fr_3fr] sm:items-start">
+              <div
+                aria-hidden
+                className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 text-xl font-semibold text-white shadow-md"
+              >
+                RJ
+              </div>
               <div>
-                <p className="font-semibold">Richard S. Javier, MBA, PhD</p>
-                <p className="text-sm text-slate-500">
+                <p className="text-lg font-semibold text-slate-900 dark:text-white">Richard S. Javier, MBA, PhD</p>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   Doctor of Philosophy in Organizational Development · MBA (Hospital
                   Administration)
                 </p>
-                <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+                <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">
                   Over two decades of management, organizational development, and healthcare
                   consulting across the Philippines, Africa, and Southeast Asia, including
                   engagements with hospitals, universities, cooperatives, government agencies,
@@ -108,20 +183,20 @@ export default function LandingPage() {
                 </p>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-slate-500">Sectors served</h3>
-                <ul className="mt-2 grid grid-cols-1 gap-1.5 text-sm sm:grid-cols-2">
+                <h3 className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Sectors served</h3>
+                <ul className="mt-2 grid grid-cols-1 gap-1.5 text-sm text-slate-700 dark:text-slate-300 sm:grid-cols-2">
                   {SECTORS.map((s) => (
                     <li key={s} className="flex items-start gap-1.5">
-                      <span aria-hidden>•</span>
+                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-indigo-500" aria-hidden />
                       {s}
                     </li>
                   ))}
                 </ul>
-                <h3 className="mt-5 text-sm font-semibold text-slate-500">Qualifications</h3>
-                <ul className="mt-2 grid grid-cols-1 gap-1.5 text-sm sm:grid-cols-2">
+                <h3 className="mt-5 text-xs font-semibold tracking-wide text-slate-400 uppercase">Qualifications</h3>
+                <ul className="mt-2 grid grid-cols-1 gap-1.5 text-sm text-slate-700 dark:text-slate-300 sm:grid-cols-2">
                   {QUALIFICATIONS.map((q) => (
                     <li key={q} className="flex items-start gap-1.5">
-                      <span aria-hidden>•</span>
+                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-indigo-500" aria-hidden />
                       {q}
                     </li>
                   ))}
@@ -131,27 +206,30 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section
-          id="contact"
-          className="border-t border-slate-200 bg-white py-16 dark:border-slate-800 dark:bg-slate-950"
-        >
+        <section id="contact" className="border-t border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-950">
           <div className="mx-auto max-w-2xl px-4">
-            <h2 className="text-xl font-semibold">Discuss an engagement</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="text-sm font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
+              Get in touch
+            </h2>
+            <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">Discuss an engagement</p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Tell us about your organization&apos;s need and we&apos;ll follow up.
             </p>
-            <div className="mt-6">
+            <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
               <InquiryForm />
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-400 dark:border-slate-800">
-        <p>© {new Date().getFullYear()} Strategnosis Solutions OPC.</p>
-        <Link href="/privacy" className="underline">
-          Privacy notice
-        </Link>
+      <footer className="border-t border-slate-800 bg-slate-950 py-10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 text-center">
+          <Image src="/brand/logo-dark.png" alt="Strategnosis Solutions OPC" width={140} height={58} className="h-8 w-auto opacity-90" />
+          <p className="text-xs text-slate-500">© {new Date().getFullYear()} Strategnosis Solutions OPC.</p>
+          <Link href="/privacy" className="text-xs text-slate-400 underline hover:text-slate-200">
+            Privacy notice
+          </Link>
+        </div>
       </footer>
     </>
   );
