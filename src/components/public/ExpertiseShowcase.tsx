@@ -29,7 +29,7 @@ const STATS = [
 export function ExpertiseShowcase() {
   return (
     <div className="relative">
-      <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/10 blur-2xl" aria-hidden />
+      <div className="absolute -inset-4 -z-10 rounded-3xl bg-indigo-500/15 blur-2xl" aria-hidden />
       <div className="overflow-hidden rounded-xl border border-white/10 bg-slate-900 p-6 shadow-2xl shadow-black/40 ring-1 ring-white/10 sm:p-7">
         <p className="text-[11px] font-medium tracking-wide text-slate-400 uppercase">
           Areas of expertise

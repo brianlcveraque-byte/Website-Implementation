@@ -116,23 +116,11 @@ export default function LandingPage() {
         <section className="relative overflow-hidden bg-slate-950">
           <div
             aria-hidden
-            className="animate-float-slow pointer-events-none absolute -left-20 top-[-10%] h-[420px] w-[420px] rounded-full bg-indigo-600/30 blur-[100px]"
+            className="pointer-events-none absolute -left-32 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-indigo-600/20 blur-[120px]"
           />
           <div
             aria-hidden
-            className="animate-float-slower pointer-events-none absolute right-[-10%] top-[10%] h-[380px] w-[380px] rounded-full bg-fuchsia-600/10 blur-[110px]"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:44px_44px]"
-          />
-          <Image
-            src="/brand/icon-badge.png"
-            alt=""
-            width={640}
-            height={640}
-            aria-hidden
-            className="pointer-events-none absolute -right-24 -top-24 h-[420px] w-[420px] opacity-[0.06] invert sm:h-[560px] sm:w-[560px]"
+            className="pointer-events-none absolute inset-0 opacity-[0.035] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:48px_48px]"
           />
           <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:py-28 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
             <div className="text-center lg:text-left">
@@ -142,12 +130,9 @@ export default function LandingPage() {
                 </span>
               </Reveal>
               <Reveal delayMs={80}>
-                <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
+                <h1 className="mt-6 font-serif text-4xl font-light tracking-tight text-white sm:text-5xl lg:text-[3.4rem] lg:leading-[1.15]">
                   Management consultancy for institutions that need to{" "}
-                  <span className="bg-gradient-to-r from-indigo-400 to-fuchsia-400 bg-clip-text text-transparent">
-                    get complex change right
-                  </span>
-                  .
+                  <em className="text-indigo-300">get complex change right</em>.
                 </h1>
               </Reveal>
               <Reveal delayMs={140}>
@@ -224,7 +209,7 @@ export default function LandingPage() {
                 <h2 className="text-sm font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
                   Service areas
                 </h2>
-                <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
+                <p className="mt-2 font-serif text-2xl font-light text-slate-900 dark:text-white sm:text-3xl">
                   Eighteen service areas, one deep specialization.
                 </p>
                 <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
@@ -330,14 +315,14 @@ export default function LandingPage() {
         </section>
 
         {/* Closing CTA band */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-700 via-indigo-600 to-fuchsia-600 py-16">
+        <section className="relative overflow-hidden bg-indigo-800 py-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.06] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:36px_36px]"
           />
           <Reveal>
             <div className="relative mx-auto max-w-3xl px-4 text-center">
-              <h2 className="text-2xl font-semibold text-white sm:text-3xl">
+              <h2 className="font-serif text-2xl font-light text-white sm:text-3xl">
                 Ready to discuss your next engagement?
               </h2>
               <p className="mx-auto mt-3 max-w-xl text-sm text-indigo-100 sm:text-base">
@@ -361,7 +346,7 @@ export default function LandingPage() {
               <h2 className="text-sm font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
                 Get in touch
               </h2>
-              <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">Discuss an engagement</p>
+              <p className="mt-2 font-serif text-2xl font-light text-slate-900 dark:text-white sm:text-3xl">Discuss an engagement</p>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Tell us about your organization&apos;s need and we&apos;ll follow up.
               </p>
