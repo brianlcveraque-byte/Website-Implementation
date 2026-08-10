@@ -114,13 +114,22 @@ export default function LandingPage() {
       <main className="flex-1">
         {/* Hero */}
         <section className="relative overflow-hidden bg-slate-950">
-          <div
+          <Image
+            src="/photos/hero-building.jpg"
+            alt=""
+            fill
+            priority
             aria-hidden
-            className="pointer-events-none absolute -left-32 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-indigo-600/20 blur-[120px]"
+            className="object-cover opacity-40"
+            sizes="100vw"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.035] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:48px_48px]"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/70"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"
           />
           <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:py-28 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
             <div className="text-center lg:text-left">
@@ -235,6 +244,44 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Healthcare specialization spotlight */}
+        <section className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+          <div className="mx-auto grid max-w-6xl items-center gap-0 lg:grid-cols-2">
+            <Reveal className="order-2 px-4 py-16 lg:order-1 lg:px-8 lg:py-0">
+              <h2 className="text-sm font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
+                Core specialization
+              </h2>
+              <p className="mt-2 font-serif text-2xl font-light text-slate-900 dark:text-white sm:text-3xl">
+                Healthcare and hospital management consulting.
+              </p>
+              <p className="mt-4 text-sm text-slate-600 dark:text-slate-300 sm:text-base">
+                Dozens of engagements with hospitals and health systems across the Philippines,
+                Africa, and Southeast Asia — implementation planning, executive coaching,
+                feasibility studies, and organizational development for institutions where getting
+                it right has direct consequences for patient care.
+              </p>
+              <a
+                href="#services"
+                className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+              >
+                See all service areas
+                <span aria-hidden>→</span>
+              </a>
+            </Reveal>
+            <Reveal delayMs={80} className="order-1 lg:order-2">
+              <div className="relative h-64 lg:h-[420px]">
+                <Image
+                  src="/photos/healthcare-corridor.jpg"
+                  alt="Hospital corridor"
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                />
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
         {/* How We Work */}
         <section className="border-b border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-950">
           <div className="mx-auto max-w-6xl px-4">
@@ -315,11 +362,16 @@ export default function LandingPage() {
         </section>
 
         {/* Closing CTA band */}
-        <section className="relative overflow-hidden bg-indigo-800 py-16">
-          <div
+        <section className="relative overflow-hidden bg-indigo-800 py-20">
+          <Image
+            src="/photos/facilitation-workshop.jpg"
+            alt=""
+            fill
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.06] [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] [background-size:36px_36px]"
+            className="object-cover opacity-25 mix-blend-luminosity"
+            sizes="100vw"
           />
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-indigo-800/85" />
           <Reveal>
             <div className="relative mx-auto max-w-3xl px-4 text-center">
               <h2 className="font-serif text-2xl font-light text-white sm:text-3xl">
