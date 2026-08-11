@@ -2,12 +2,12 @@ import Link from "next/link";
 
 export default function PrivacyPage() {
   return (
-    <main className="mx-auto max-w-2xl flex-1 px-4 py-16">
+    <main className="mx-auto max-w-2xl flex-1 bg-white px-4 py-16 text-slate-900">
       <Link href="/" className="text-sm text-slate-500 underline">
         ← Back
       </Link>
       <h1 className="mt-4 text-2xl font-semibold">Privacy Notice</h1>
-      <div className="mt-6 space-y-4 text-sm text-slate-600 dark:text-slate-300">
+      <div className="mt-6 space-y-4 text-sm text-slate-600">
         <p>
           When you submit an inquiry through this site, Strategnosis Solutions OPC collects
           your name, organization, email, phone number, and message so we can respond to your

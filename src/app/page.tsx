@@ -4,6 +4,11 @@ import { InquiryForm } from "@/components/public/InquiryForm";
 import { Reveal } from "@/components/public/Reveal";
 import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
 
+// This page deliberately does NOT follow the visitor's OS light/dark
+// preference — unlike the internal /app tool, a marketing site's brand
+// colors shouldn't shift based on someone's system setting (mckinsey.com
+// and bcg.com don't either). One fixed light-based look, on purpose.
+
 const SECTORS = [
   "Government institutions",
   "Hospitals and healthcare organizations",
@@ -47,17 +52,13 @@ const PROCESS = [
 export default function LandingPage() {
   return (
     <>
-      <noscript>
-        <style>{`.transition-all{opacity:1 !important;transform:none !important;}`}</style>
-      </noscript>
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Image src="/brand/logo-light.png" alt="Strategnosis Solutions OPC" width={160} height={67} className="h-9 w-auto dark:hidden" priority />
-          <Image src="/brand/logo-dark.png" alt="Strategnosis Solutions OPC" width={160} height={67} className="hidden h-9 w-auto dark:block" priority />
+          <Image src="/brand/logo-light.png" alt="Strategnosis Solutions OPC" width={160} height={67} className="h-9 w-auto" priority />
           <nav className="flex items-center gap-6 text-sm">
-            <a href="#services" className="hidden font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white sm:inline">Services</a>
-            <a href="#about" className="hidden font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white sm:inline">About</a>
-            <a href="#contact" className="hidden font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white sm:inline">Contact</a>
+            <a href="#services" className="hidden font-medium text-slate-600 hover:text-slate-900 sm:inline">Services</a>
+            <a href="#about" className="hidden font-medium text-slate-600 hover:text-slate-900 sm:inline">About</a>
+            <a href="#contact" className="hidden font-medium text-slate-600 hover:text-slate-900 sm:inline">Contact</a>
             <Link href="/login" className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-500">
               Team sign in
             </Link>
@@ -66,7 +67,9 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        {/* Hero: headline above, big full-bleed image with overlaid card below */}
+        {/* Hero: headline above, big full-bleed image with overlaid card below.
+            Deliberately dark — this is the one intentional dark section, like
+            BCG's own dark hero card, not a whole-page dark theme. */}
         <section className="bg-slate-950 pt-16 pb-10 sm:pt-20">
           <div className="mx-auto max-w-4xl px-4 text-center">
             <Reveal>
@@ -91,23 +94,23 @@ export default function LandingPage() {
               <div className="relative h-[380px] overflow-hidden rounded-3xl sm:h-[480px] lg:h-[560px]">
                 <Image src="/photos/hero-building.jpg" alt="" fill priority className="object-cover" sizes="100vw" />
                 <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/10 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 max-w-md rounded-2xl bg-white/95 p-6 shadow-xl backdrop-blur dark:bg-slate-900/95 sm:bottom-8 sm:left-8">
-                  <p className="text-xs font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
+                <div className="absolute bottom-6 left-6 right-6 max-w-md rounded-2xl bg-white/95 p-6 shadow-xl backdrop-blur sm:bottom-8 sm:left-8">
+                  <p className="text-xs font-semibold tracking-wide text-indigo-600 uppercase">
                     Twenty years, one specialization
                   </p>
-                  <p className="mt-1.5 font-serif text-xl font-light text-slate-900 dark:text-white sm:text-2xl">
+                  <p className="mt-1.5 font-serif text-xl font-light text-slate-900 sm:text-2xl">
                     Healthcare consulting, done at depth.
                   </p>
-                  <a href="#services" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+                  <a href="#services" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-500">
                     See what we do
                     <span aria-hidden>→</span>
                   </a>
                 </div>
-                <dl className="absolute top-6 right-6 hidden gap-6 rounded-2xl bg-white/95 px-6 py-4 shadow-xl backdrop-blur dark:bg-slate-900/95 sm:flex">
+                <dl className="absolute top-6 right-6 hidden gap-6 rounded-2xl bg-white/95 px-6 py-4 shadow-xl backdrop-blur sm:flex">
                   {STATS.map((s) => (
                     <div key={s.label} className="text-center">
-                      <dd className="text-xl font-semibold text-slate-900 dark:text-white">{s.value}</dd>
-                      <dt className="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">{s.label}</dt>
+                      <dd className="text-xl font-semibold text-slate-900">{s.value}</dd>
+                      <dt className="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">{s.label}</dt>
                     </div>
                   ))}
                 </dl>
@@ -117,7 +120,7 @@ export default function LandingPage() {
         </section>
 
         {/* Pillar cards */}
-        <section className="bg-white py-16 dark:bg-slate-950 sm:py-20">
+        <section className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4">
             <Reveal>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -151,10 +154,10 @@ export default function LandingPage() {
         </section>
 
         {/* Services: compact tag list, not 18 wordy cards */}
-        <section id="services" className="border-y border-slate-200 bg-slate-50 py-16 dark:border-slate-800 dark:bg-slate-900/40 sm:py-20">
+        <section id="services" className="border-y border-slate-200 bg-slate-50 py-16 sm:py-20">
           <div className="mx-auto max-w-5xl px-4 text-center">
             <Reveal>
-              <p className="font-serif text-4xl font-light text-slate-900 dark:text-white sm:text-5xl">
+              <p className="font-serif text-4xl font-light text-slate-900 sm:text-5xl">
                 Eighteen service areas.
               </p>
             </Reveal>
@@ -163,7 +166,7 @@ export default function LandingPage() {
                 {SERVICE_CATEGORIES.map((s) => (
                   <span
                     key={s.name}
-                    className="rounded-full border border-slate-200 bg-white px-5 py-2.5 text-base text-slate-700 transition-colors hover:border-indigo-300 hover:text-indigo-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-indigo-700 dark:hover:text-indigo-300"
+                    className="rounded-full border border-slate-200 bg-white px-5 py-2.5 text-base text-slate-700 transition-colors hover:border-indigo-300 hover:text-indigo-700"
                   >
                     {s.name}
                   </span>
@@ -174,7 +177,7 @@ export default function LandingPage() {
         </section>
 
         {/* Regional reach — big photo + short text, BCG "locations" pattern */}
-        <section className="bg-white py-16 dark:bg-slate-950 sm:py-20">
+        <section className="bg-white py-16 sm:py-20">
           <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 lg:grid-cols-2 lg:gap-12">
             <Reveal>
               <div className="relative h-72 overflow-hidden rounded-2xl lg:h-[420px]">
@@ -182,13 +185,13 @@ export default function LandingPage() {
               </div>
             </Reveal>
             <Reveal delayMs={80}>
-              <p className="text-sm font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
+              <p className="text-sm font-semibold tracking-wide text-indigo-600 uppercase">
                 Regional reach
               </p>
-              <p className="mt-2 font-serif text-4xl font-light text-slate-900 dark:text-white sm:text-5xl">
+              <p className="mt-2 font-serif text-4xl font-light text-slate-900 sm:text-5xl">
                 Philippines. Africa. Southeast Asia.
               </p>
-              <p className="mt-4 max-w-md text-lg text-slate-600 dark:text-slate-300">
+              <p className="mt-4 max-w-md text-lg text-slate-600">
                 Hospitals, cooperatives, governments, universities — backed by WHO, DOH, and NIH
                 research.
               </p>
@@ -196,8 +199,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Why Strategnosis — bright color-blocked band, deliberately NOT dark
-            (the rest of the page is; this is the one section built to pop) */}
+        {/* Why Strategnosis — bright color-blocked band, the one deliberate pop */}
         <section className="bg-amber-400 py-16 sm:py-20">
           <div className="mx-auto max-w-5xl px-4 text-center">
             <Reveal>
@@ -221,10 +223,10 @@ export default function LandingPage() {
         </section>
 
         {/* About */}
-        <section id="about" className="bg-white py-16 dark:bg-slate-950 sm:py-20">
+        <section id="about" className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-5xl px-4">
             <Reveal>
-              <p className="text-sm font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
+              <p className="text-sm font-semibold tracking-wide text-indigo-600 uppercase">
                 Principal consultant
               </p>
               <div className="mt-6 flex flex-col gap-8 sm:flex-row sm:items-start">
@@ -235,17 +237,17 @@ export default function LandingPage() {
                   RJ
                 </div>
                 <div>
-                  <p className="font-serif text-3xl font-light text-slate-900 dark:text-white">Richard S. Javier, MBA, PhD</p>
-                  <p className="mt-1 text-base text-slate-500 dark:text-slate-400">
+                  <p className="font-serif text-3xl font-light text-slate-900">Richard S. Javier, MBA, PhD</p>
+                  <p className="mt-1 text-base text-slate-500">
                     PhD, Organizational Development · MBA, Hospital Administration
                   </p>
-                  <p className="mt-4 max-w-2xl text-lg text-slate-600 dark:text-slate-300">
+                  <p className="mt-4 max-w-2xl text-lg text-slate-600">
                     Two decades consulting for hospitals, universities, cooperatives, and
                     governments — Philippines to Southeast Asia.
                   </p>
                   <div className="mt-5 flex flex-wrap gap-2">
                     {QUALIFICATIONS.map((q) => (
-                      <span key={q} className="rounded-full bg-slate-100 px-3.5 py-1.5 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                      <span key={q} className="rounded-full bg-slate-100 px-3.5 py-1.5 text-sm text-slate-600">
                         {q}
                       </span>
                     ))}
@@ -274,11 +276,11 @@ export default function LandingPage() {
         </section>
 
         {/* Contact */}
-        <section id="contact" className="bg-white py-16 dark:bg-slate-950 sm:py-20">
+        <section id="contact" className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-2xl px-4">
             <Reveal>
-              <p className="font-serif text-4xl font-light text-slate-900 dark:text-white">Discuss an engagement</p>
-              <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p className="font-serif text-4xl font-light text-slate-900">Discuss an engagement</p>
+              <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                 <InquiryForm />
               </div>
             </Reveal>

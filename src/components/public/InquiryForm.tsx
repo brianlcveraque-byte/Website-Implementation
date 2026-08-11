@@ -2,8 +2,24 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Button, ErrorBlock, Field, Input, Textarea } from "@/components/ui/Primitives";
 import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
+
+// Styled locally rather than reusing the shared ui/Primitives components —
+// those are dark-mode aware for the internal /app tool, but this public page
+// has one fixed light appearance regardless of the visitor's OS theme (see
+// the note at the top of app/page.tsx).
+
+const inputClass =
+  "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500";
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-medium text-slate-700">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 export function InquiryForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
@@ -41,7 +57,7 @@ export function InquiryForm() {
 
   if (status === "done") {
     return (
-      <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-6 text-center text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+      <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-6 text-center text-sm text-emerald-800">
         Thank you — your inquiry has been received. We&apos;ll get back to you shortly.
       </div>
     );
@@ -59,23 +75,20 @@ export function InquiryForm() {
       />
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Name">
-          <Input name="name" required />
+          <input name="name" required className={inputClass} />
         </Field>
         <Field label="Organization">
-          <Input name="organization" />
+          <input name="organization" className={inputClass} />
         </Field>
         <Field label="Email">
-          <Input name="email" type="email" required />
+          <input name="email" type="email" required className={inputClass} />
         </Field>
         <Field label="Phone">
-          <Input name="phone" />
+          <input name="phone" className={inputClass} />
         </Field>
       </div>
       <Field label="Service of interest">
-        <select
-          name="service_interest"
-          className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
-        >
+        <select name="service_interest" className={inputClass}>
           <option value="">Not sure yet</option>
           {SERVICE_CATEGORIES.map((s) => (
             <option key={s.name} value={s.name}>
@@ -85,12 +98,18 @@ export function InquiryForm() {
         </select>
       </Field>
       <Field label="Tell us about your need">
-        <Textarea name="message" rows={4} required />
+        <textarea name="message" rows={4} required className={inputClass} />
       </Field>
-      {error && <ErrorBlock message={error} />}
-      <Button type="submit" disabled={status === "submitting"} className="w-full sm:w-auto">
+      {error && (
+        <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>
+      )}
+      <button
+        type="submit"
+        disabled={status === "submitting"}
+        className="w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-500 disabled:opacity-50 sm:w-auto"
+      >
         {status === "submitting" ? "Sending…" : "Send inquiry"}
-      </Button>
+      </button>
     </form>
   );
 }
