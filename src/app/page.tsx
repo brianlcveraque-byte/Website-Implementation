@@ -1,7 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FreeConsultationOffer } from "@/components/public/FreeConsultationOffer";
 import { InquiryForm } from "@/components/public/InquiryForm";
+import { NewsletterSignup } from "@/components/public/NewsletterSignup";
 import { Reveal } from "@/components/public/Reveal";
+import { SiteFooter } from "@/components/public/SiteFooter";
+import { SiteHeader } from "@/components/public/SiteHeader";
+import { TestimonialSlot } from "@/components/public/TestimonialSlot";
+import { PILLARS } from "@/lib/pillars";
 import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
 
 // This page deliberately does NOT follow the visitor's OS light/dark
@@ -9,37 +15,17 @@ import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
 // colors shouldn't shift based on someone's system setting (mckinsey.com
 // and bcg.com don't either). One fixed light-based look, on purpose.
 
-const SECTORS = [
-  "Government institutions",
-  "Hospitals and healthcare organizations",
-  "Universities and educational institutions",
-  "Cooperatives",
-  "International and development organizations",
-  "Faith-based institutions",
-  "Private companies",
-  "Professional associations",
-];
-
-const QUALIFICATIONS = [
-  "Organizational Development",
-  "International Consultant",
-  "Strategic Planning",
-  "Competency-Based HR",
-  "WHO / DOH / NIH Research",
-  "International Lecturer",
-];
+const SECTORS_COUNT = 8;
 
 const STATS = [
   { value: "20+", label: "Years" },
-  { value: SECTORS.length.toString(), label: "Sectors" },
+  { value: SECTORS_COUNT.toString(), label: "Sectors" },
   { value: SERVICE_CATEGORIES.length.toString(), label: "Service areas" },
 ];
 
-const PILLARS = [
-  { tag: "Strategy & Leadership", photo: "/photos/strategy-whiteboard.jpg", href: "#services" },
-  { tag: "Healthcare & Hospitals", photo: "/photos/healthcare-corridor.jpg", href: "#services" },
-  { tag: "Training & Facilitation", photo: "/photos/facilitation-workshop.jpg", href: "#services" },
-  { tag: "Regional Reach", photo: "/photos/skyline-sunset.jpg", href: "#about" },
+const HOME_CARDS = [
+  ...PILLARS.map((p) => ({ tag: p.tag, photo: p.photo, href: `/services/${p.slug}` })),
+  { tag: "Regional Reach", photo: "/photos/skyline-sunset.jpg", href: "/about" },
 ];
 
 const PROCESS = [
@@ -52,19 +38,7 @@ const PROCESS = [
 export default function LandingPage() {
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <Image src="/brand/logo-light.png" alt="Strategnosis Solutions OPC" width={160} height={67} className="h-9 w-auto" priority />
-          <nav className="flex items-center gap-6 text-sm">
-            <a href="#services" className="hidden font-medium text-slate-600 hover:text-slate-900 sm:inline">Services</a>
-            <a href="#about" className="hidden font-medium text-slate-600 hover:text-slate-900 sm:inline">About</a>
-            <a href="#contact" className="hidden font-medium text-slate-600 hover:text-slate-900 sm:inline">Contact</a>
-            <Link href="/login" className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm transition-colors hover:bg-indigo-500">
-              Team sign in
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="flex-1">
         {/* Hero: headline above, big full-bleed image with overlaid card below.
@@ -101,10 +75,10 @@ export default function LandingPage() {
                   <p className="mt-1.5 font-serif text-xl font-light text-slate-900 sm:text-2xl">
                     Healthcare consulting, done at depth.
                   </p>
-                  <a href="#services" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+                  <Link href="/services/healthcare" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-500">
                     See what we do
                     <span aria-hidden>→</span>
-                  </a>
+                  </Link>
                 </div>
                 <dl className="absolute top-6 right-6 hidden gap-6 rounded-2xl bg-white/95 px-6 py-4 shadow-xl backdrop-blur sm:flex">
                   {STATS.map((s) => (
@@ -119,13 +93,13 @@ export default function LandingPage() {
           </Reveal>
         </section>
 
-        {/* Pillar cards */}
+        {/* Pillar cards — now real pages, not scroll anchors */}
         <section className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4">
             <Reveal>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {PILLARS.map((p, i) => (
-                  <a
+                {HOME_CARDS.map((p, i) => (
+                  <Link
                     key={p.tag}
                     href={p.href}
                     className="group relative block h-64 overflow-hidden rounded-2xl"
@@ -146,12 +120,14 @@ export default function LandingPage() {
                         Explore
                       </span>
                     )}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </Reveal>
           </div>
         </section>
+
+        <FreeConsultationOffer />
 
         {/* Services: compact tag list, not 18 wordy cards */}
         <section id="services" className="border-y border-slate-200 bg-slate-50 py-16 sm:py-20">
@@ -160,9 +136,12 @@ export default function LandingPage() {
               <p className="font-serif text-4xl font-light text-slate-900 sm:text-5xl">
                 Eighteen service areas.
               </p>
+              <Link href="/services" className="mt-2 inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+                Browse by practice area →
+              </Link>
             </Reveal>
             <Reveal delayMs={80}>
-              <div className="mt-10 flex flex-wrap justify-center gap-3">
+              <div className="mt-8 flex flex-wrap justify-center gap-3">
                 {SERVICE_CATEGORIES.map((s) => (
                   <span
                     key={s.name}
@@ -222,8 +201,10 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <TestimonialSlot />
+
         {/* About */}
-        <section id="about" className="bg-white py-16 sm:py-20">
+        <section id="about" className="bg-slate-50 py-16 sm:py-20">
           <div className="mx-auto max-w-5xl px-4">
             <Reveal>
               <p className="text-sm font-semibold tracking-wide text-indigo-600 uppercase">
@@ -245,16 +226,25 @@ export default function LandingPage() {
                     Two decades consulting for hospitals, universities, cooperatives, and
                     governments — Philippines to Southeast Asia.
                   </p>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {QUALIFICATIONS.map((q) => (
-                      <span key={q} className="rounded-full bg-slate-100 px-3.5 py-1.5 text-sm text-slate-600">
-                        {q}
-                      </span>
-                    ))}
-                  </div>
+                  <Link href="/about" className="mt-4 inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+                    Read the full profile →
+                  </Link>
                 </div>
               </div>
             </Reveal>
+          </div>
+        </section>
+
+        {/* Newsletter */}
+        <section className="border-t border-slate-200 bg-white py-14">
+          <div className="mx-auto max-w-2xl px-4 text-center">
+            <p className="font-serif text-2xl font-light text-slate-900">Occasional insights, no spam.</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Notes on strategy, HR systems, and healthcare management — sent rarely.
+            </p>
+            <div className="mt-5 flex justify-center">
+              <NewsletterSignup />
+            </div>
           </div>
         </section>
 
@@ -288,15 +278,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-800 bg-slate-950 py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 text-center">
-          <Image src="/brand/logo-dark.png" alt="Strategnosis Solutions OPC" width={140} height={58} className="h-8 w-auto opacity-90" />
-          <p className="text-xs text-slate-500">© {new Date().getFullYear()} Strategnosis Solutions OPC.</p>
-          <Link href="/privacy" className="text-xs text-slate-400 underline hover:text-slate-200">
-            Privacy notice
-          </Link>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }
