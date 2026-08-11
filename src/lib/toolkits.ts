@@ -16,7 +16,39 @@ export type Toolkit = {
   matchingService?: string; // SERVICE_CATEGORIES name, for prefilling InquiryForm
 };
 
+/** ₱0 displays as "Free" instead of "₱0" wherever a toolkit's price is shown. */
+export function formatToolkitPrice(price: number): string {
+  return price === 0 ? "Free" : `₱${price.toLocaleString()}`;
+}
+
 export const TOOLKITS: Toolkit[] = [
+  {
+    slug: "organizational-health-check",
+    name: "Organizational Health Check",
+    price: 0,
+    pillarTag: "Strategy & Leadership",
+    tagline: "A 10-minute self-assessment to see where your organization needs the most help.",
+    includes: [
+      "20-question checklist across strategy, HR, and operations",
+      "Simple scoring guide to interpret your results",
+      "A suggested next toolkit based on your score",
+    ],
+    idealFor: "Anyone unsure where to start — no strings attached.",
+  },
+  {
+    slug: "swot-priorities-worksheet",
+    name: "One-Page SWOT & Priorities Worksheet",
+    price: 150,
+    pillarTag: "Strategy & Leadership",
+    tagline: "A simple worksheet to structure your next planning conversation.",
+    includes: [
+      "One-page SWOT analysis template",
+      "Priority-setting matrix (impact vs. effort)",
+      "Quick-fill instructions",
+    ],
+    idealFor: "Teams wanting a fast, structured discussion tool for their next meeting.",
+    matchingService: "Strategic Management and Planning",
+  },
   {
     slug: "strategic-planning-canvas",
     name: "Strategic Planning Canvas",

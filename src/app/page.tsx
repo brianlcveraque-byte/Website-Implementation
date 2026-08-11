@@ -9,7 +9,7 @@ import { SiteHeader } from "@/components/public/SiteHeader";
 import { TestimonialSlot } from "@/components/public/TestimonialSlot";
 import { PILLARS } from "@/lib/pillars";
 import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
-import { TOOLKITS } from "@/lib/toolkits";
+import { formatToolkitPrice, TOOLKITS } from "@/lib/toolkits";
 
 // This page deliberately does NOT follow the visitor's OS light/dark
 // preference — unlike the internal /app tool, a marketing site's brand
@@ -29,7 +29,7 @@ const HOME_CARDS = [
   { tag: "Regional Reach", photo: "/photos/skyline-sunset.jpg", href: "/about" },
 ];
 
-const TOOLKIT_TEASERS = ["strategic-planning-canvas", "training-design-kit", "healthcare-qi-toolkit"]
+const TOOLKIT_TEASERS = ["organizational-health-check", "strategic-planning-canvas", "healthcare-qi-toolkit"]
   .map((slug) => TOOLKITS.find((t) => t.slug === slug))
   .filter((t): t is (typeof TOOLKITS)[number] => !!t);
 
@@ -166,7 +166,7 @@ export default function LandingPage() {
             <Reveal>
               <p className="text-sm font-semibold tracking-wide text-indigo-600 uppercase">Not ready for a full engagement?</p>
               <p className="mt-2 font-serif text-4xl font-light text-slate-900 sm:text-5xl">
-                Starter toolkits from ₱500.
+                Starter toolkits, free to ₱5,000.
               </p>
               <p className="mx-auto mt-3 max-w-xl text-lg text-slate-600">
                 Practical templates built from the same frameworks we use in full engagements.
@@ -182,8 +182,12 @@ export default function LandingPage() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <p className="text-xs font-semibold tracking-wide text-indigo-600 uppercase">{t.pillarTag}</p>
-                      <p className="shrink-0 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
-                        ₱{t.price.toLocaleString()}
+                      <p
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          t.price === 0 ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                        }`}
+                      >
+                        {formatToolkitPrice(t.price)}
                       </p>
                     </div>
                     <p className="mt-2 font-serif text-lg font-light text-slate-900">{t.name}</p>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
-import { TOOLKITS } from "@/lib/toolkits";
+import { formatToolkitPrice, TOOLKITS } from "@/lib/toolkits";
 
 // Styled locally rather than reusing the shared ui/Primitives components —
 // those are dark-mode aware for the internal /app tool, but this public page
@@ -34,7 +34,8 @@ export function InquiryForm() {
     const slug = new URLSearchParams(window.location.search).get("toolkit");
     const toolkit = TOOLKITS.find((t) => t.slug === slug);
     if (!toolkit) return;
-    setMessage(`I'd like to get the "${toolkit.name}" toolkit (₱${toolkit.price.toLocaleString()}). Please send payment instructions.`);
+    const closing = toolkit.price === 0 ? "Please send it over." : "Please send payment instructions.";
+    setMessage(`I'd like to get the "${toolkit.name}" toolkit (${formatToolkitPrice(toolkit.price)}). ${closing}`);
     if (toolkit.matchingService) setServiceInterest(toolkit.matchingService);
   }, []);
 

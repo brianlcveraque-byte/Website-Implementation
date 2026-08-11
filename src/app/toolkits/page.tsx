@@ -3,12 +3,12 @@ import Link from "next/link";
 import { FreeConsultationOffer } from "@/components/public/FreeConsultationOffer";
 import { SiteFooter } from "@/components/public/SiteFooter";
 import { SiteHeader } from "@/components/public/SiteHeader";
-import { TOOLKITS } from "@/lib/toolkits";
+import { formatToolkitPrice, TOOLKITS } from "@/lib/toolkits";
 
 export const metadata: Metadata = {
   title: "Starter Toolkits — Strategnosis Growth and Delivery Hub",
   description:
-    "Practical templates for strategic planning, succession planning, HR systems, healthcare quality, and training — priced from ₱500, no engagement required.",
+    "Practical templates for strategic planning, succession planning, HR systems, healthcare quality, and training — free to ₱5,000, no engagement required.",
 };
 
 export default function ToolkitsPage() {
@@ -21,8 +21,8 @@ export default function ToolkitsPage() {
             <p className="text-xs font-semibold tracking-wide text-indigo-300 uppercase">Starter toolkits</p>
             <h1 className="mt-3 font-serif text-5xl font-light text-white">Start smaller than an engagement.</h1>
             <p className="mt-4 text-lg text-slate-300">
-              Practical templates you can put to work today — built from the same frameworks used in
-              full engagements, priced so trying one is an easy yes.
+              Practical templates you can put to work today — free to ₱5,000, built from the same
+              frameworks used in full engagements.
             </p>
           </div>
         </section>
@@ -37,8 +37,12 @@ export default function ToolkitsPage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-xs font-semibold tracking-wide text-indigo-600 uppercase">{t.pillarTag}</p>
-                    <p className="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-800">
-                      ₱{t.price.toLocaleString()}
+                    <p
+                      className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold ${
+                        t.price === 0 ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                      }`}
+                    >
+                      {formatToolkitPrice(t.price)}
                     </p>
                   </div>
                   <p className="mt-3 font-serif text-xl font-light text-slate-900">{t.name}</p>
@@ -76,16 +80,17 @@ export default function ToolkitsPage() {
                 </p>
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900">2. Confirm payment</p>
+                <p className="text-sm font-semibold text-slate-900">2. Confirm details</p>
                 <p className="mt-1 text-sm text-slate-600">
-                  We&apos;ll reply with GCash or bank transfer details for the toolkit price.
+                  For paid toolkits, we&apos;ll reply with GCash or bank transfer details. Free toolkits
+                  skip straight to step 3.
                 </p>
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-900">3. Get your toolkit</p>
                 <p className="mt-1 text-sm text-slate-600">
-                  Once payment is confirmed, we&apos;ll email your templates and guide within 1 business
-                  day.
+                  We&apos;ll email your templates and guide within 1 business day (once payment is
+                  confirmed, for paid toolkits).
                 </p>
               </div>
             </div>
