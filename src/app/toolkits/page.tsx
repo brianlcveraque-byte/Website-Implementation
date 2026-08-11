@@ -49,23 +49,25 @@ export default function ToolkitsPage() {
                     </p>
                   </div>
                   <div className="flex flex-1 flex-col p-6">
-                    <p className="font-serif text-xl font-light text-slate-900">{t.name}</p>
-                    <p className="mt-2 text-sm text-slate-600">{t.tagline}</p>
-                    <ul className="mt-4 space-y-1.5">
+                    <p className="font-serif text-2xl font-light text-slate-900">{t.name}</p>
+                    <p className="mt-2 text-base text-slate-600">{t.tagline}</p>
+                    <ul className="mt-4 space-y-2">
                       {t.includes.map((item) => (
-                        <li key={item} className="flex items-start gap-1.5 text-sm text-slate-700">
-                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-indigo-500" aria-hidden />
+                        <li key={item} className="flex items-start gap-2 text-base text-slate-700">
+                          <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" aria-hidden />
                           {item}
                         </li>
                       ))}
                     </ul>
-                    <p className="mt-4 text-xs text-slate-500 italic">{t.idealFor}</p>
-                    <Link
-                      href={`/?toolkit=${t.slug}#contact`}
-                      className="mt-5 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-500"
-                    >
-                      Get this toolkit
-                    </Link>
+                    <div className="mt-auto pt-5">
+                      <p className="text-sm text-slate-500 italic">{t.idealFor}</p>
+                      <Link
+                        href={`/?toolkit=${t.slug}#contact`}
+                        className="mt-4 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-3 text-base font-semibold text-white transition-colors hover:bg-indigo-500"
+                      >
+                        Get this toolkit
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}
