@@ -135,7 +135,7 @@ const TOOLKITS_BASE: Omit<Toolkit, "photo">[] = [
     tagline: "The full toolkit bundle, plus a live orientation call to help you apply it right.",
     includes: [
       "Strategic Planning Canvas + Succession Planning Toolkit + Competency-Based HR Starter Kit, bundled",
-      "30-minute video call walkthrough with Richard",
+      "30-minute video call walkthrough with our principal consultants and subject matter experts",
       "Email support for questions while you apply the toolkit",
     ],
     idealFor: "Teams who want the templates and expert guidance on using them, without a full engagement.",
