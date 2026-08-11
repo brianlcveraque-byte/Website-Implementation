@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { SERVICE_CATEGORIES } from "@/lib/services-catalogue";
+import { TOOLKITS } from "@/lib/toolkits";
 
 // Styled locally rather than reusing the shared ui/Primitives components —
 // those are dark-mode aware for the internal /app tool, but this public page
@@ -24,6 +25,18 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export function InquiryForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+  const [serviceInterest, setServiceInterest] = useState("");
+
+  // Toolkit cards link here as /?toolkit=<slug>#contact — prefill the form
+  // so the visitor doesn't have to re-explain which toolkit they want.
+  useEffect(() => {
+    const slug = new URLSearchParams(window.location.search).get("toolkit");
+    const toolkit = TOOLKITS.find((t) => t.slug === slug);
+    if (!toolkit) return;
+    setMessage(`I'd like to get the "${toolkit.name}" toolkit (₱${toolkit.price.toLocaleString()}). Please send payment instructions.`);
+    if (toolkit.matchingService) setServiceInterest(toolkit.matchingService);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -88,7 +101,12 @@ export function InquiryForm() {
         </Field>
       </div>
       <Field label="Service of interest">
-        <select name="service_interest" className={inputClass}>
+        <select
+          name="service_interest"
+          className={inputClass}
+          value={serviceInterest}
+          onChange={(e) => setServiceInterest(e.target.value)}
+        >
           <option value="">Not sure yet</option>
           {SERVICE_CATEGORIES.map((s) => (
             <option key={s.name} value={s.name}>
@@ -98,7 +116,14 @@ export function InquiryForm() {
         </select>
       </Field>
       <Field label="Tell us about your need">
-        <textarea name="message" rows={4} required className={inputClass} />
+        <textarea
+          name="message"
+          rows={4}
+          required
+          className={inputClass}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
       </Field>
       {error && (
         <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>
