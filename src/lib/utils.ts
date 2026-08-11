@@ -104,6 +104,16 @@ export const TASK_STATUSES = [
 
 export const TASK_PRIORITIES = ["low", "medium", "high", "urgent"] as const;
 
+export const EXPENSE_CATEGORIES = [
+  "subcontractor",
+  "tools_and_subscriptions",
+  "travel",
+  "office",
+  "marketing",
+  "taxes_and_fees",
+  "other",
+] as const;
+
 export const INVOICE_STATUSES = [
   "draft",
   "for_submission",

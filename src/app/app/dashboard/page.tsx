@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { useClientsLookup } from "@/lib/hooks";
-import type { Invoice, Milestone, Opportunity, Project, Task } from "@/lib/database.types";
+import type { Expense, Invoice, Milestone, Opportunity, Payment, Project, Task } from "@/lib/database.types";
 import { daysUntil, formatCurrency, formatDate, isDueSoon, isOverdue } from "@/lib/utils";
 import { StatTile } from "@/components/ui/StatTile";
 import { Card, LoadingBlock } from "@/components/ui/Primitives";
@@ -73,20 +73,27 @@ function FullDashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
 
   useEffect(() => {
+    const startOfYear = `${new Date().getFullYear()}-01-01`;
     Promise.all([
       supabase.from("opportunities").select("*"),
       supabase.from("projects").select("*"),
       supabase.from("tasks").select("*").neq("status", "completed").neq("status", "cancelled"),
       supabase.from("milestones").select("*").neq("status", "completed").neq("status", "cancelled"),
       supabase.from("invoices").select("*").neq("status", "paid").neq("status", "cancelled"),
-    ]).then(([o, p, t, m, i]) => {
+      supabase.from("payments").select("*").gte("payment_date", startOfYear),
+      supabase.from("expenses").select("*").gte("expense_date", startOfYear),
+    ]).then(([o, p, t, m, i, pay, ex]) => {
       setOpportunities((o.data as Opportunity[]) ?? []);
       setProjects((p.data as Project[]) ?? []);
       setTasks((t.data as Task[]) ?? []);
       setMilestones((m.data as Milestone[]) ?? []);
       setInvoices((i.data as Invoice[]) ?? []);
+      setPayments((pay.data as Payment[]) ?? []);
+      setExpenses((ex.data as Expense[]) ?? []);
       setLoading(false);
     });
   }, []);
@@ -95,7 +102,9 @@ function FullDashboard() {
 
   const activeOpps = opportunities.filter((o) => !["won", "lost"].includes(o.stage));
   const pipelineValue = activeOpps.reduce((s, o) => s + (o.estimated_value ?? 0), 0);
-  const weightedValue = activeOpps.reduce((s, o) => s + (o.weighted_value ?? 0), 0);
+  const ytdRevenue = payments.reduce((s, p) => s + p.amount, 0);
+  const ytdExpenses = expenses.reduce((s, e) => s + e.amount, 0);
+  const netProfit = ytdRevenue - ytdExpenses;
   const activeProjects = projects.filter((p) => !["completed", "closed", "cancelled"].includes(p.status));
   const atRiskProjects = activeProjects.filter((p) => p.health_status === "red" || p.health_status === "amber");
   const overdueOpps = activeOpps.filter((o) => isOverdue(o.next_action_due));
@@ -117,7 +126,11 @@ function FullDashboard() {
 
       <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <StatTile label="Pipeline value" value={formatCurrency(pipelineValue)} />
-        <StatTile label="Weighted pipeline" value={formatCurrency(weightedValue)} />
+        <StatTile
+          label="Net profit (YTD)"
+          value={formatCurrency(netProfit)}
+          tone={netProfit < 0 ? "red" : "green"}
+        />
         <StatTile label="Active projects" value={activeProjects.length} tone={atRiskProjects.length ? "amber" : "neutral"} />
         <StatTile label="Projects at risk" value={atRiskProjects.length} tone={atRiskProjects.length ? "red" : "neutral"} />
         <StatTile label="Overdue tasks" value={overdueTasks.length} tone={overdueTasks.length ? "red" : "neutral"} />

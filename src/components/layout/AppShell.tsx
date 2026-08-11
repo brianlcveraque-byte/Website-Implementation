@@ -14,6 +14,7 @@ const FULL_NAV = [
   { href: "/app/tasks", label: "Tasks" },
   { href: "/app/consultants", label: "Consultants" },
   { href: "/app/invoices", label: "Billing" },
+  { href: "/app/expenses", label: "Expenses" },
   { href: "/app/settings", label: "Settings" },
 ];
 

@@ -69,6 +69,15 @@ export type DocumentEntityType =
 
 export type InquiryStatus = "new" | "converted" | "spam";
 
+export type ExpenseCategory =
+  | "subcontractor"
+  | "tools_and_subscriptions"
+  | "travel"
+  | "office"
+  | "marketing"
+  | "taxes_and_fees"
+  | "other";
+
 export interface AppUser {
   id: string;
   full_name: string;
@@ -281,6 +290,19 @@ export interface Payment {
   method: string | null;
   receipt_link: string | null;
   notes: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface Expense {
+  id: string;
+  description: string;
+  category: ExpenseCategory;
+  amount: number;
+  currency: string;
+  expense_date: string;
+  notes: string | null;
+  receipt_link: string | null;
   created_by: string | null;
   created_at: string;
 }
