@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { useClientsLookup } from "@/lib/hooks";
 import type { Expense, Invoice, Milestone, Opportunity, Payment, Project, Task } from "@/lib/database.types";
-import { daysUntil, formatCurrency, formatDate, isDueSoon, isOverdue } from "@/lib/utils";
+import { daysUntil, formatCurrency, formatDate, isDueSoon, isOverdue, titleCase } from "@/lib/utils";
 import { StatTile } from "@/components/ui/StatTile";
 import { Card, LoadingBlock } from "@/components/ui/Primitives";
 
@@ -101,10 +101,15 @@ function FullDashboard() {
   if (loading) return <LoadingBlock />;
 
   const activeOpps = opportunities.filter((o) => !["won", "lost"].includes(o.stage));
-  const pipelineValue = activeOpps.reduce((s, o) => s + (o.estimated_value ?? 0), 0);
   const ytdRevenue = payments.reduce((s, p) => s + p.amount, 0);
   const ytdExpenses = expenses.reduce((s, e) => s + e.amount, 0);
   const netProfit = ytdRevenue - ytdExpenses;
+  const expensesByCategory = Object.entries(
+    expenses.reduce<Record<string, number>>((acc, e) => {
+      acc[e.category] = (acc[e.category] ?? 0) + e.amount;
+      return acc;
+    }, {})
+  ).sort((a, b) => b[1] - a[1]);
   const activeProjects = projects.filter((p) => !["completed", "closed", "cancelled"].includes(p.status));
   const atRiskProjects = activeProjects.filter((p) => p.health_status === "red" || p.health_status === "amber");
   const overdueOpps = activeOpps.filter((o) => isOverdue(o.next_action_due));
@@ -124,13 +129,46 @@ function FullDashboard() {
     <div>
       <h1 className="mb-6 text-lg font-semibold">Dashboard</h1>
 
+      <Card className="mb-8 p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold">Profit &amp; Loss — Year to date</h2>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Revenue</p>
+            <p className="mt-1 text-2xl font-semibold text-emerald-700 dark:text-emerald-400">{formatCurrency(ytdRevenue)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Expenses</p>
+            <p className="mt-1 text-2xl font-semibold text-red-700 dark:text-red-400">{formatCurrency(ytdExpenses)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Net profit</p>
+            <p
+              className={`mt-1 text-2xl font-semibold ${
+                netProfit < 0 ? "text-red-700 dark:text-red-400" : "text-emerald-700 dark:text-emerald-400"
+              }`}
+            >
+              {formatCurrency(netProfit)}
+            </p>
+          </div>
+        </div>
+        {expensesByCategory.length > 0 && (
+          <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Expenses by category</p>
+            <ul className="space-y-1 text-sm">
+              {expensesByCategory.map(([cat, amt]) => (
+                <li key={cat} className="flex justify-between">
+                  <span className="text-slate-600 dark:text-slate-300">{titleCase(cat)}</span>
+                  <span className="font-medium">{formatCurrency(amt)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </Card>
+
       <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        <StatTile label="Pipeline value" value={formatCurrency(pipelineValue)} />
-        <StatTile
-          label="Net profit (YTD)"
-          value={formatCurrency(netProfit)}
-          tone={netProfit < 0 ? "red" : "green"}
-        />
         <StatTile label="Active projects" value={activeProjects.length} tone={atRiskProjects.length ? "amber" : "neutral"} />
         <StatTile label="Projects at risk" value={atRiskProjects.length} tone={atRiskProjects.length ? "red" : "neutral"} />
         <StatTile label="Overdue tasks" value={overdueTasks.length} tone={overdueTasks.length ? "red" : "neutral"} />
