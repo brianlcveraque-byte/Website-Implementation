@@ -178,20 +178,30 @@ export default function LandingPage() {
                   <Link
                     key={t.slug}
                     href={`/toolkits`}
-                    className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                    className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="text-xs font-semibold tracking-wide text-indigo-600 uppercase">{t.pillarTag}</p>
+                    <div className="relative h-28">
+                      <Image
+                        src={t.photo}
+                        alt=""
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(min-width: 640px) 33vw, 100vw"
+                      />
+                      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/0 to-transparent" />
+                      <p className="absolute bottom-2 left-3.5 text-xs font-semibold tracking-wide text-white uppercase">{t.pillarTag}</p>
                       <p
-                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                        className={`absolute top-2 right-2.5 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm ${
                           t.price === 0 ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
                         }`}
                       >
                         {formatToolkitPrice(t.price)}
                       </p>
                     </div>
-                    <p className="mt-2 font-serif text-lg font-light text-slate-900">{t.name}</p>
-                    <p className="mt-1.5 text-sm text-slate-600">{t.tagline}</p>
+                    <div className="p-5">
+                      <p className="font-serif text-lg font-light text-slate-900">{t.name}</p>
+                      <p className="mt-1.5 text-sm text-slate-600">{t.tagline}</p>
+                    </div>
                   </Link>
                 ))}
               </div>

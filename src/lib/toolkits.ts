@@ -10,10 +10,17 @@ export type Toolkit = {
   name: string;
   price: number; // PHP
   pillarTag: string; // matches a PILLARS.tag, used for the badge color
+  photo: string; // reuses the same licensed photos as the matching /services pillar
   tagline: string;
   includes: string[];
   idealFor: string;
   matchingService?: string; // SERVICE_CATEGORIES name, for prefilling InquiryForm
+};
+
+const PILLAR_PHOTO: Record<string, string> = {
+  "Strategy & Leadership": "/photos/strategy-whiteboard.jpg",
+  "Healthcare & Hospitals": "/photos/healthcare-corridor.jpg",
+  "Training & Facilitation": "/photos/facilitation-workshop.jpg",
 };
 
 /** ₱0 displays as "Free" instead of "₱0" wherever a toolkit's price is shown. */
@@ -21,7 +28,7 @@ export function formatToolkitPrice(price: number): string {
   return price === 0 ? "Free" : `₱${price.toLocaleString()}`;
 }
 
-export const TOOLKITS: Toolkit[] = [
+const TOOLKITS_BASE: Omit<Toolkit, "photo">[] = [
   {
     slug: "organizational-health-check",
     name: "Organizational Health Check",
@@ -135,3 +142,8 @@ export const TOOLKITS: Toolkit[] = [
     matchingService: "Strategic Management and Planning",
   },
 ];
+
+export const TOOLKITS: Toolkit[] = TOOLKITS_BASE.map((t) => ({
+  ...t,
+  photo: PILLAR_PHOTO[t.pillarTag],
+}));

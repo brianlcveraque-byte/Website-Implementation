@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { FreeConsultationOffer } from "@/components/public/FreeConsultationOffer";
 import { SiteFooter } from "@/components/public/SiteFooter";
@@ -33,35 +34,39 @@ export default function ToolkitsPage() {
               {TOOLKITS.map((t) => (
                 <div
                   key={t.slug}
-                  className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                  className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="text-xs font-semibold tracking-wide text-indigo-600 uppercase">{t.pillarTag}</p>
+                  <div className="relative h-36 shrink-0">
+                    <Image src={t.photo} alt="" fill className="object-cover" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" />
+                    <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/0 to-transparent" />
+                    <p className="absolute bottom-2.5 left-4 text-xs font-semibold tracking-wide text-white uppercase">{t.pillarTag}</p>
                     <p
-                      className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold ${
+                      className={`absolute top-2.5 right-3 rounded-full px-3 py-1 text-sm font-semibold shadow-sm ${
                         t.price === 0 ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
                       }`}
                     >
                       {formatToolkitPrice(t.price)}
                     </p>
                   </div>
-                  <p className="mt-3 font-serif text-xl font-light text-slate-900">{t.name}</p>
-                  <p className="mt-2 text-sm text-slate-600">{t.tagline}</p>
-                  <ul className="mt-4 space-y-1.5">
-                    {t.includes.map((item) => (
-                      <li key={item} className="flex items-start gap-1.5 text-sm text-slate-700">
-                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-indigo-500" aria-hidden />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-4 text-xs text-slate-500 italic">{t.idealFor}</p>
-                  <Link
-                    href={`/?toolkit=${t.slug}#contact`}
-                    className="mt-5 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-500"
-                  >
-                    Get this toolkit
-                  </Link>
+                  <div className="flex flex-1 flex-col p-6">
+                    <p className="font-serif text-xl font-light text-slate-900">{t.name}</p>
+                    <p className="mt-2 text-sm text-slate-600">{t.tagline}</p>
+                    <ul className="mt-4 space-y-1.5">
+                      {t.includes.map((item) => (
+                        <li key={item} className="flex items-start gap-1.5 text-sm text-slate-700">
+                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-indigo-500" aria-hidden />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-4 text-xs text-slate-500 italic">{t.idealFor}</p>
+                    <Link
+                      href={`/?toolkit=${t.slug}#contact`}
+                      className="mt-5 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-500"
+                    >
+                      Get this toolkit
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
