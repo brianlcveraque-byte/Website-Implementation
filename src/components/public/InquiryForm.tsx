@@ -22,7 +22,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export function InquiryForm() {
+export function InquiryForm({ presetToolkitSlug }: { presetToolkitSlug?: string } = {}) {
   const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -30,14 +30,16 @@ export function InquiryForm() {
 
   // Toolkit cards link here as /?toolkit=<slug>#contact — prefill the form
   // so the visitor doesn't have to re-explain which toolkit they want.
+  // A page can also pass presetToolkitSlug directly (e.g. a single-offer
+  // campaign landing page with an embedded form and no URL round-trip).
   useEffect(() => {
-    const slug = new URLSearchParams(window.location.search).get("toolkit");
+    const slug = presetToolkitSlug ?? new URLSearchParams(window.location.search).get("toolkit");
     const toolkit = TOOLKITS.find((t) => t.slug === slug);
     if (!toolkit) return;
     const closing = toolkit.price === 0 ? "Please send it over." : "Please send payment instructions.";
     setMessage(`I'd like to get the "${toolkit.name}" toolkit (${formatToolkitPrice(toolkit.price)}). ${closing}`);
     if (toolkit.matchingService) setServiceInterest(toolkit.matchingService);
-  }, []);
+  }, [presetToolkitSlug]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

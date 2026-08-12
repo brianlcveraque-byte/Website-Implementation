@@ -15,12 +15,14 @@ export type Toolkit = {
   includes: string[];
   idealFor: string;
   matchingService?: string; // SERVICE_CATEGORIES name, for prefilling InquiryForm
+  bundleValue?: number; // sum of the standalone prices of what's included, for "save ₱X" framing
 };
 
 const PILLAR_PHOTO: Record<string, string> = {
   "Strategy & Leadership": "/photos/strategy-whiteboard.jpg",
   "Healthcare & Hospitals": "/photos/healthcare-corridor.jpg",
   "Training & Facilitation": "/photos/facilitation-workshop.jpg",
+  "Complete Library": "/photos/skyline-sunset.jpg",
 };
 
 /** ₱0 displays as "Free" instead of "₱0" wherever a toolkit's price is shown. */
@@ -140,6 +142,24 @@ const TOOLKITS_BASE: Omit<Toolkit, "photo">[] = [
     ],
     idealFor: "Teams who want the templates and expert guidance on using them, without a full engagement.",
     matchingService: "Strategic Management and Planning",
+  },
+  {
+    slug: "complete-toolkit-library",
+    name: "Complete Toolkit Library",
+    price: 2500,
+    pillarTag: "Complete Library",
+    tagline: "Every paid toolkit we offer, bundled together, for less than the price of any two on their own.",
+    includes: [
+      "One-Page SWOT & Priorities Worksheet",
+      "Strategic Planning Canvas",
+      "Training Needs & Session Design Kit",
+      "Succession Planning Toolkit",
+      "Competency-Based HR Starter Kit",
+      "Healthcare Quality Improvement Toolkit",
+    ],
+    idealFor: "Teams who'd rather have the full library on hand than pick just one.",
+    matchingService: "Strategic Management and Planning",
+    bundleValue: 4150,
   },
 ];
 
