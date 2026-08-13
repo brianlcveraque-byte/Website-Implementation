@@ -62,11 +62,28 @@ Deno.serve(async () => {
   const windowStart = new Date(Date.now() - WINDOW_DAYS * 86_400_000).toISOString();
   const followupCutoff = new Date(Date.now() - FOLLOWUP_AFTER_DAYS * 86_400_000).toISOString();
 
-  const [{ data: inquiries }, { data: subscribers }, { data: logs }] = await Promise.all([
-    supabase.from("public_inquiries").select("*").gte("created_at", windowStart),
+  // NOTE: public_inquiries timestamps its rows with submitted_at, not
+  // created_at — see supabase/migrations/0001_schema.sql.
+  const [inquiryRes, subscriberRes, logRes] = await Promise.all([
+    supabase.from("public_inquiries").select("*").gte("submitted_at", windowStart),
     supabase.from("newsletter_subscribers").select("*").gte("subscribed_at", windowStart),
     supabase.from("email_log").select("email_type, related_table, related_id"),
   ]);
+
+  // Surface query failures instead of silently treating them as "nothing to
+  // do" — a wrong column name previously made this function report success
+  // while doing nothing at all.
+  const queryErrors = [inquiryRes.error, subscriberRes.error, logRes.error].filter(Boolean);
+  if (queryErrors.length > 0) {
+    return new Response(
+      JSON.stringify({ error: "query failed", details: queryErrors.map((e) => e!.message) }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  const inquiries = inquiryRes.data;
+  const subscribers = subscriberRes.data;
+  const logs = logRes.data;
 
   const sentKeys = new Set<LogKey>(
     (logs ?? []).map((l) => key(l.email_type, l.related_table, l.related_id))
@@ -149,7 +166,7 @@ Deno.serve(async () => {
   // 3. One low-pressure follow-up for toolkit requests older than 3 days.
   for (const inq of inquiries ?? []) {
     const isToolkitRequest = typeof inq.message === "string" && inq.message.includes("toolkit");
-    if (!isToolkitRequest || inq.created_at > followupCutoff) continue;
+    if (!isToolkitRequest || inq.submitted_at > followupCutoff) continue;
     const firstName = (inq.name ?? "").split(" ")[0] || "there";
     await deliver(
       "toolkit_followup",
