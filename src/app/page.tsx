@@ -258,6 +258,36 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Visual band — the work, at a glance */}
+        <section className="bg-white py-12 sm:py-16">
+          <div className="mx-auto max-w-7xl px-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { src: "/photos/boardroom.jpg", label: "Strategy sessions" },
+                { src: "/photos/healthcare-corridor.jpg", label: "Hospital systems" },
+                { src: "/photos/library-research.jpg", label: "Research & policy" },
+                { src: "/photos/business-meeting.jpg", label: "Implementation" },
+              ].map((item, i) => (
+                <Reveal key={item.src} delayMs={i * 70}>
+                  <div className="relative h-52 overflow-hidden rounded-2xl">
+                    <Image
+                      src={item.src}
+                      alt=""
+                      fill
+                      className="object-cover transition-transform duration-500 hover:scale-105"
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    />
+                    <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
+                    <span className="absolute bottom-3 left-4 right-4 text-sm font-semibold text-white">
+                      {item.label}
+                    </span>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <TestimonialSlot />
 
         {/* About */}

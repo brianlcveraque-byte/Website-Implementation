@@ -55,7 +55,9 @@ Deno.serve(async () => {
   const overdueTasks = (tasks ?? []).filter((t) => isOverdue(t.due_date, today));
   const dueSoonTasks = (tasks ?? []).filter((t) => isDueSoon(t.due_date, today, 7));
   const overdueMilestones = (milestones ?? []).filter((m) => isOverdue(m.due_date, today));
+  const dueSoonMilestones = (milestones ?? []).filter((m) => isDueSoon(m.due_date, today, 14));
   const overdueInvoices = (invoices ?? []).filter((i) => isOverdue(i.due_date, today));
+  const dueSoonInvoices = (invoices ?? []).filter((i) => isDueSoon(i.due_date, today, 14));
 
   const totalAttention =
     overdueOpps.length + staleOpps.length + overdueTasks.length + overdueMilestones.length + overdueInvoices.length;
@@ -99,8 +101,16 @@ Deno.serve(async () => {
       `
       }
       ${section(
-        "Coming up in the next 7 days",
+        "Tasks due in the next 7 days",
         dueSoonTasks.map((t) => `${t.title} (due ${t.due_date})`)
+      )}
+      ${section(
+        "Milestones due in the next 14 days",
+        dueSoonMilestones.map((m) => `${m.title} (due ${m.due_date})`)
+      )}
+      ${section(
+        "Invoices falling due in the next 14 days",
+        dueSoonInvoices.map((i) => `${i.invoice_ref} — ${i.amount} (due ${i.due_date})`)
       )}
       ${APP_URL ? `<p style="margin-top:16px;"><a href="${APP_URL}/app/dashboard" style="font-size:13px;color:#2563eb;">Open the dashboard →</a></p>` : ""}
     </div>
