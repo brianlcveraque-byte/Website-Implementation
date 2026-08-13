@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 
@@ -37,6 +38,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
         <AuthProvider>{children}</AuthProvider>
       </body>
+      {/* Cloudflare Web Analytics — privacy-first, no cookies, so no consent
+          banner is required. The beacon token is public by design; it ships in
+          the page HTML on every request. */}
+      <Script
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon='{"token": "885658c230e245a288ac89f68dc4bcf0"}'
+        strategy="afterInteractive"
+      />
     </html>
   );
 }
