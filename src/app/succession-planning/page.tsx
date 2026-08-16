@@ -163,7 +163,7 @@ export default function SuccessionPlanningPage() {
 
         {/* The fork */}
         <section id="choose" className="scroll-mt-4 bg-white py-16 sm:py-24">
-          <div className="mx-auto max-w-5xl px-4">
+          <div className="mx-auto max-w-7xl px-4">
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold tracking-wide text-indigo-600 uppercase">
                 After the workbook
@@ -172,8 +172,9 @@ export default function SuccessionPlanningPage() {
                 Then close the gaps it finds.
               </p>
               <p className="mt-4 text-lg text-slate-600">
-                The workbook will tell you where the bench is thin. What happens next depends on
-                whether you want to build the capability internally or bring it in.
+                The workbook will tell you where the bench is thin. Closing that gap ranges from
+                learning the method yourself to having the whole thing built for you — four options,
+                and the workbook stays free either way.
               </p>
             </div>
             <div className="mt-12">

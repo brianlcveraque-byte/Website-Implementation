@@ -241,8 +241,9 @@ Deno.serve(async () => {
            behind it at all.
          </p>
          <p style="font-size:15px;color:#475569;line-height:1.6;">
-           There are two sensible ways to close that gap: learn to run the process internally, or have it run
-           across your whole plantilla for you.
+           Closing that gap can be as small as a ₱500 course on the method, or as complete as having the whole
+           system built against your own plantilla. There are four ways in, depending on how much of it you
+           want to do yourself.
          </p>
          ${SITE_URL ? `<p style="font-size:15px;"><a href="${SITE_URL}/succession-planning#choose" style="color:#6366f1;">See both options →</a></p>` : ""}
          <p style="font-size:15px;color:#475569;line-height:1.6;">

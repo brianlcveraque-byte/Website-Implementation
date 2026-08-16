@@ -28,65 +28,106 @@ export const WORKBOOK = {
   ] as const satisfies readonly (readonly [string, string])[],
 } as const;
 
-// PLACEHOLDER PRICE — replace before running traffic to this page. Sits above
-// the ₱5,000 Strategy Sprint (the top of the toolkit range) and well below a
-// consultancy engagement, which is the gap a mid-ticket product needs to fill.
-const TRAINING_PRICE = 12000;
-
-export type FunnelTier = "training" | "engagement";
+export type FunnelTier = "training" | "diy-system" | "done-for-you" | "consultancy";
 
 export type FunnelPath = {
   id: FunnelTier;
   eyebrow: string;
   name: string;
-  /** null renders as "By inquiry" — no gateway is wired up for either tier. */
+  /** null renders as "By inquiry" — no gateway is wired up for any tier. */
   price: number | null;
   priceNote: string;
   tagline: string;
   includes: string[];
   bestWhen: string;
   cta: string;
+  /** Same licensed photo set as /services and the toolkit cards. */
+  photo: string;
   /** Prefills the inquiry form's service dropdown. Must match SERVICE_CATEGORIES. */
   matchingService: string;
 };
 
+// A four-rung ladder rather than a single fork: ₱500 to learn the method,
+// ₱10,000 to get the system and install it yourself, ₱30,000 to have it built
+// against your own plantilla, and an open-scope engagement above that. Each rung
+// is a credible next step from the one below, which is what keeps the ₱500 buyer
+// reachable later instead of being a dead end.
 export const FUNNEL_PATHS: FunnelPath[] = [
   {
     id: "training",
-    eyebrow: "Learn to run it yourself",
-    name: "Succession Management Practitioner Program",
-    price: TRAINING_PRICE,
-    priceNote: "per participant, materials included",
+    eyebrow: "Learn the method",
+    name: "Succession Planning Essentials",
+    price: 500,
+    priceNote: "one-time, lifetime access",
     tagline:
-      "Six self-paced modules that take you from a filled-in workbook to a succession plan your board will sign off on.",
+      "A short recorded course that takes you from a blank workbook to a scored, defensible succession plan.",
     includes: [
       "Six recorded modules — criticality scoring, bench assessment, competency gaps, development planning, governance, and the board conversation",
-      "A live cohort session each month for questions on your own numbers",
-      "Facilitator pack: session decks, participant handouts, and a briefing script for your executive team",
-      "Reviewed practice run on one position of your choosing",
+      "A worked example running one position end to end",
+      "Watch at your own pace, keep it for good",
     ],
-    bestWhen:
-      "You have someone internal who will own succession planning, and you would rather build that capability than rent it.",
-    cta: "Join the program",
+    bestWhen: "You want to understand the method properly before committing budget to it.",
+    cta: "Get the course",
+    photo: "/photos/facilitation-workshop.jpg",
     matchingService: "Succession Planning",
   },
   {
-    id: "engagement",
+    id: "diy-system",
+    eyebrow: "Build it yourself",
+    name: "Succession System — self-build",
+    price: 10000,
+    priceNote: "one-time, includes setup guide",
+    tagline:
+      "The complete system, configured to your salary-grade structure, for your own team to roll out.",
+    includes: [
+      "Full scoring model, competency dictionary, and development-plan templates",
+      "Workbook pre-configured for your plantilla structure and grade bands",
+      "Implementation guide plus a briefing script for your executive team",
+      "Email support while you roll it out",
+    ],
+    bestWhen:
+      "You have someone internal who will own this, and would rather build the capability than rent it.",
+    cta: "Get the system",
+    photo: "/photos/strategy-whiteboard.jpg",
+    matchingService: "Succession Planning",
+  },
+  {
+    id: "done-for-you",
     eyebrow: "Have it built for you",
-    name: "Consultancy engagement or a competency-based HRIS",
+    name: "Succession System — built for you",
+    price: 30000,
+    priceNote: "one-time, configured to your plantilla",
+    tagline:
+      "We score your actual positions, build the system around them, and hand it over working.",
+    includes: [
+      "Criticality scored across every position, not just the ones you already worry about",
+      "The system configured against your real plantilla and salary grades",
+      "Board-ready succession plan with the scoring rationale documented",
+      "Handover session so your team can maintain it without us",
+    ],
+    bestWhen: "You want this working now, without spending your team's time building it.",
+    cta: "Have it built",
+    photo: "/photos/planning-discussion.jpg",
+    matchingService: "Succession Planning",
+  },
+  {
+    id: "consultancy",
+    eyebrow: "Bring us in",
+    name: "Consultancy engagement",
     price: null,
     priceNote: "scoped per organization",
     tagline:
-      "We run the assessment across your whole plantilla, or install a system that keeps it current after we leave.",
+      "Facilitated end to end by our principal consultants, through the transition rather than up to it.",
     includes: [
-      "Facilitated criticality and bench assessment across every position, not just the ones you already worry about",
+      "Facilitated criticality and bench assessment across the whole organization",
       "Successor development plans written against real competency gaps",
-      "Board-ready succession plan with the scoring rationale documented for contested decisions",
-      "Optional: a competency-based HRIS carrying the same scoring model, so the plan stays live instead of ageing in a spreadsheet",
+      "Optional competency-based HRIS, so the plan stays live instead of ageing in a spreadsheet",
+      "Ongoing advisory through the transition itself",
     ],
     bestWhen:
       "The transition is close, the plantilla is large, or a promotion decision needs to withstand being challenged.",
     cta: "Discuss an engagement",
+    photo: "/photos/boardroom.jpg",
     matchingService: "Succession Planning",
   },
 ];
