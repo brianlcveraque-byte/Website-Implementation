@@ -64,16 +64,17 @@ Deno.serve(async () => {
 
   // NOTE: public_inquiries timestamps its rows with submitted_at, not
   // created_at — see supabase/migrations/0001_schema.sql.
-  const [inquiryRes, subscriberRes, logRes] = await Promise.all([
+  const [inquiryRes, subscriberRes, leadRes, logRes] = await Promise.all([
     supabase.from("public_inquiries").select("*").gte("submitted_at", windowStart),
     supabase.from("newsletter_subscribers").select("*").gte("subscribed_at", windowStart),
+    supabase.from("toolkit_leads").select("*").gte("downloaded_at", windowStart),
     supabase.from("email_log").select("email_type, related_table, related_id"),
   ]);
 
   // Surface query failures instead of silently treating them as "nothing to
   // do" — a wrong column name previously made this function report success
   // while doing nothing at all.
-  const queryErrors = [inquiryRes.error, subscriberRes.error, logRes.error].filter(Boolean);
+  const queryErrors = [inquiryRes.error, subscriberRes.error, leadRes.error, logRes.error].filter(Boolean);
   if (queryErrors.length > 0) {
     return new Response(
       JSON.stringify({ error: "query failed", details: queryErrors.map((e) => e!.message) }),
@@ -83,6 +84,7 @@ Deno.serve(async () => {
 
   const inquiries = inquiryRes.data;
   const subscribers = subscriberRes.data;
+  const leads = leadRes.data;
   const logs = logRes.data;
 
   const sentKeys = new Set<LogKey>(
@@ -186,6 +188,68 @@ Deno.serve(async () => {
          ${SITE_URL ? `<p style="font-size:15px;"><a href="${SITE_URL}/#contact" style="color:#6366f1;">Book a free consultation →</a></p>` : ""}
          <p style="font-size:15px;color:#475569;">— Strategnosis Solutions OPC</p>`,
         "You're receiving this one-time follow-up because you requested a toolkit from us."
+      )
+    );
+  }
+
+  // 4. Deliver the succession workbook. The landing page already hands over the
+  //    file on submit, so this is the copy that survives a closed tab — and the
+  //    reason collecting the address is worth anything.
+  for (const lead of leads ?? []) {
+    const firstName = (lead.name ?? "").split(" ")[0] || "there";
+    const link = SITE_URL ? `${SITE_URL}/downloads/succession-planning-toolkit.xlsx` : "";
+    await deliver(
+      "succession_workbook_delivery",
+      "toolkit_leads",
+      lead.id,
+      lead.email,
+      "Your Succession Planning Toolkit",
+      shell(
+        `<h2 style="font-size:20px;font-weight:normal;">Here it is, ${firstName}.</h2>
+         <p style="font-size:15px;color:#475569;line-height:1.6;">
+           Your copy of the Succession Planning Toolkit is attached to this link — keep it somewhere
+           you'll find it again.
+         </p>
+         ${link ? `<p style="font-size:15px;"><a href="${link}" style="color:#6366f1;">Download the workbook →</a></p>` : ""}
+         <p style="font-size:15px;color:#475569;line-height:1.6;">
+           Start with the <strong>SUCCESSION PLANNING</strong> sheet and score just your top ten positions
+           on the three criticality factors. That alone usually tells you something uncomfortable, and it
+           takes about twenty minutes.
+         </p>
+         <p style="font-size:15px;color:#475569;">— Strategnosis Solutions OPC</p>`,
+        "You're receiving this because you requested the toolkit on our website."
+      )
+    );
+  }
+
+  // 5. One nurture note three days on, pointing at the two ways forward. Same
+  //    low-pressure posture as the toolkit follow-up above — one send, not a drip.
+  for (const lead of leads ?? []) {
+    if (lead.downloaded_at > followupCutoff) continue;
+    const firstName = (lead.name ?? "").split(" ")[0] || "there";
+    await deliver(
+      "succession_nurture",
+      "toolkit_leads",
+      lead.id,
+      lead.email,
+      "What the workbook usually turns up",
+      shell(
+        `<h2 style="font-size:20px;font-weight:normal;">Hello ${firstName},</h2>
+         <p style="font-size:15px;color:#475569;line-height:1.6;">
+           If you've filled in the bench sheet by now, the column worth looking at is <strong>Bench Risk</strong>.
+           Most organizations running this for the first time find at least one critical position with nobody
+           behind it at all.
+         </p>
+         <p style="font-size:15px;color:#475569;line-height:1.6;">
+           There are two sensible ways to close that gap: learn to run the process internally, or have it run
+           across your whole plantilla for you.
+         </p>
+         ${SITE_URL ? `<p style="font-size:15px;"><a href="${SITE_URL}/succession-planning#choose" style="color:#6366f1;">See both options →</a></p>` : ""}
+         <p style="font-size:15px;color:#475569;line-height:1.6;">
+           If neither fits yet, replying to this email with your numbers is free and often enough.
+         </p>
+         <p style="font-size:15px;color:#475569;">— Strategnosis Solutions OPC</p>`,
+        "You're receiving this one-time note because you downloaded our succession planning toolkit."
       )
     );
   }

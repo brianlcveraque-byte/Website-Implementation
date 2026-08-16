@@ -30,7 +30,7 @@ export default function ToolkitLibraryCampaignPage() {
           <div className="mx-auto max-w-2xl px-4">
             <p className="text-xs font-semibold tracking-wide text-indigo-300 uppercase">Bundle offer</p>
             <h1 className="mt-3 font-serif text-4xl font-light text-white sm:text-5xl">
-              Every toolkit we offer, for less than the price of any two.
+              Every paid toolkit we offer, for less than the price of any two.
             </h1>
             <p className="mx-auto mt-4 max-w-lg text-lg text-slate-300">{BUNDLE.tagline}</p>
             <a
@@ -77,8 +77,10 @@ export default function ToolkitLibraryCampaignPage() {
           <Image src={BUNDLE.photo} alt="" fill aria-hidden className="object-cover opacity-20 mix-blend-luminosity" sizes="100vw" />
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-indigo-600/80" />
           <div className="relative mx-auto max-w-2xl px-4">
+            {/* Driven off the list rather than spelled out, so it can't drift
+                again when a toolkit joins or leaves the bundle. */}
             <p className="font-serif text-3xl font-light text-white sm:text-4xl">
-              Six toolkits. One price. Start today.
+              {BUNDLE.includes.length} toolkits. One price. Start today.
             </p>
             <a
               href="#get-it"

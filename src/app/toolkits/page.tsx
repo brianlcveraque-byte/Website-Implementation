@@ -62,10 +62,10 @@ export default function ToolkitsPage() {
                     <div className="mt-auto pt-5">
                       <p className="text-sm text-slate-500 italic">{t.idealFor}</p>
                       <Link
-                        href={`/?toolkit=${t.slug}#contact`}
+                        href={t.funnelPath ?? `/?toolkit=${t.slug}#contact`}
                         className="mt-4 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-3 text-base font-semibold text-white transition-colors hover:bg-indigo-500"
                       >
-                        Get this toolkit
+                        {t.funnelPath ? "Download free" : "Get this toolkit"}
                       </Link>
                     </div>
                   </div>

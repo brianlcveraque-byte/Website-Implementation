@@ -22,7 +22,17 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export function InquiryForm({ presetToolkitSlug }: { presetToolkitSlug?: string } = {}) {
+export function InquiryForm({
+  presetToolkitSlug,
+  presetMessage,
+  presetService,
+}: {
+  presetToolkitSlug?: string;
+  /** Overrides the toolkit-derived message — used by the succession funnel,
+   *  whose tiers are programs and engagements rather than catalogue toolkits. */
+  presetMessage?: string;
+  presetService?: string;
+} = {}) {
   const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -33,13 +43,18 @@ export function InquiryForm({ presetToolkitSlug }: { presetToolkitSlug?: string 
   // A page can also pass presetToolkitSlug directly (e.g. a single-offer
   // campaign landing page with an embedded form and no URL round-trip).
   useEffect(() => {
+    if (presetMessage) {
+      setMessage(presetMessage);
+      if (presetService) setServiceInterest(presetService);
+      return;
+    }
     const slug = presetToolkitSlug ?? new URLSearchParams(window.location.search).get("toolkit");
     const toolkit = TOOLKITS.find((t) => t.slug === slug);
     if (!toolkit) return;
     const closing = toolkit.price === 0 ? "Please send it over." : "Please send payment instructions.";
     setMessage(`I'd like to get the "${toolkit.name}" toolkit (${formatToolkitPrice(toolkit.price)}). ${closing}`);
     if (toolkit.matchingService) setServiceInterest(toolkit.matchingService);
-  }, [presetToolkitSlug]);
+  }, [presetToolkitSlug, presetMessage, presetService]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

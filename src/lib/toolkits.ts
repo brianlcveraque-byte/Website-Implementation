@@ -16,6 +16,9 @@ export type Toolkit = {
   idealFor: string;
   matchingService?: string; // SERVICE_CATEGORIES name, for prefilling InquiryForm
   bundleValue?: number; // sum of the standalone prices of what's included, for "save ₱X" framing
+  // Toolkits with their own funnel page send visitors there instead of to the
+  // inquiry form — the page collects an email and hands over the file directly.
+  funnelPath?: string;
 };
 
 const PILLAR_PHOTO: Record<string, string> = {
@@ -87,19 +90,24 @@ const TOOLKITS_BASE: Omit<Toolkit, "photo">[] = [
     matchingService: "Training, Facilitation, Coaching, and Mentoring",
   },
   {
+    // Free deliberately: this is the top of the succession funnel. Filling the
+    // workbook in surfaces the problem — critical roles with nobody ready — which
+    // is what the training and consultancy tiers exist to solve. A ₱1,000 gate in
+    // front of that would filter out most of the people worth talking to.
     slug: "succession-planning-toolkit",
     name: "Succession Planning Toolkit",
-    price: 1000,
+    price: 0,
     pillarTag: "Strategy & Leadership",
-    tagline: "Identify critical roles, assess bench strength, and start building a real succession pipeline.",
+    tagline: "Score which roles would hurt most to lose, and find out who is actually ready to step in.",
     includes: [
-      "Critical-role identification matrix",
-      "Successor readiness assessment template",
-      "Individual development plan template",
-      "Step-by-step guide to running the process internally",
+      "Criticality scoring sheet that bands every position automatically",
+      "Successor assessment matrix — 7 criteria, computed readiness status",
+      "Succession bench that counts its own depth and strength",
+      "Competency gap profile, definitions, and a configurable scoring sheet",
     ],
     idealFor: "Boards and executive teams facing an upcoming leadership transition.",
     matchingService: "Succession Planning",
+    funnelPath: "/succession-planning",
   },
   {
     slug: "competency-hr-starter-kit",
@@ -136,7 +144,7 @@ const TOOLKITS_BASE: Omit<Toolkit, "photo">[] = [
     pillarTag: "Strategy & Leadership",
     tagline: "The full toolkit bundle, plus a live orientation call to help you apply it right.",
     includes: [
-      "Strategic Planning Canvas + Succession Planning Toolkit + Competency-Based HR Starter Kit, bundled",
+      "Strategic Planning Canvas + Competency-Based HR Starter Kit, bundled",
       "30-minute video call walkthrough with our principal consultants and subject matter experts",
       "Email support for questions while you apply the toolkit",
     ],
@@ -153,13 +161,15 @@ const TOOLKITS_BASE: Omit<Toolkit, "photo">[] = [
       "One-Page SWOT & Priorities Worksheet",
       "Strategic Planning Canvas",
       "Training Needs & Session Design Kit",
-      "Succession Planning Toolkit",
       "Competency-Based HR Starter Kit",
       "Healthcare Quality Improvement Toolkit",
     ],
     idealFor: "Teams who'd rather have the full library on hand than pick just one.",
     matchingService: "Strategic Management and Planning",
-    bundleValue: 4150,
+    // Sum of the five paid toolkits above. The Succession Planning Toolkit used
+    // to count ₱1,000 toward this; it is free now, so it is no longer something
+    // the bundle buys you.
+    bundleValue: 3150,
   },
 ];
 
