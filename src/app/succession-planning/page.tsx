@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/public/SiteFooter";
 import { SiteHeader } from "@/components/public/SiteHeader";
 import { SuccessionLeadForm } from "@/components/public/SuccessionLeadForm";
 import { SuccessionPaths } from "@/components/public/SuccessionPaths";
+import { WorkbookPreview } from "@/components/public/WorkbookPreview";
 import { WORKBOOK } from "@/lib/succession-funnel";
 
 // The succession funnel's own page — indexed and linked from /toolkits, unlike
@@ -93,35 +94,36 @@ export default function SuccessionPlanningPage() {
           </div>
         </section>
 
-        {/* What's inside */}
+        {/* A look inside the actual file */}
         <section className="border-y border-slate-200 bg-slate-50 py-16 sm:py-20">
-          <div className="mx-auto max-w-5xl px-4">
+          <div className="mx-auto max-w-4xl px-4">
             <Reveal>
               <p className="text-center font-serif text-3xl font-light text-slate-900">
-                What&apos;s in the workbook
+                A look inside
               </p>
               <p className="mx-auto mt-3 max-w-xl text-center text-base text-slate-600">
-                Every score, band, and count is a live formula. Fill in the ratings and the
-                classifications follow.
+                Three of the eight sheets, shown filled in. The file itself arrives blank apart from
+                one example row.
               </p>
             </Reveal>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2">
-              {WORKBOOK.sheets.map(([name, detail], i) => (
-                <Reveal key={name} delayMs={i * 60}>
-                  <div className="flex h-full gap-4 rounded-xl border border-slate-200 bg-white p-6">
-                    <span
-                      aria-hidden
-                      className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700"
-                    >
-                      {i + 1}
-                    </span>
-                    <div>
-                      <p className="font-semibold text-slate-900">{name}</p>
-                      <p className="mt-1.5 text-base text-slate-600">{detail}</p>
+            <div className="mt-10">
+              <WorkbookPreview />
+            </div>
+
+            <div className="mt-14">
+              <p className="text-center text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                Everything in the file
+              </p>
+              <div className="mt-6 grid gap-x-10 gap-y-5 sm:grid-cols-2">
+                {WORKBOOK.sheets.map(([name, detail], i) => (
+                  <Reveal key={name} delayMs={i * 50}>
+                    <div className="border-l-2 border-indigo-200 pl-4">
+                      <p className="text-sm font-semibold text-slate-900">{name}</p>
+                      <p className="mt-1 text-sm text-slate-600">{detail}</p>
                     </div>
-                  </div>
-                </Reveal>
-              ))}
+                  </Reveal>
+                ))}
+              </div>
             </div>
           </div>
         </section>

@@ -28,6 +28,66 @@ export const WORKBOOK = {
   ] as const satisfies readonly (readonly [string, string])[],
 } as const;
 
+// A worked example of the workbook in use, rendered on the landing page by
+// WorkbookPreview. Every computed value here is what the file's own formulas
+// produce for these inputs — kept honest so the preview can't oversell the file:
+//
+//   Total criticality = sum of the three factors; >=13 Highly Critical, >=10
+//   Critical, >=7 Moderately Critical (CONFIG rows 7-9).
+//   Overall match     = sum of seven 1-4 ratings / 28; 100% Ready Now, >=80%
+//   Ready Soon, >=50% Ready Later (CONFIG rows 15-17).
+//   Depth             = Ready Now + Soon + Later. Strength = Ready Now.
+//   Bench risk        = critical role with depth 0 is the flagged case.
+//
+// The three sheets tell one story: the CIO scores as critical as the Executive
+// Director, but has nobody behind him at all.
+export const WORKBOOK_PREVIEW = [
+  {
+    tab: "SUCCESSION PLANNING",
+    caption:
+      "Rate each position on three factors and the criticality band follows. Nothing here is a judgement call you have to defend twice.",
+    columns: ["Approved Position", "Filled", "Total Vacancy", "Perf. Trend", "Revenue", "Risk", "Special.", "Total Score", "Critical Position Level"],
+    inputCols: [1, 3, 4, 5, 6],
+    rows: [
+      ["Executive Director", 1, 1, "VS", 5, 5, 4, 14, "Highly Critical"],
+      ["Chief Information Officer", 1, 1, "S", 4, 5, 5, 14, "Highly Critical"],
+      ["Internal Auditor V", 1, 0, "VS", 3, 5, 4, 12, "Critical"],
+      ["Planning Officer IV", 2, 0, "S", 3, 3, 3, 9, "Moderately Critical"],
+    ],
+  },
+  {
+    tab: "SUCCESSOR ASSESSMENT MATRIX",
+    caption:
+      "Seven criteria, rated 1–4. The match percentage and readiness status are computed, so “ready” means the same thing in every conversation about it.",
+    columns: ["Potential Successor", "Qual. Std.", "Comp.", "Perf.", "Learning", "Commit.", "Loyalty", "Likability", "Overall Match", "Readiness Status"],
+    inputCols: [1, 2, 3, 4, 5, 6, 7],
+    rows: [
+      ["A. Dela Cruz", 4, 4, 4, 4, 4, 4, "100%", "Ready Now"],
+      ["B. Santos", 4, 3, 4, 4, 3, 4, "89%", "Ready Soon"],
+      ["C. Reyes", 3, 2, 3, 2, 3, 3, "64%", "Ready Later"],
+    ],
+  },
+  {
+    tab: "SUCCESSION BENCH",
+    caption:
+      "Nothing to fill in — this sheet counts itself from the matrix. The flagged row is the one that should start the conversation.",
+    columns: ["Position", "Ready Now", "Ready Soon", "Ready Later", "Depth", "Strength", "Bench Risk"],
+    inputCols: [],
+    rows: [
+      ["Executive Director", 1, 1, 1, 3, 1, "Covered"],
+      ["Chief Information Officer", 0, 0, 0, 0, 0, "Critical role, no bench"],
+      ["Internal Auditor V", 0, 2, 1, 3, 0, "No one ready now"],
+      ["Planning Officer IV", 0, 0, 1, 1, 0, "No one ready now"],
+    ],
+  },
+] as const satisfies readonly {
+  tab: string;
+  caption: string;
+  columns: readonly string[];
+  inputCols: readonly number[];
+  rows: readonly (readonly (string | number)[])[];
+}[];
+
 export type FunnelTier = "training" | "diy-system" | "done-for-you" | "consultancy";
 
 export type FunnelPath = {
