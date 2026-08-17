@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { InquiryForm } from "@/components/public/InquiryForm";
+import { PaymentQRPanel } from "@/components/public/PaymentQRPanel";
 import { NextSessionBanner, SessionCheckout } from "@/components/public/SessionCheckout";
 import { FUNNEL_PATHS, formatTierPrice, type FunnelTier } from "@/lib/succession-funnel";
 
@@ -47,10 +48,13 @@ export function SuccessionPaths() {
           return (
             <div
               key={path.id}
-              className={`flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-all ${
-                active ? "border-indigo-500 ring-2 ring-indigo-200" : "border-slate-200 hover:shadow-md"
+              className={`flex flex-col overflow-hidden rounded-2xl border-2 bg-white shadow-sm transition-all ${
+                active
+                  ? `${path.accent.ring} ring-4 shadow-lg`
+                  : "border-slate-200 hover:-translate-y-1 hover:shadow-xl"
               }`}
             >
+              <div className={`h-1.5 bg-gradient-to-r ${path.accent.bar}`} aria-hidden />
               <div className="relative h-32 shrink-0">
                 <Image
                   src={path.photo}
@@ -66,7 +70,9 @@ export function SuccessionPaths() {
                 <p className="absolute bottom-2.5 left-4 text-xs font-semibold tracking-wide text-white uppercase">
                   {path.eyebrow}
                 </p>
-                <p className="absolute top-2.5 right-3 rounded-full bg-white/95 px-3 py-1 text-sm font-semibold text-slate-900 shadow-sm">
+                <p
+                  className={`absolute top-2.5 right-3 rounded-full ${path.accent.badge} px-3.5 py-1 text-sm font-bold text-white shadow-lg`}
+                >
                   {formatTierPrice(path.price)}
                 </p>
               </div>
@@ -91,10 +97,8 @@ export function SuccessionPaths() {
                     type="button"
                     onClick={() => setSelected(path.id)}
                     aria-pressed={active}
-                    className={`mt-4 w-full rounded-md px-4 py-2.5 text-sm font-semibold transition-colors ${
-                      active
-                        ? "bg-slate-900 text-white hover:bg-slate-800"
-                        : "bg-indigo-600 text-white hover:bg-indigo-500"
+                    className={`mt-4 w-full rounded-lg px-4 py-3 text-sm font-bold text-white shadow-md transition-all hover:shadow-lg ${
+                      active ? "bg-slate-900 hover:bg-slate-800" : path.accent.button
                     }`}
                   >
                     {active ? "Selected — form below" : path.cta}
@@ -139,7 +143,15 @@ export function SuccessionPaths() {
                     <NextSessionBanner />
                   </div>
                 )}
-                <InquiryForm presetMessage={MESSAGES[chosen.id]} presetService={chosen.matchingService} />
+                <InquiryForm
+                  presetMessage={MESSAGES[chosen.id]}
+                  presetService={chosen.matchingService}
+                  successExtra={
+                    chosen.id === "training" ? (
+                      <PaymentQRPanel amountLabel={formatTierPrice(chosen.price)} />
+                    ) : undefined
+                  }
+                />
               </div>
             )}
           </div>

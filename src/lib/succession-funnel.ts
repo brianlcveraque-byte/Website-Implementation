@@ -100,41 +100,45 @@ export const WORKBOOK_PREVIEW = [
 // CHANGE THESE THREE VALUES to move the slot. Everything else follows.
 // ---------------------------------------------------------------------------
 export const SESSION_RULE = {
-  /** 0 = Sunday … 4 = Thursday. */
-  weekday: 4,
-  /** 2 = the second occurrence of that weekday in the month. */
-  ordinal: 2,
+  /** First session. Every later one is this plus a multiple of intervalDays. */
+  anchorISO: "2026-08-20",
+  /** Fortnightly. Anchored to a real date rather than "every other week of the
+   *  year", because week-numbering rules differ and would drift. */
+  intervalDays: 14,
   /** Display only — the authoritative time goes in the calendar invite. */
-  timeLabel: "2:00–4:00 PM (PHT)",
+  timeLabel: "6:00–8:00 PM (PHT)",
   weekdayLabel: "Thursday",
-  cadenceLabel: "Second Thursday of every month",
+  cadenceLabel: "Every other Thursday",
 } as const;
 
-/** The `nth` occurrence of `weekday` in a given month, in UTC. */
-export function nthWeekdayOfMonth(year: number, month: number, weekday: number, nth: number): Date {
-  const first = new Date(Date.UTC(year, month, 1));
-  const offset = (weekday - first.getUTCDay() + 7) % 7;
-  return new Date(Date.UTC(year, month, 1 + offset + (nth - 1) * 7));
+const DAY_MS = 86_400_000;
+
+/** Strips the time, so comparisons are date-to-date and timezone-stable. */
+function utcMidnight(d: Date): Date {
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
 }
 
 /**
- * The next session on or after `from`. Rolls to the following month once this
- * month's has passed, so it is never a date in the past.
+ * The next session on or after `from`. Sessions run every `intervalDays` from
+ * the anchor, so this is arithmetic rather than calendar walking — no month
+ * lengths, no leap years, no drift.
  */
 export function nextSessionDate(from: Date = new Date()): Date {
-  const today = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate()));
-  const thisMonth = nthWeekdayOfMonth(
-    today.getUTCFullYear(),
-    today.getUTCMonth(),
-    SESSION_RULE.weekday,
-    SESSION_RULE.ordinal
-  );
-  if (thisMonth >= today) return thisMonth;
-  return nthWeekdayOfMonth(
-    today.getUTCFullYear(),
-    today.getUTCMonth() + 1,
-    SESSION_RULE.weekday,
-    SESSION_RULE.ordinal
+  const anchor = new Date(SESSION_RULE.anchorISO + "T00:00:00Z");
+  const today = utcMidnight(from);
+  if (today <= anchor) return anchor;
+
+  const elapsed = (today.getTime() - anchor.getTime()) / DAY_MS;
+  const cycles = Math.ceil(elapsed / SESSION_RULE.intervalDays);
+  return new Date(anchor.getTime() + cycles * SESSION_RULE.intervalDays * DAY_MS);
+}
+
+/** The next `count` sessions, for showing an upcoming-dates list. */
+export function upcomingSessions(count: number, from: Date = new Date()): Date[] {
+  const first = nextSessionDate(from);
+  return Array.from(
+    { length: count },
+    (_, i) => new Date(first.getTime() + i * SESSION_RULE.intervalDays * DAY_MS)
   );
 }
 
@@ -169,6 +173,11 @@ export type FunnelPath = {
   cta: string;
   /** Same licensed photo set as /services and the toolkit cards. */
   photo: string;
+  /** Tailwind classes, written out in full rather than composed at runtime —
+   *  Tailwind scans source text, so a class built by string concatenation is
+   *  never emitted. Each rung gets its own colour so the ladder reads as four
+   *  distinct choices rather than four grey boxes. */
+  accent: { bar: string; badge: string; button: string; ring: string };
   /** Prefills the inquiry form's service dropdown. Must match SERVICE_CATEGORIES. */
   matchingService: string;
 };
@@ -196,6 +205,12 @@ export const FUNNEL_PATHS: FunnelPath[] = [
     bestWhen: "You want to understand the method properly before committing budget to it.",
     cta: "Book a seat",
     photo: "/photos/facilitation-workshop.jpg",
+    accent: {
+      bar: "from-emerald-400 to-teal-500",
+      badge: "bg-emerald-500",
+      button: "bg-emerald-600 hover:bg-emerald-500",
+      ring: "border-emerald-500 ring-emerald-200",
+    },
     matchingService: "Succession Planning",
   },
   {
@@ -216,6 +231,12 @@ export const FUNNEL_PATHS: FunnelPath[] = [
       "You have someone internal who will own this, and would rather build the capability than rent it.",
     cta: "Get the system",
     photo: "/photos/strategy-whiteboard.jpg",
+    accent: {
+      bar: "from-sky-400 to-blue-600",
+      badge: "bg-blue-600",
+      button: "bg-blue-600 hover:bg-blue-500",
+      ring: "border-blue-500 ring-blue-200",
+    },
     matchingService: "Succession Planning",
   },
   {
@@ -235,6 +256,12 @@ export const FUNNEL_PATHS: FunnelPath[] = [
     bestWhen: "You want this working now, without spending your team's time building it.",
     cta: "Have it built",
     photo: "/photos/planning-discussion.jpg",
+    accent: {
+      bar: "from-violet-500 to-purple-600",
+      badge: "bg-violet-600",
+      button: "bg-violet-600 hover:bg-violet-500",
+      ring: "border-violet-500 ring-violet-200",
+    },
     matchingService: "Succession Planning",
   },
   {
@@ -255,6 +282,12 @@ export const FUNNEL_PATHS: FunnelPath[] = [
       "The transition is close, the plantilla is large, or a promotion decision needs to withstand being challenged.",
     cta: "Discuss an engagement",
     photo: "/photos/boardroom.jpg",
+    accent: {
+      bar: "from-amber-400 to-orange-500",
+      badge: "bg-amber-600",
+      button: "bg-amber-600 hover:bg-amber-500",
+      ring: "border-amber-500 ring-amber-200",
+    },
     matchingService: "Succession Planning",
   },
 ];

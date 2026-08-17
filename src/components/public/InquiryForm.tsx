@@ -26,12 +26,17 @@ export function InquiryForm({
   presetToolkitSlug,
   presetMessage,
   presetService,
+  successExtra,
 }: {
   presetToolkitSlug?: string;
   /** Overrides the toolkit-derived message — used by the succession funnel,
    *  whose tiers are programs and engagements rather than catalogue toolkits. */
   presetMessage?: string;
   presetService?: string;
+  /** Rendered under the thank-you once the inquiry is in — used by the
+   *  succession funnel to show payment QRs only after we have the buyer's
+   *  details, so every transfer can be matched to a booking. */
+  successExtra?: React.ReactNode;
 } = {}) {
   const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -88,9 +93,12 @@ export function InquiryForm({
 
   if (status === "done") {
     return (
-      <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-6 text-center text-sm text-emerald-800">
-        Thank you — your inquiry has been received. We&apos;ll get back to you shortly.
-      </div>
+      <>
+        <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-6 text-center text-sm text-emerald-800">
+          Thank you — your inquiry has been received. We&apos;ll get back to you shortly.
+        </div>
+        {successExtra}
+      </>
     );
   }
 

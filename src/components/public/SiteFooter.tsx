@@ -5,7 +5,13 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-slate-800 bg-slate-950 py-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 text-center">
-        <Image src="/brand/logo-dark.png" alt="Strategnosis Solutions OPC" width={140} height={58} className="h-8 w-auto opacity-90" />
+        <Image
+          src="/brand/logo-dark.png"
+          alt="Strategnosis Solutions OPC"
+          width={320}
+          height={133}
+          className="h-14 w-auto sm:h-16"
+        />
         <nav className="flex flex-wrap justify-center gap-4 text-xs text-slate-400">
           <Link href="/services" className="hover:text-slate-200">Services</Link>
           <Link href="/about" className="hover:text-slate-200">About</Link>
