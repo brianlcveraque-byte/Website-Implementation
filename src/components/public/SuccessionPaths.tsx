@@ -11,7 +11,7 @@ import { FUNNEL_PATHS, formatTierPrice, type FunnelTier } from "@/lib/succession
 
 const MESSAGES: Record<FunnelTier, string> = {
   training:
-    "I'd like to get the Succession Planning Essentials course (₱500). Please send payment details.",
+    "I'd like to book a seat on the Succession Planning Essentials session (₱500). Please send the next session date and payment details.",
   "diy-system":
     "I'd like the self-build Succession System (₱10,000). Please send payment details.\n\nOur organization has roughly this many positions: ",
   "done-for-you":
