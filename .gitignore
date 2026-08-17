@@ -43,3 +43,6 @@ next-env.d.ts
 
 # Office lock files, created while a workbook is open
 ~$*
+
+# Supabase CLI machine-local state, written by `supabase link`
+supabase/.temp/
