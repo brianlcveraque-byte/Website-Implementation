@@ -88,6 +88,72 @@ export const WORKBOOK_PREVIEW = [
   rows: readonly (readonly (string | number)[])[];
 }[];
 
+// ---------------------------------------------------------------------------
+// Live session schedule
+//
+// Expressed as a recurrence rule rather than a list of dates, and resolved in
+// the browser rather than at build time. The site is a static export: a date
+// baked in at build time would silently go stale the moment a month passed
+// without a deploy, and a landing page advertising a session that already
+// happened is worse than one showing no date at all.
+//
+// CHANGE THESE THREE VALUES to move the slot. Everything else follows.
+// ---------------------------------------------------------------------------
+export const SESSION_RULE = {
+  /** 0 = Sunday … 4 = Thursday. */
+  weekday: 4,
+  /** 2 = the second occurrence of that weekday in the month. */
+  ordinal: 2,
+  /** Display only — the authoritative time goes in the calendar invite. */
+  timeLabel: "2:00–4:00 PM (PHT)",
+  weekdayLabel: "Thursday",
+  cadenceLabel: "Second Thursday of every month",
+} as const;
+
+/** The `nth` occurrence of `weekday` in a given month, in UTC. */
+export function nthWeekdayOfMonth(year: number, month: number, weekday: number, nth: number): Date {
+  const first = new Date(Date.UTC(year, month, 1));
+  const offset = (weekday - first.getUTCDay() + 7) % 7;
+  return new Date(Date.UTC(year, month, 1 + offset + (nth - 1) * 7));
+}
+
+/**
+ * The next session on or after `from`. Rolls to the following month once this
+ * month's has passed, so it is never a date in the past.
+ */
+export function nextSessionDate(from: Date = new Date()): Date {
+  const today = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate()));
+  const thisMonth = nthWeekdayOfMonth(
+    today.getUTCFullYear(),
+    today.getUTCMonth(),
+    SESSION_RULE.weekday,
+    SESSION_RULE.ordinal
+  );
+  if (thisMonth >= today) return thisMonth;
+  return nthWeekdayOfMonth(
+    today.getUTCFullYear(),
+    today.getUTCMonth() + 1,
+    SESSION_RULE.weekday,
+    SESSION_RULE.ordinal
+  );
+}
+
+/** "Thursday, 11 September 2026" — stable across locales via explicit options. */
+export function formatSessionDate(d: Date): string {
+  return d.toLocaleDateString("en-PH", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+/** ISO date (YYYY-MM-DD) — what gets stored against the order. */
+export function sessionDateISO(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
 export type FunnelTier = "training" | "diy-system" | "done-for-you" | "consultancy";
 
 export type FunnelPath = {
@@ -125,6 +191,7 @@ export const FUNNEL_PATHS: FunnelPath[] = [
       "Two hours live online, worked through the criticality scoring and readiness assessment step by step",
       "A full position taken end to end, from plantilla row to readiness band",
       "Questions answered live — bring the positions you are stuck on",
+      "The recording afterwards, so a clash on the day costs you nothing",
     ],
     bestWhen: "You want to understand the method properly before committing budget to it.",
     cta: "Book a seat",

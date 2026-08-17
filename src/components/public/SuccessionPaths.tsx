@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { InquiryForm } from "@/components/public/InquiryForm";
+import { SessionCheckout } from "@/components/public/SessionCheckout";
 import { FUNNEL_PATHS, formatTierPrice, type FunnelTier } from "@/lib/succession-funnel";
 
 // The ladder at the bottom of the funnel. All four rungs land in the same
@@ -102,13 +103,30 @@ export function SuccessionPaths() {
           <div className="mx-auto max-w-2xl">
             <p className="text-center font-serif text-3xl font-light text-slate-900">{chosen.name}</p>
             <p className="mx-auto mt-2 max-w-md text-center text-sm text-slate-500">
-              {chosen.price === null
-                ? "Tell us the shape of the organization and we'll come back with a scope and a figure — no obligation."
-                : "Send your details and we'll reply with payment instructions within one business day."}
+              {chosen.id === "training"
+                ? "Pick your seat on the next session and pay by GCash, Maya, GrabPay, or card."
+                : chosen.price === null
+                  ? "Tell us the shape of the organization and we'll come back with a scope and a figure — no obligation."
+                  : "Send your details and we'll reply with payment instructions within one business day."}
             </p>
-            <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <InquiryForm presetMessage={MESSAGES[chosen.id]} presetService={chosen.matchingService} />
-            </div>
+            {/* The ₱500 seat is the only tier with automated checkout. The others
+                are scoped conversations, not things you buy off a page. */}
+            {chosen.id === "training" ? (
+              <div className="mt-8">
+                <SessionCheckout
+                  fallback={
+                    <InquiryForm
+                      presetMessage={MESSAGES.training}
+                      presetService={FUNNEL_PATHS[0].matchingService}
+                    />
+                  }
+                />
+              </div>
+            ) : (
+              <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <InquiryForm presetMessage={MESSAGES[chosen.id]} presetService={chosen.matchingService} />
+              </div>
+            )}
           </div>
         </div>
       )}
