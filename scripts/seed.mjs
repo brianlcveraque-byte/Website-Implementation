@@ -97,7 +97,68 @@ async function clearBusinessData() {
   }
 }
 
+// Tables clearBusinessData() empties. Kept beside the guard so the two cannot
+// drift: a table added to the wipe must be counted here too.
+const DESTRUCTIVE_TABLES = [
+  "payments",
+  "documents",
+  "invoices",
+  "tasks",
+  "milestones",
+  "project_assignments",
+  "projects",
+  "opportunity_stage_history",
+  "opportunities",
+  "contacts",
+  "clients",
+  "consultants",
+  "public_inquiries",
+];
+
+const CONFIRM_PHRASE = "wipe-and-reseed";
+
+/**
+ * Refuses to run against a database that already holds data unless explicitly
+ * confirmed.
+ *
+ * This script was written when the database was a sandbox. It now points at a
+ * live business: seeding deletes every client, opportunity, invoice, payment
+ * and public inquiry before repopulating with demo data. A stray run — wrong
+ * terminal, arrow-up through shell history — would destroy real leads with no
+ * undo. Counts are printed per table rather than summarised, so the size of
+ * what would be lost is concrete before anyone types the confirmation.
+ */
+async function guardAgainstWipingRealData() {
+  const counts = [];
+  for (const table of DESTRUCTIVE_TABLES) {
+    const { count, error } = await supabase.from(table).select("id", { count: "exact", head: true });
+    if (error) throw new Error(`Counting ${table}: ${error.message}`);
+    if (count) counts.push({ table, count });
+  }
+
+  const total = counts.reduce((sum, c) => sum + c.count, 0);
+  if (total === 0) return; // Empty database — nothing to lose.
+
+  if (process.env.SEED_CONFIRM === CONFIRM_PHRASE) {
+    console.warn(`\n!  Proceeding: ${total} existing rows will be DELETED (SEED_CONFIRM is set).\n`);
+    return;
+  }
+
+  console.error("\nRefusing to seed - this database already contains data.\n");
+  console.error("  Seeding deletes all of the following before repopulating:\n");
+  for (const { table, count } of counts) {
+    console.error(`    ${String(count).padStart(5)}  ${table}`);
+  }
+  console.error(`\n    ${String(total).padStart(5)}  rows total, permanently\n`);
+  console.error("  If that is genuinely what you want, re-run with:\n");
+  console.error(`    PowerShell:  $env:SEED_CONFIRM=\"${CONFIRM_PHRASE}\"; npm run seed`);
+  console.error(`    bash:        SEED_CONFIRM=${CONFIRM_PHRASE} npm run seed\n`);
+  process.exit(1);
+}
+
 async function main() {
+  await guardAgainstWipingRealData();
+
   console.log("Seeding services…");
   await supabase.from("services").upsert(
     SERVICE_CATEGORIES.map((c) => ({ name: c.name, category: c.name, description: c.description })),

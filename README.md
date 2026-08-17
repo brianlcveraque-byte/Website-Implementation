@@ -73,6 +73,24 @@ exact artifact (see §5).
    opportunities, a converted project, tasks, an invoice with a partial payment, and a public
    inquiry — enough to walk the full acceptance scenario in SPEC.md §8.
 
+   > **This is destructive, and the production database is live.** Seeding deletes every
+   > client, contact, opportunity, project, task, milestone, invoice, payment, document,
+   > consultant and **public inquiry** before repopulating. Against production that means
+   > losing real leads, with no undo.
+   >
+   > The script refuses to run when it finds existing rows, printing a per-table count of what
+   > would be destroyed. Only override that if wiping is genuinely the intent:
+   >
+   > ```bash
+   > SEED_CONFIRM=wipe-and-reseed npm run seed
+   > ```
+   >
+   > The three demo accounts are **banned** in production — their password is published in
+   > this file and the repository is public, which made them an open door into real client
+   > data. Re-seeding does not unban them or reset their passwords; it only creates them if
+   > they are absent. Leave them banned and use Google sign-in, which is restricted to an
+   > allowlist of team addresses.
+
 ### Using the Supabase CLI instead of the SQL editor (optional, recommended for repeat use)
 
 ```bash
