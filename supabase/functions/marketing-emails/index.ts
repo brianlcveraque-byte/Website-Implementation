@@ -16,6 +16,14 @@ const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const FROM = Deno.env.get("MARKETING_FROM_EMAIL") ?? "onboarding@resend.dev";
 const SITE_URL = Deno.env.get("APP_URL") ?? "";
+// Where new-inquiry alerts go. Deliberately an explicit secret rather than
+// reading app_users: those rows are demo accounts on a .demo domain that does
+// not exist, so alerting them would bounce every time.
+//
+// This is the one email that works before the sending domain is verified —
+// Resend still delivers to the account owner's own address, and that is who
+// this is addressed to.
+const ALERT_EMAIL = Deno.env.get("ALERT_EMAIL") ?? "";
 
 // Only look at records from the last 7 days, so enabling this feature never
 // back-blasts everyone who ever filled in the form.
@@ -92,6 +100,7 @@ Deno.serve(async () => {
   );
 
   const results: { type: string; to: string; ok: boolean }[] = [];
+  const logFailures: { type: string; error: string }[] = [];
 
   async function deliver(
     emailType: string,
@@ -107,7 +116,7 @@ Deno.serve(async () => {
     // only mark success=true when it actually went out. A failed row still
     // occupies the unique slot, so check the dashboard rather than silently
     // retrying forever against a bad address.
-    await supabase.from("email_log").insert({
+    const { error: logError } = await supabase.from("email_log").insert({
       email_type: emailType,
       recipient: to,
       related_table: table,
@@ -115,8 +124,60 @@ Deno.serve(async () => {
       provider_response: body.slice(0, 500),
       success: ok,
     });
+    // A failed log insert is worse than a failed send: the send already
+    // happened, and without the row the next cron run five minutes later will
+    // send it again, and again, forever. The usual cause is a new email_type
+    // that the check constraint does not permit yet — i.e. a migration that
+    // has not been applied. Surface it loudly rather than quietly spamming.
+    if (logError) {
+      console.error("email_log insert failed — WILL RESEND until fixed", emailType, logError.message);
+      logFailures.push({ type: emailType, error: logError.message });
+    }
     sentKeys.add(key(emailType, table, id));
     results.push({ type: emailType, to, ok });
+  }
+
+  // 0. Alert the team first. Everything else in this function is addressed to
+  //    the outside world; this one is the only thing that tells us a lead
+  //    exists at all, so it goes out before the niceties.
+  const esc = (s: unknown) =>
+    String(s ?? "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  for (const inq of inquiries ?? []) {
+    if (!ALERT_EMAIL) break;
+    const row = (label: string, value: unknown) =>
+      `<tr>
+         <td style="padding:6px 12px 6px 0;color:#64748b;font-size:13px;white-space:nowrap;vertical-align:top;">${label}</td>
+         <td style="padding:6px 0;font-size:14px;color:#0f172a;">${esc(value)}</td>
+       </tr>`;
+
+    await deliver(
+      "internal_inquiry_alert",
+      "public_inquiries",
+      inq.id,
+      ALERT_EMAIL,
+      `New inquiry — ${inq.service_interest || "unspecified"} — ${inq.name ?? "unknown"}`,
+      shell(
+        `<h2 style="font-size:19px;font-weight:normal;margin-bottom:4px;">Someone just enquired.</h2>
+         <table style="border-collapse:collapse;margin-top:12px;">
+           ${row("Name", inq.name)}
+           ${row("Organization", inq.organization)}
+           ${row("Email", inq.email)}
+           ${row("Phone", inq.phone)}
+           ${row("Interested in", inq.service_interest)}
+           ${row("Submitted", inq.submitted_at)}
+         </table>
+         <p style="margin-top:16px;font-size:13px;color:#64748b;">Their message</p>
+         <div style="border-left:3px solid #6366f1;padding:8px 0 8px 12px;font-size:14px;color:#0f172a;white-space:pre-wrap;">${esc(inq.message)}</div>
+         <p style="margin-top:20px;font-size:14px;">
+           <a href="mailto:${esc(inq.email)}" style="color:#6366f1;font-weight:bold;">Reply to ${esc(inq.name)} →</a>
+         </p>
+         <p style="font-size:13px;color:#94a3b8;">
+           They have already had an automatic acknowledgement, so a same-day reply still reads as prompt.
+         </p>`,
+        "Internal alert — sent to you, not to the enquirer."
+      )
+    );
   }
 
   // 1. Acknowledge new inquiries — transactional, they contacted us.
@@ -256,7 +317,14 @@ Deno.serve(async () => {
   }
 
   return new Response(
-    JSON.stringify({ processed: results.length, results }),
-    { status: 200, headers: { "Content-Type": "application/json" } }
+    JSON.stringify({
+      processed: results.length,
+      results,
+      // Both of these are silent failures otherwise: no alerts configured, or
+      // alerts sending but not being recorded. Either shows up here.
+      ...(ALERT_EMAIL ? {} : { warning: "ALERT_EMAIL not set — no inquiry alerts will be sent" }),
+      ...(logFailures.length ? { logFailures } : {}),
+    }),
+    { status: logFailures.length ? 500 : 200, headers: { "Content-Type": "application/json" } }
   );
 });
