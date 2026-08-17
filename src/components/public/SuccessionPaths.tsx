@@ -3,12 +3,20 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { InquiryForm } from "@/components/public/InquiryForm";
-import { SessionCheckout } from "@/components/public/SessionCheckout";
+import { NextSessionBanner, SessionCheckout } from "@/components/public/SessionCheckout";
 import { FUNNEL_PATHS, formatTierPrice, type FunnelTier } from "@/lib/succession-funnel";
 
 // The ladder at the bottom of the funnel. All four rungs land in the same
 // inquiry table — the difference is the prefilled message, which is what tells
 // us which rung a lead came in on.
+//
+// Automated checkout on the ₱500 seat is behind a flag. PayMongo requires
+// business verification that takes days, and until it clears a "Book a seat"
+// button could only ever fail — so the tier shows the inquiry form instead and
+// seats are settled by GCash or bank transfer, the same as every other tier.
+// Set NEXT_PUBLIC_PAYMENTS_ENABLED=true in the Worker's settings to turn it on;
+// no code change, no redeploy of anything but the build.
+const PAYMENTS_ENABLED = process.env.NEXT_PUBLIC_PAYMENTS_ENABLED === "true";
 
 const MESSAGES: Record<FunnelTier, string> = {
   training:
@@ -104,14 +112,16 @@ export function SuccessionPaths() {
             <p className="text-center font-serif text-3xl font-light text-slate-900">{chosen.name}</p>
             <p className="mx-auto mt-2 max-w-md text-center text-sm text-slate-500">
               {chosen.id === "training"
-                ? "Pick your seat on the next session and pay by GCash, Maya, GrabPay, or card."
+                ? PAYMENTS_ENABLED
+                  ? "Pick your seat on the next session and pay by GCash, Maya, GrabPay, or card."
+                  : "Send your details to reserve a seat and we'll reply with GCash or bank transfer instructions."
                 : chosen.price === null
                   ? "Tell us the shape of the organization and we'll come back with a scope and a figure — no obligation."
                   : "Send your details and we'll reply with payment instructions within one business day."}
             </p>
             {/* The ₱500 seat is the only tier with automated checkout. The others
                 are scoped conversations, not things you buy off a page. */}
-            {chosen.id === "training" ? (
+            {chosen.id === "training" && PAYMENTS_ENABLED ? (
               <div className="mt-8">
                 <SessionCheckout
                   fallback={
@@ -124,6 +134,11 @@ export function SuccessionPaths() {
               </div>
             ) : (
               <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                {chosen.id === "training" && (
+                  <div className="mb-6">
+                    <NextSessionBanner />
+                  </div>
+                )}
                 <InquiryForm presetMessage={MESSAGES[chosen.id]} presetService={chosen.matchingService} />
               </div>
             )}

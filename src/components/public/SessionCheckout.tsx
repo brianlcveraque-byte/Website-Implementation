@@ -34,6 +34,24 @@ const CHECKOUT_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/creat
 const inputClass =
   "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500";
 
+/**
+ * The next session's date. Shown whether or not automated checkout is on — for
+ * a live session the date is the single most important fact on the page, and
+ * hiding it behind a payment flag would be the wrong thing to hide.
+ */
+export function NextSessionBanner() {
+  const sessionISO = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
+  return (
+    <div className="rounded-lg bg-indigo-50 px-4 py-3">
+      <p className="text-xs font-semibold tracking-wide text-indigo-700 uppercase">Next session</p>
+      <p className="mt-1 font-serif text-2xl font-light text-slate-900">
+        {sessionISO ? formatSessionDate(new Date(sessionISO + "T00:00:00Z")) : " "}
+      </p>
+      <p className="mt-0.5 text-sm text-slate-600">{SESSION_RULE.timeLabel} · two hours · online</p>
+    </div>
+  );
+}
+
 export function SessionCheckout({ fallback }: { fallback?: React.ReactNode } = {}) {
   const sessionISO = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
