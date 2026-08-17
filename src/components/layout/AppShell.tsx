@@ -8,6 +8,9 @@ import { LoadingBlock } from "@/components/ui/Primitives";
 
 const FULL_NAV = [
   { href: "/app/dashboard", label: "Dashboard" },
+  // Sits above Clients because it is upstream of them: this is where people
+  // arrive before they are anything else.
+  { href: "/app/leads", label: "Leads" },
   { href: "/app/clients", label: "Clients" },
   { href: "/app/opportunities", label: "Opportunities" },
   { href: "/app/projects", label: "Projects" },

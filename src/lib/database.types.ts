@@ -331,3 +331,14 @@ export interface PublicInquiry {
   opportunity_id: string | null;
   status: InquiryStatus;
 }
+
+/** Matches supabase/migrations/0009_succession_funnel.sql. */
+export interface ToolkitLead {
+  id: string;
+  email: string;
+  name: string | null;
+  organization: string | null;
+  toolkit_slug: string;
+  source: string | null;
+  downloaded_at: string;
+}

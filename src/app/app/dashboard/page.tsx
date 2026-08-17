@@ -75,6 +75,7 @@ function FullDashboard() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [newInquiries, setNewInquiries] = useState(0);
 
   useEffect(() => {
     const startOfYear = `${new Date().getFullYear()}-01-01`;
@@ -85,13 +86,17 @@ function FullDashboard() {
       supabase.from("invoices").select("*").neq("status", "paid").neq("status", "cancelled"),
       supabase.from("payments").select("*").gte("payment_date", startOfYear),
       supabase.from("expenses").select("*").gte("expense_date", startOfYear),
-    ]).then(([p, t, m, i, pay, ex]) => {
+      // Count only — the dashboard needs the number, not the rows. See
+      // /app/leads for the triage view.
+      supabase.from("public_inquiries").select("id", { count: "exact", head: true }).eq("status", "new"),
+    ]).then(([p, t, m, i, pay, ex, inq]) => {
       setProjects((p.data as Project[]) ?? []);
       setTasks((t.data as Task[]) ?? []);
       setMilestones((m.data as Milestone[]) ?? []);
       setInvoices((i.data as Invoice[]) ?? []);
       setPayments((pay.data as Payment[]) ?? []);
       setExpenses((ex.data as Expense[]) ?? []);
+      setNewInquiries(inq.count ?? 0);
       setLoading(false);
     });
   }, []);
@@ -155,12 +160,15 @@ function FullDashboard() {
         <p className="mt-0.5 text-sm text-slate-500">{monthLabel}</p>
       </div>
 
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         <DarkTile label="Revenue (YTD)" value={formatCurrency(ytdRevenue)} />
         <DarkTile label="Net Margin" value={`${netMarginPct.toFixed(1)}%`} tone={netMarginPct < 0 ? "red" : "emerald"} />
         <DarkTile label="Outstanding A/R" value={formatCurrency(outstanding)} tone={outstanding > 0 ? "amber" : "neutral"} />
         <DarkTile label="Active Projects" value={activeProjects.length} />
         <DarkTile label="Projects At Risk" value={atRiskProjects.length} tone={atRiskProjects.length ? "red" : "neutral"} />
+        {/* Amber when anyone is waiting: an unanswered inquiry is the one number
+            here that decays on its own if nobody looks at it. */}
+        <DarkTile label="New Inquiries" value={newInquiries} tone={newInquiries ? "amber" : "neutral"} />
       </div>
 
       <div className="mb-6 grid gap-4 lg:grid-cols-2">
