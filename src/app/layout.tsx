@@ -25,6 +25,10 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
+  // Absolute base for Open Graph and canonical URLs. Without it, a link shared
+  // to Facebook or LinkedIn resolves relative paths against nothing and the
+  // preview breaks — which matters most on the pages meant to be shared.
+  metadataBase: new URL("https://strategnosis.com"),
   title: "Strategnosis Growth and Delivery Hub",
   description: "Consultancy growth and project management for Strategnosis Solutions OPC",
 };

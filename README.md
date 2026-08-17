@@ -85,24 +85,35 @@ npx supabase db push
 
 ---
 
-## 3. Deployment (Cloudflare Pages)
+## 3. Deployment (Cloudflare Workers)
+
+Live at **https://strategnosis.com**. This is a Workers project with static assets, not a
+Pages project — `wrangler.jsonc` declares the config, and Workers Builds is connected to the
+GitHub repo.
 
 1. Push this repository to GitHub (private repo recommended — it contains client business
    logic, even though it holds no secrets).
-2. In the Cloudflare dashboard: **Workers & Pages → Create → Pages → Connect to Git**, select
+2. In the Cloudflare dashboard: **Workers & Pages → Create → Import a repository**, select
    the repo.
 3. Build settings:
    - Build command: `npm run build`
    - Build output directory: `out`
-4. Add environment variables in the Pages project settings (**not** `.env.local` — that file
+4. Add environment variables in the Worker's settings (**not** `.env.local` — that file
    never leaves your machine):
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-5. Deploy. Every push to `main` redeploys automatically; pull requests get preview URLs.
-6. In Supabase **Authentication → URL Configuration**, add your Cloudflare Pages URL (and any
-   custom domain) to the allowed redirect URLs, or Google sign-in will fail after deployment.
+5. Deploy. **Every push to `master` redeploys automatically** — the push is the deploy, there
+   is no separate release step.
+6. Attach the domain: **Workers & Pages → the project → Domains → Add custom domain**. Because
+   `strategnosis.com` is already on Cloudflare DNS, the record is created for you and the
+   certificate issues automatically.
+7. In Supabase **Authentication → URL Configuration**, set the Site URL to the custom domain
+   and add both it and the `workers.dev` URL to the allowed redirect URLs, or Google sign-in
+   will fail after deployment.
 
-A custom domain can be attached in Cloudflare Pages at no extra cost whenever you have one.
+The `workers.dev` URL keeps working alongside the custom domain. Leave it enabled until the
+custom domain is proven, then disable it in the Worker's settings so search engines don't
+index two copies of the same site.
 
 ---
 
@@ -138,9 +149,11 @@ overdue invoices, and what's due in the next 7 days — the same data the dashbo
 pushed to your inbox so you don't have to remember to check. Free at this scale (see the cost
 breakdown you already discussed). Setup, in order:
 
-1. **Create a [Resend](https://resend.com) account** (free tier: ~3,000 emails/month). For
-   real production sending you'd verify your own domain there; for now you can send from
-   Resend's shared `onboarding@resend.dev` address, which works without any domain setup.
+1. **Create a [Resend](https://resend.com) account** (free tier: ~3,000 emails/month). Verify
+   `strategnosis.com` there — Resend gives you DNS records to add in Cloudflare, and until
+   that is done **emails only reach the Resend account owner's own address**, nobody else.
+   Then set `MARKETING_FROM_EMAIL` to an address on the domain; unset, it falls back to
+   Resend's shared `onboarding@resend.dev`, which is fine for testing and wrong for clients.
 2. Grab your Resend **API key** from the dashboard.
 3. **Deploy the Edge Function:**
    ```bash
@@ -152,7 +165,7 @@ breakdown you already discussed). Setup, in order:
    emails link back to the dashboard):
    ```bash
    npx supabase secrets set RESEND_API_KEY=<your-resend-api-key>
-   npx supabase secrets set APP_URL=https://website-implementation.brianlc-veraque.workers.dev
+   npx supabase secrets set APP_URL=https://strategnosis.com
    ```
 5. **Store your service role key in Supabase Vault** (this is what lets the scheduled job
    call the function — never put the raw key in a migration file or commit it):
