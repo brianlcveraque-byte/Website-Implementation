@@ -1,10 +1,11 @@
 // Production-facing seed script.
 //
-// Loads the real service catalogue, the demo login accounts, real client
-// engagements pulled from the owner's actual monitoring sheet (see below),
-// and ONE clearly-labeled synthetic "Demo —" trio kept specifically to
-// showcase features the real data doesn't currently exercise: the won→
-// project conversion, invoicing/payments, and temp-consultant RLS isolation.
+// Loads the real service catalogue, the owner account, and the real client
+// engagements pulled from the owner's actual monitoring sheet.
+//
+// The synthetic "Demo —" showcase trio was removed once the system went live:
+// demonstration rows sitting alongside real client records in a production
+// database are a reporting hazard, not a feature.
 //
 // Safe to re-run: it clears prior business data (clients through documents)
 // before reinserting, but never touches auth accounts.
@@ -169,8 +170,8 @@ async function main() {
 
   console.log("Creating login accounts (password: %s)…", DEMO_PASSWORD);
   const ownerId = await upsertDemoUser("owner@strategnosis.demo", "Demo Owner", "owner");
-  const coreId = await upsertDemoUser("core@strategnosis.demo", "Demo Core Team", "core_team");
-  const tempId = await upsertDemoUser("consultant@strategnosis.demo", "Demo Temp Consultant", "temp_consultant");
+  await upsertDemoUser("core@strategnosis.demo", "Demo Core Team", "core_team");
+  await upsertDemoUser("consultant@strategnosis.demo", "Demo Temp Consultant", "temp_consultant");
 
   console.log("Clearing prior business data…");
   await clearBusinessData();
@@ -465,140 +466,13 @@ async function main() {
     source: "Direct inquiry",
   });
 
-  // ────────────────────────────────────────────────────────────────────
-  // ONE clearly-synthetic "Demo —" trio: showcases won→project conversion,
-  // invoicing/payments, and temp-consultant RLS isolation — none of which
-  // the real data above currently demonstrates.
-  // ────────────────────────────────────────────────────────────────────
-  console.log("Seeding the labeled demo showcase (won→project, billing, temp-consultant view)…");
-  const { data: demoConsultant } = await supabase
-    .from("consultants")
-    .insert({
-      full_name: "Demo Temp Consultant",
-      title: "Research Associate",
-      expertise: ["Research and Policy Studies", "Monitoring and Evaluation"],
-      contact_email: "consultant@strategnosis.demo",
-      rate: 5000,
-      rate_currency: "PHP",
-      availability: "Weekdays",
-      location: "Metro Manila",
-      travel_availability: true,
-      linked_user_id: tempId,
-      active: true,
-    })
-    .select()
-    .single();
-
-  const { data: demoClient } = await supabase
-    .from("clients")
-    .insert({
-      org_name: "Demo — Sample Prospect Co.",
-      org_type: "Private company",
-      sector: "Demonstration",
-      status: "prospect",
-      source: "Demo",
-      notes: "Synthetic example kept to demonstrate the won→project, billing, and temp-consultant features.",
-      relationship_owner: ownerId,
-      created_by: ownerId,
-      updated_by: ownerId,
-    })
-    .select()
-    .single();
-
-  const { data: demoOpp } = await supabase
-    .from("opportunities")
-    .insert({
-      title: "Demo — Sample Engagement",
-      client_id: demoClient.id,
-      stage: "negotiation",
-      estimated_value: 500000,
-      probability_pct: 80,
-      owner_id: ownerId,
-      created_by: ownerId,
-      updated_by: ownerId,
-      next_action: "Finalize terms",
-      next_action_due: inDays(3),
-      source: "Demo",
-    })
-    .select()
-    .single();
-
-  const { data: demoProjectId } = await supabase.rpc("convert_opportunity_to_project", {
-    p_opportunity_id: demoOpp.id,
-  });
-
-  await supabase
-    .from("projects")
-    .update({
-      name: "Demo — Sample Engagement",
-      project_manager_id: coreId,
-      status: "in_progress",
-      health_status: "green",
-      start_date: inDays(-5),
-      end_date: inDays(60),
-    })
-    .eq("id", demoProjectId);
-
-  const { data: demoMilestone } = await supabase
-    .from("milestones")
-    .insert({
-      project_id: demoProjectId,
-      title: "Demo — Discovery phase complete",
-      responsible_id: coreId,
-      due_date: inDays(7),
-      status: "in_progress",
-      completion_pct: 40,
-      billing_trigger: true,
-    })
-    .select()
-    .single();
-
-  await supabase.from("tasks").insert({
-    project_id: demoProjectId,
-    milestone_id: demoMilestone.id,
-    title: "Demo — Compile discovery notes (assigned to the temp consultant login)",
-    assigned_to: tempId,
-    priority: "high",
-    due_date: inDays(-1),
-    status: "in_progress",
-    created_by: coreId,
-  });
-
-  await supabase.from("project_assignments").insert([
-    { project_id: demoProjectId, user_id: coreId, role_on_project: "Project coordinator" },
-    { project_id: demoProjectId, consultant_id: demoConsultant.id, role_on_project: "Research associate" },
-  ]);
-
-  const { data: demoInvoice } = await supabase
-    .from("invoices")
-    .insert({
-      invoice_ref: "DEMO-INV-001",
-      client_id: demoClient.id,
-      project_id: demoProjectId,
-      milestone_id: demoMilestone.id,
-      due_date: inDays(15),
-      amount: 250000,
-      tax_note: "Demo — excluding tax, shouldered by client per contract.",
-      status: "submitted",
-      created_by: coreId,
-    })
-    .select()
-    .single();
-
-  await supabase.rpc("record_payment", {
-    p_invoice_id: demoInvoice.id,
-    p_amount: 100000,
-    p_payment_date: inDays(-2),
-    p_method: "Bank transfer",
-    p_created_by: coreId,
-  });
 
   console.log("\nDone. Login accounts (password: %s):", DEMO_PASSWORD);
   console.log("  owner@strategnosis.demo       (Owner)");
   console.log("  core@strategnosis.demo        (Core Team)");
   console.log("  consultant@strategnosis.demo  (Temporary Consultant)");
   console.log("\n7 real client engagements seeded from the monitoring sheet, plus 2 real");
-  console.log("pipeline opportunities, plus one labeled 'Demo —' showcase trio.");
+  console.log("pipeline opportunities. No synthetic demo rows.");
 }
 
 main().catch((err) => {
