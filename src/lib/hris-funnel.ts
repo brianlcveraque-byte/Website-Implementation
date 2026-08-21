@@ -30,6 +30,12 @@ export const HRIS_URL = "https://hris.brianlc-veraque.workers.dev";
  * the consulting practice itself: competency frameworks, succession,
  * performance systems.
  *
+ * Learning Management is free because Onboarding depends on it — the journey
+ * enrols new hires in an orientation course and reads requiredCourseIds off each
+ * checkpoint, so free Onboarding without LMS would render a broken journey. It
+ * is a defensible giveaway anyway: the LMS is plumbing for courses, while what
+ * gets sold is the facilitation and the content that goes in it.
+ *
  * The commercial logic: using the free half means typing your entire workforce
  * into the 201 File. Once several hundred employee records are in there,
  * competency assessment and succession planning are a toggle away, and the data
@@ -40,6 +46,8 @@ export const FREE_MODULES = [
   ["201 File", "The employee master database: personal and employment records, position history, credentials, documents."],
   ["Leave System", "Applications, approval routing, and an append-only balance ledger where every grant, accrual and deduction is a transaction."],
   ["Daily Time Record", "Attendance and timesheets, with the summaries government reporting asks for."],
+  ["Onboarding & Orientation", "New-hire journeys with a task checklist, 30/60/90 checkpoints, and a buddy assigned."],
+  ["Learning Management", "Courses, enrolments and completion tracking — what the onboarding journey enrols new hires into."],
 ] as const satisfies readonly (readonly [string, string])[];
 
 export const PAID_MODULES = [
@@ -47,8 +55,6 @@ export const PAID_MODULES = [
   ["Succession Management", "Criticality scoring, successor readiness bands, and bench depth across every position."],
   ["Performance Management", "Review cycles where supervisor ratings are the system of record and self-ratings sit beside them."],
   ["Recruitment", "Job postings and an applicant pipeline, with one-click conversion into a 201 file."],
-  ["Onboarding & Orientation", "New-hire journeys, 30/60/90 plans, and buddy assignment."],
-  ["Learning Management", "Courses, enrolments, and completion tracking."],
   ["Training Calendar", "Training needs, scheduled sessions, and attendance."],
   ["Employee Engagement", "Pulse surveys and engagement reporting."],
 ] as const satisfies readonly (readonly [string, string])[];
