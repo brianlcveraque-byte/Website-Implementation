@@ -30,27 +30,31 @@ export const HRIS_URL = "https://hris.brianlc-veraque.workers.dev";
  * the consulting practice itself: competency frameworks, succession,
  * performance systems.
  *
- * Learning Management is free because Onboarding depends on it — the journey
- * enrols new hires in an orientation course and reads requiredCourseIds off each
- * checkpoint, so free Onboarding without LMS would render a broken journey. It
- * is a defensible giveaway anyway: the LMS is plumbing for courses, while what
- * gets sold is the facilitation and the content that goes in it.
+ * The free tier is deliberately narrow: onboarding a new hire is the moment an
+ * organization is most willing to try a new system, and it is self-contained
+ * enough to prove value in one hire.
  *
- * The commercial logic: using the free half means typing your entire workforce
- * into the 201 File. Once several hundred employee records are in there,
- * competency assessment and succession planning are a toggle away, and the data
- * they need is already sitting in the database.
+ * 201 File is in the list because it is isCore — it cannot be switched off, and
+ * onboarding would be meaningless without it. That is a happy accident
+ * commercially: onboarding hires means building the employee database, and the
+ * paid modules all run on exactly that data.
+ *
+ * REQUIRES HRIS WORK BEFORE THIS IS TRUE. Onboarding dependsOn LMS: the journey
+ * links new hires to /lms/{courseId}, and course authoring lives only under
+ * /lms/authoring. With LMS disabled the orientation course is both unreachable
+ * and uneditable. The HRIS needs orientation courses owned by the Onboarding
+ * module before this configuration can ship. See docs/12-provisioning.md.
  */
 export const FREE_MODULES = [
   ["Dashboard", "Role-aware landing views — org-wide for leadership, team-scoped for supervisors, personal for staff."],
-  ["201 File", "The employee master database: personal and employment records, position history, credentials, documents."],
-  ["Leave System", "Applications, approval routing, and an append-only balance ledger where every grant, accrual and deduction is a transaction."],
-  ["Daily Time Record", "Attendance and timesheets, with the summaries government reporting asks for."],
-  ["Onboarding & Orientation", "New-hire journeys with a task checklist, 30/60/90 checkpoints, and a buddy assigned."],
-  ["Learning Management", "Courses, enrolments and completion tracking — what the onboarding journey enrols new hires into."],
+  ["201 File", "The employee master database: personal and employment records, position history, credentials and documents. Always included — every other module reads from it."],
+  ["Onboarding & Orientation", "New-hire journeys with a task checklist, 30/60/90 checkpoints, a buddy assigned, and an orientation course you can edit to match your own organization."],
 ] as const satisfies readonly (readonly [string, string])[];
 
 export const PAID_MODULES = [
+  ["Leave System", "Applications, approval routing, and an append-only balance ledger where every grant, accrual and deduction is a transaction."],
+  ["Daily Time Record", "Attendance and timesheets, with the summaries government reporting asks for."],
+  ["Learning Management", "Build and run your own course library beyond orientation — enrolments, quizzes and completion tracking."],
   ["Competency Assessment", "Competency profiles per position, assessed against required levels, with the gap as the development agenda."],
   ["Succession Management", "Criticality scoring, successor readiness bands, and bench depth across every position."],
   ["Performance Management", "Review cycles where supervisor ratings are the system of record and self-ratings sit beside them."],
