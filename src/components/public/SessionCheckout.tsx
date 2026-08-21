@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { SESSION_RULE } from "@/lib/succession-funnel";
 import {
-  SESSION_RULE,
   formatSessionDate,
   nextSessionDate,
   sessionDateISO,
-} from "@/lib/succession-funnel";
+  type SessionRule,
+} from "@/lib/session-schedule";
 
 // Seat booking for the ₱500 live session.
 //
@@ -26,8 +27,21 @@ import {
 
 /** The date never changes mid-visit, so there is nothing to subscribe to. */
 const subscribe = () => () => {};
-const getClientSnapshot = () => sessionDateISO(nextSessionDate());
 const getServerSnapshot = () => null;
+
+// One stable snapshot function per rule. useSyncExternalStore compares
+// snapshots with Object.is and re-subscribes when the getter identity changes,
+// so a fresh closure each render would spin. Rules are module constants, which
+// makes a WeakMap the natural cache.
+const snapshotCache = new WeakMap<SessionRule, () => string>();
+function snapshotFor(rule: SessionRule): () => string {
+  let fn = snapshotCache.get(rule);
+  if (!fn) {
+    fn = () => sessionDateISO(nextSessionDate(rule));
+    snapshotCache.set(rule, fn);
+  }
+  return fn;
+}
 
 const CHECKOUT_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/create-checkout`;
 
@@ -39,21 +53,24 @@ const inputClass =
  * a live session the date is the single most important fact on the page, and
  * hiding it behind a payment flag would be the wrong thing to hide.
  */
-export function NextSessionBanner() {
-  const sessionISO = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
+export function NextSessionBanner({
+  rule = SESSION_RULE,
+  label = "Next session",
+}: { rule?: SessionRule; label?: string } = {}) {
+  const sessionISO = useSyncExternalStore(subscribe, snapshotFor(rule), getServerSnapshot);
   return (
     <div className="rounded-lg bg-indigo-50 px-4 py-3">
-      <p className="text-xs font-semibold tracking-wide text-indigo-700 uppercase">Next session</p>
+      <p className="text-xs font-semibold tracking-wide text-indigo-700 uppercase">{label}</p>
       <p className="mt-1 font-serif text-2xl font-light text-slate-900">
         {sessionISO ? formatSessionDate(new Date(sessionISO + "T00:00:00Z")) : " "}
       </p>
-      <p className="mt-0.5 text-sm text-slate-600">{SESSION_RULE.timeLabel} · two hours · online</p>
+      <p className="mt-0.5 text-sm text-slate-600">{rule.timeLabel} · online</p>
     </div>
   );
 }
 
 export function SessionCheckout({ fallback }: { fallback?: React.ReactNode } = {}) {
-  const sessionISO = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
+  const sessionISO = useSyncExternalStore(subscribe, snapshotFor(SESSION_RULE), getServerSnapshot);
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 

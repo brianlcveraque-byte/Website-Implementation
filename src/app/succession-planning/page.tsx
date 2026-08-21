@@ -220,8 +220,12 @@ export default function SuccessionPlanningPage() {
         <section className="border-t border-slate-200 bg-slate-50 py-14">
           <div className="mx-auto max-w-2xl px-4 text-center">
             <p className="text-base text-slate-600">
-              Not ready for either? The workbook is genuinely free and stands on its own — or browse
-              the{" "}
+              Not ready for either? The workbook is genuinely free and stands on its own — or take a
+              look at the{" "}
+              <Link href="/hris" className="font-semibold text-emerald-600 hover:text-emerald-500">
+                free HR information system
+              </Link>{" "}
+              and the{" "}
               <Link href="/toolkits" className="font-semibold text-indigo-600 hover:text-indigo-500">
                 other starter toolkits
               </Link>

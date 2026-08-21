@@ -1,3 +1,5 @@
+import { nextSessionDate as nextSession, type SessionRule } from "./session-schedule";
+
 // The succession planning funnel.
 //
 // Shape: a free workbook in exchange for an email address, then a single choice
@@ -88,75 +90,22 @@ export const WORKBOOK_PREVIEW = [
   rows: readonly (readonly (string | number)[])[];
 }[];
 
-// ---------------------------------------------------------------------------
-// Live session schedule
-//
-// Expressed as a recurrence rule rather than a list of dates, and resolved in
-// the browser rather than at build time. The site is a static export: a date
-// baked in at build time would silently go stale the moment a month passed
-// without a deploy, and a landing page advertising a session that already
-// happened is worse than one showing no date at all.
-//
-// CHANGE THESE THREE VALUES to move the slot. Everything else follows.
-// ---------------------------------------------------------------------------
-export const SESSION_RULE = {
-  /** First session. Every later one is this plus a multiple of intervalDays. */
+// Live session schedule for the succession seat. The date maths lives in
+// lib/session-schedule so every funnel shares one implementation.
+export const SESSION_RULE: SessionRule = {
   anchorISO: "2026-08-20",
-  /** Fortnightly. Anchored to a real date rather than "every other week of the
-   *  year", because week-numbering rules differ and would drift. */
   intervalDays: 14,
-  /** Display only — the authoritative time goes in the calendar invite. */
   timeLabel: "6:00–8:00 PM (PHT)",
   weekdayLabel: "Thursday",
   cadenceLabel: "Every other Thursday",
-} as const;
+};
 
-const DAY_MS = 86_400_000;
-
-/** Strips the time, so comparisons are date-to-date and timezone-stable. */
-function utcMidnight(d: Date): Date {
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-}
-
-/**
- * The next session on or after `from`. Sessions run every `intervalDays` from
- * the anchor, so this is arithmetic rather than calendar walking — no month
- * lengths, no leap years, no drift.
- */
+/** The next succession session. Thin wrapper so callers need not pass the rule. */
 export function nextSessionDate(from: Date = new Date()): Date {
-  const anchor = new Date(SESSION_RULE.anchorISO + "T00:00:00Z");
-  const today = utcMidnight(from);
-  if (today <= anchor) return anchor;
-
-  const elapsed = (today.getTime() - anchor.getTime()) / DAY_MS;
-  const cycles = Math.ceil(elapsed / SESSION_RULE.intervalDays);
-  return new Date(anchor.getTime() + cycles * SESSION_RULE.intervalDays * DAY_MS);
+  return nextSession(SESSION_RULE, from);
 }
 
-/** The next `count` sessions, for showing an upcoming-dates list. */
-export function upcomingSessions(count: number, from: Date = new Date()): Date[] {
-  const first = nextSessionDate(from);
-  return Array.from(
-    { length: count },
-    (_, i) => new Date(first.getTime() + i * SESSION_RULE.intervalDays * DAY_MS)
-  );
-}
-
-/** "Thursday, 11 September 2026" — stable across locales via explicit options. */
-export function formatSessionDate(d: Date): string {
-  return d.toLocaleDateString("en-PH", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
-
-/** ISO date (YYYY-MM-DD) — what gets stored against the order. */
-export function sessionDateISO(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
+export { formatSessionDate, sessionDateISO } from "./session-schedule";
 
 export type FunnelTier = "training" | "diy-system" | "done-for-you" | "consultancy";
 

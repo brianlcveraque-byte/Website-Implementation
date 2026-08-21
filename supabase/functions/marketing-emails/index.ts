@@ -58,6 +58,26 @@ async function sendEmail(to: string, subject: string, html: string): Promise<{ o
   return { ok: res.ok, body: await res.text() };
 }
 
+// The free HRIS session: every other Tuesday from 2026-08-25, mirroring
+// HRIS_SESSION_RULE in src/lib/hris-funnel.ts. Duplicated rather than imported
+// because Edge Functions do not share the Next.js module graph — if the rule
+// changes there, change it here too.
+const HRIS_ANCHOR = Date.UTC(2026, 7, 25);
+const HRIS_INTERVAL_DAYS = 14;
+
+function nextHrisSessionLabel(): string {
+  const day = 86_400_000;
+  const now = new Date();
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const when =
+    today <= HRIS_ANCHOR
+      ? HRIS_ANCHOR
+      : HRIS_ANCHOR + Math.ceil((today - HRIS_ANCHOR) / day / HRIS_INTERVAL_DAYS) * HRIS_INTERVAL_DAYS * day;
+  return new Date(when).toLocaleDateString("en-PH", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC",
+  });
+}
+
 Deno.serve(async () => {
   if (!RESEND_API_KEY) {
     return new Response(JSON.stringify({ sent: 0, reason: "RESEND_API_KEY not set" }), {
@@ -257,6 +277,9 @@ Deno.serve(async () => {
   //    file on submit, so this is the copy that survives a closed tab — and the
   //    reason collecting the address is worth anything.
   for (const lead of leads ?? []) {
+    // Slug-scoped. toolkit_leads now carries more than one funnel, and without
+    // this an HRIS signup would be sent a succession workbook they never asked for.
+    if (lead.toolkit_slug !== "succession-planning-toolkit") continue;
     const firstName = (lead.name ?? "").split(" ")[0] || "there";
     const link = SITE_URL ? `${SITE_URL}/downloads/succession-planning-toolkit.xlsx` : "";
     await deliver(
@@ -286,6 +309,7 @@ Deno.serve(async () => {
   // 5. One nurture note three days on, pointing at the two ways forward. Same
   //    low-pressure posture as the toolkit follow-up above — one send, not a drip.
   for (const lead of leads ?? []) {
+    if (lead.toolkit_slug !== "succession-planning-toolkit") continue;
     if (lead.downloaded_at > followupCutoff) continue;
     const firstName = (lead.name ?? "").split(" ")[0] || "there";
     await deliver(
@@ -314,6 +338,63 @@ Deno.serve(async () => {
         "You're receiving this one-time note because you downloaded our succession planning toolkit."
       )
     );
+  }
+
+
+  // 6. HRIS sandbox signups. A different funnel with a different promise, so a
+  //    different email — and an internal alert, because sandbox access has to be
+  //    provisioned by hand until the HRIS supports more than one organization.
+  for (const lead of leads ?? []) {
+    if (lead.toolkit_slug !== "hris-sandbox") continue;
+    const firstName = (lead.name ?? "").split(" ")[0] || "there";
+    const sessionLabel = nextHrisSessionLabel();
+
+    await deliver(
+      "hris_sandbox_welcome",
+      "toolkit_leads",
+      lead.id,
+      lead.email,
+      "Your HRIS access and session details",
+      shell(
+        `<h2 style="font-size:20px;font-weight:normal;">You are booked in, ${firstName}.</h2>
+         <p style="font-size:15px;color:#475569;line-height:1.6;">
+           Your session is <strong>${sessionLabel}</strong>, 6:00-8:00 PM Philippine time, online.
+           We will send the joining link a day before.
+         </p>
+         <p style="font-size:15px;color:#475569;line-height:1.6;">
+           Your sandbox login follows separately — we set each one up by hand so we can point it at
+           examples that look like your organization rather than a generic demo.
+         </p>
+         <p style="font-size:15px;color:#475569;line-height:1.6;">
+           Worth bringing: a rough headcount, and how leave credits currently work where you are.
+           The session runs through your situation rather than a made-up one.
+         </p>
+         <p style="font-size:15px;color:#475569;">- Strategnosis Solutions OPC</p>`,
+        "You are receiving this because you requested free HRIS access on our website."
+      )
+    );
+
+    if (ALERT_EMAIL) {
+      await deliver(
+        "internal_lead_alert",
+        "toolkit_leads",
+        lead.id,
+        ALERT_EMAIL,
+        `HRIS signup - ${lead.organization || lead.name || lead.email}`,
+        shell(
+          `<h2 style="font-size:19px;font-weight:normal;">Someone wants HRIS access.</h2>
+           <p style="font-size:14px;color:#0f172a;">
+             <strong>${esc(lead.name)}</strong>${lead.organization ? " - " + esc(lead.organization) : ""}<br />
+             ${esc(lead.email)}
+           </p>
+           <p style="font-size:14px;color:#475569;line-height:1.6;">
+             They are expecting a sandbox login and a seat on the ${sessionLabel} session.
+             Nothing is provisioned automatically - this one needs you.
+           </p>`,
+          "Internal alert - sent to you, not to them."
+        )
+      );
+    }
   }
 
   return new Response(
