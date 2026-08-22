@@ -5,7 +5,7 @@ import { HrisPaths } from "@/components/public/HrisPaths";
 import { Reveal } from "@/components/public/Reveal";
 import { SiteFooter } from "@/components/public/SiteFooter";
 import { SiteHeader } from "@/components/public/SiteHeader";
-import { FREE_MODULES, HRIS_SIGNUP_URL, PAID_MODULES } from "@/lib/hris-funnel";
+import { FREE_MODULES, PAID_MODULES } from "@/lib/hris-funnel";
 
 // The HRIS funnel, structured like /succession-planning on purpose. Ends on the
 // priced ladder rather than the site-wide consultation offer — a third option
@@ -193,15 +193,21 @@ export default function HrisPage() {
               </p>
             </div>
             <div className="mt-8 rounded-2xl border-2 border-emerald-200 bg-white p-6 text-center shadow-xl sm:p-8">
+              {/* Self-serve signup is built and tested but not yet reachable in
+                  production: tenant workspaces need a wildcard subdomain, which
+                  workers.dev cannot provide. Until the HRIS moves to a custom
+                  domain, workspaces are opened by hand - which takes minutes and
+                  is a real path, not a holding page. Switch this back to
+                  HRIS_SIGNUP_URL the day the domain is live. */}
               <a
-                href={HRIS_SIGNUP_URL}
+                href="#choose"
                 className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-4 text-lg font-black text-white shadow-lg transition-all hover:-translate-y-0.5 hover:from-emerald-400 hover:to-teal-400"
               >
-                Create my free workspace
+                Request my free workspace
               </a>
               <p className="mt-4 text-sm text-slate-600">
-                Takes about a minute. You pick a name and a password — everything else is already
-                set up.
+                We open your workspace and send the login, usually the same day. Your own employee
+                database — not a shared demo.
               </p>
               <p className="mt-4 border-t border-slate-100 pt-4 text-sm text-slate-600">
                 Want to be walked through it first? The free two-hour session runs{" "}
