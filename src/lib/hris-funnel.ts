@@ -12,14 +12,16 @@ import { nextSessionDate as nextSession, type SessionRule } from "./session-sche
 //   ₱75,000 → we build and hand over yours
 //   inquiry → HR consulting
 //
-// WHY A SANDBOX RATHER THAN A HOSTED FREE TIER: the HRIS has no multi-tenancy —
-// 80 Prisma models and not one organization or tenant column. One deployment
-// serves exactly one organization, so a self-serve free tier would mean
-// provisioning a database and a deployment per signup, by hand. The sandbox
-// demonstrates the real system without that. Real multi-tenancy is the
-// prerequisite for anything else, and it is not a landing-page problem.
+// The free tier is a real workspace, not a demo. The HRIS is multi-tenant now:
+// signing up creates an organization with its own isolated employee database,
+// reached at its own subdomain, with Postgres row-level security enforcing the
+// boundary rather than the application being trusted to remember. Nothing is
+// provisioned by hand and nothing is shared with another organization.
 
 export const HRIS_URL = "https://hris.brianlc-veraque.workers.dev";
+
+/** Where a visitor creates their own workspace. No sales step in between. */
+export const HRIS_SIGNUP_URL = `${HRIS_URL}/signup`;
 
 /**
  * What the free tier includes, and what it does not.

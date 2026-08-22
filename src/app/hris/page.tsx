@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { HrisAccessForm } from "@/components/public/HrisAccessForm";
 import { HrisPaths } from "@/components/public/HrisPaths";
 import { Reveal } from "@/components/public/Reveal";
 import { SiteFooter } from "@/components/public/SiteFooter";
 import { SiteHeader } from "@/components/public/SiteHeader";
-import { FREE_MODULES, PAID_MODULES } from "@/lib/hris-funnel";
+import { FREE_MODULES, HRIS_SIGNUP_URL, PAID_MODULES } from "@/lib/hris-funnel";
 
 // The HRIS funnel, structured like /succession-planning on purpose. Ends on the
 // priced ladder rather than the site-wide consultation offer — a third option
@@ -15,7 +14,7 @@ import { FREE_MODULES, PAID_MODULES } from "@/lib/hris-funnel";
 export const metadata: Metadata = {
   title: "Free HRIS + free HR training | Strategnosis",
   description:
-    "A working HR information system — 201 files, leave, and daily time record — free, plus a live two-hour session with an HR expert. Then four ways to go further.",
+    "A real HR information system with employee records and new-hire onboarding, free. Your own workspace in about a minute, plus a live session with an HR expert.",
 };
 
 export default function HrisPage() {
@@ -58,12 +57,12 @@ export default function HrisPage() {
             </div>
 
             <h1 className="mt-8 font-serif text-4xl leading-tight font-light text-white sm:text-5xl">
-              Your 201 files are in a filing cabinet and your leave balances are in a spreadsheet
-              somebody guards.
+              Your last new hire spent their first week chasing forms, and nobody could say what
+              they had finished.
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-lg text-emerald-50">
-              Get a real HR information system running your employee records, leave and timekeeping —
-              free — and two hours with an HR expert showing you how to use it.
+              Get a real HR system for your 201 files and new-hire onboarding — free, your own
+              workspace, in about a minute — and two hours with an HR expert on how to use it.
             </p>
             <a
               href="#get"
@@ -72,7 +71,7 @@ export default function HrisPage() {
               Get free access — ₱0
             </a>
             <p className="mt-4 text-sm font-medium text-emerald-50">
-              No card · no expiring trial · the training is genuinely free
+              No card · no expiring trial · your own database, not a shared demo
             </p>
           </div>
         </section>
@@ -91,13 +90,14 @@ export default function HrisPage() {
                   tells you nothing, so people quietly go back to the spreadsheet.
                 </p>
                 <p>
-                  So start at the other end. Run your leave applications and daily time records in
-                  the system, because those are the things your staff need every week — and by the
-                  time that habit sticks, your entire workforce is in the database.
+                  So start where the data arrives on its own. Every new hire has to be recorded
+                  anyway — the forms, the orientation, the thirty-day check. Run that in the system
+                  and the employee database builds itself, one person at a time, without anyone
+                  being asked to migrate anything.
                 </p>
                 <p className="font-medium text-slate-900">
-                  That is what the free version is for. Not a demo with a countdown — the working
-                  parts you would use anyway.
+                  That is what the free tier is: onboarding and the 201 file it fills. Not a demo
+                  with a countdown — the part you would be doing by hand regardless.
                 </p>
               </div>
             </Reveal>
@@ -124,7 +124,7 @@ export default function HrisPage() {
                   <span className="rounded-lg bg-emerald-500 px-3 py-1 text-sm font-black text-white">
                     FREE
                   </span>
-                  <p className="font-serif text-xl font-light text-slate-900">Yours from day one</p>
+                  <p className="font-serif text-xl font-light text-slate-900">Yours, free, forever</p>
                 </div>
                 <ul className="mt-5 space-y-4">
                   {FREE_MODULES.map(([name, detail]) => (
@@ -188,12 +188,26 @@ export default function HrisPage() {
                 The system and the training
               </p>
               <p className="mx-auto mt-3 max-w-md text-base text-slate-700">
-                Sandbox access to the live system, plus a seat on the next two-hour session with an
-                HR expert. Both free, no card.
+                Create your workspace and start onboarding your next hire. Your own employee
+                database, nobody else&apos;s. No card, and no trial that turns into a bill.
               </p>
             </div>
-            <div className="mt-8 rounded-2xl border-2 border-emerald-200 bg-white p-6 shadow-xl sm:p-8">
-              <HrisAccessForm source="hris" />
+            <div className="mt-8 rounded-2xl border-2 border-emerald-200 bg-white p-6 text-center shadow-xl sm:p-8">
+              <a
+                href={HRIS_SIGNUP_URL}
+                className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-4 text-lg font-black text-white shadow-lg transition-all hover:-translate-y-0.5 hover:from-emerald-400 hover:to-teal-400"
+              >
+                Create my free workspace
+              </a>
+              <p className="mt-4 text-sm text-slate-600">
+                Takes about a minute. You pick a name and a password — everything else is already
+                set up.
+              </p>
+              <p className="mt-4 border-t border-slate-100 pt-4 text-sm text-slate-600">
+                Want to be walked through it first? The free two-hour session runs{" "}
+                <span className="font-semibold">every other Tuesday</span> — mention it on any
+                enquiry below and we&apos;ll send the joining link.
+              </p>
             </div>
           </div>
         </section>
