@@ -95,6 +95,11 @@ export default function HrisPage() {
                   and the employee database builds itself, one person at a time, without anyone
                   being asked to migrate anything.
                 </p>
+                <p>
+                  And give the new hire their own login, so they work through their own checklist.
+                  That is the difference between a record of what HR believes happened and a
+                  record of what the person actually did.
+                </p>
                 <p className="font-medium text-slate-900">
                   That is what the free tier is: onboarding and the 201 file it fills. Not a demo
                   with a countdown — the part you would be doing by hand regardless.

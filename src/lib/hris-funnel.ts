@@ -51,6 +51,7 @@ export const FREE_MODULES = [
   ["Dashboard", "Role-aware landing views — org-wide for leadership, team-scoped for supervisors, personal for staff."],
   ["201 File", "The employee master database: personal and employment records, position history, credentials and documents. Always included — every other module reads from it."],
   ["Onboarding & Orientation", "New-hire journeys with a task checklist, 30/60/90 checkpoints, a buddy assigned, and an orientation course you can edit to match your own organization."],
+  ["Staff accounts", "Give any employee their own login, so the new hire works through their own checklist instead of HR ticking boxes for them. Issued with a one-time password they have to replace."],
 ] as const satisfies readonly (readonly [string, string])[];
 
 export const PAID_MODULES = [
