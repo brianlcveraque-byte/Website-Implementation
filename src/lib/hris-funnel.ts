@@ -18,9 +18,15 @@ import { nextSessionDate as nextSession, type SessionRule } from "./session-sche
 // boundary rather than the application being trusted to remember. Nothing is
 // provisioned by hand and nothing is shared with another organization.
 
-export const HRIS_URL = "https://hris.brianlc-veraque.workers.dev";
+export const HRIS_URL = "https://hris.strategnosis.com";
 
-/** Where a visitor creates their own workspace. No sales step in between. */
+/**
+ * Where a visitor creates their own workspace. No sales step in between.
+ *
+ * Signing up puts them on their own subdomain - acme.strategnosis.com - which
+ * is why the HRIS had to leave workers.dev: a free certificate covers one
+ * subdomain level, and workers.dev has no wildcard to give.
+ */
 export const HRIS_SIGNUP_URL = `${HRIS_URL}/signup`;
 
 /**
