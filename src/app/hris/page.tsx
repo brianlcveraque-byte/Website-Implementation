@@ -5,14 +5,14 @@ import { HrisPaths } from "@/components/public/HrisPaths";
 import { Reveal } from "@/components/public/Reveal";
 import { SiteFooter } from "@/components/public/SiteFooter";
 import { SiteHeader } from "@/components/public/SiteHeader";
-import { FREE_MODULES, HRIS_SIGNUP_URL, PAID_MODULES } from "@/lib/hris-funnel";
+import { FREE_MODULES, HRIS_ENTRY, PAID_MODULES, formatHrisPrice } from "@/lib/hris-funnel";
 
 // The HRIS funnel, structured like /succession-planning on purpose. Ends on the
 // priced ladder rather than the site-wide consultation offer — a third option
 // at the point of decision is how a funnel leaks.
 
 export const metadata: Metadata = {
-  title: "Free HRIS + free HR training | Strategnosis",
+  title: "₱250 HR training + your own HR system | Strategnosis",
   description:
     "A real HR information system with employee records and new-hire onboarding, free. Your own workspace in about a minute, plus a live session with an HR expert.",
 };
@@ -49,10 +49,10 @@ export default function HrisPage() {
           <div className="relative mx-auto max-w-3xl px-4 text-center">
             <div className="inline-flex rotate-1 items-center gap-4 rounded-2xl bg-gradient-to-r from-lime-300 via-yellow-300 to-amber-300 px-6 py-3 shadow-2xl ring-4 ring-white/40">
               <span className="text-5xl leading-none font-black tracking-tight text-slate-900 sm:text-6xl">
-                FREE
+                ₱250
               </span>
-              <span className="max-w-[10rem] text-left text-xs leading-tight font-bold tracking-wide text-slate-800 uppercase sm:text-sm">
-                HR system + 2-hour expert training
+              <span className="max-w-[11rem] text-left text-xs leading-tight font-bold tracking-wide text-slate-800 uppercase sm:text-sm">
+                1-hour practical HR training + your own HR system
               </span>
             </div>
 
@@ -61,17 +61,17 @@ export default function HrisPage() {
               they had finished.
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-lg text-emerald-50">
-              Get a real HR system for your 201 files and new-hire onboarding — free, your own
-              workspace, in about a minute — and two hours with an HR expert on how to use it.
+              One hour with an HR practitioner on how to fix that — and the system to fix it in.
+              Your 201 files and new-hire onboarding, your own workspace, yours to keep.
             </p>
             <a
-              href="#get"
+              href={HRIS_ENTRY.href}
               className="mt-9 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-300 to-yellow-400 px-10 py-4 text-lg font-black text-slate-900 shadow-2xl ring-2 ring-white/30 transition-all hover:-translate-y-1 hover:from-amber-200 hover:to-yellow-300"
             >
-              Get free access — ₱0
+              Book my session — {formatHrisPrice(HRIS_ENTRY.price)}
             </a>
             <p className="mt-4 text-sm font-medium text-emerald-50">
-              No card · no expiring trial · your own database, not a shared demo
+              The system is free and stays yours · your own database, not a shared demo
             </p>
           </div>
         </section>
@@ -101,7 +101,7 @@ export default function HrisPage() {
                   record of what the person actually did.
                 </p>
                 <p className="font-medium text-slate-900">
-                  That is what the free tier is: onboarding and the 201 file it fills. Not a demo
+                  That is what you get with the session: onboarding and the 201 file it fills. Not a demo
                   with a countdown — the part you would be doing by hand regardless.
                 </p>
               </div>
@@ -187,32 +187,38 @@ export default function HrisPage() {
           <div className="mx-auto max-w-2xl px-4">
             <div className="text-center">
               <span className="inline-block -rotate-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2 text-3xl font-black tracking-tight text-white shadow-xl sm:text-4xl">
-                FREE ACCESS
+                {formatHrisPrice(HRIS_ENTRY.price)}
               </span>
               <p className="mt-5 font-serif text-3xl font-light text-slate-900">
-                The system and the training
+                The training, and the system to use it in
               </p>
               <p className="mx-auto mt-3 max-w-md text-base text-slate-700">
-                Create your workspace and start onboarding your next hire. Your own employee
-                database, nobody else&apos;s. No card, and no trial that turns into a bill.
+                One hour live with an HR practitioner, worked through your own situation. Your
+                workspace opens the same day — your own employee database, nobody else&apos;s.
               </p>
             </div>
             <div className="mt-8 rounded-2xl border-2 border-emerald-200 bg-white p-6 text-center shadow-xl sm:p-8">
+              <ul className="mb-6 space-y-3 text-left">
+                {HRIS_ENTRY.includes.map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-slate-700">
+                    <span
+                      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"
+                      aria-hidden
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
               <a
-                href={HRIS_SIGNUP_URL}
+                href={HRIS_ENTRY.href}
                 className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-4 text-lg font-black text-white shadow-lg transition-all hover:-translate-y-0.5 hover:from-emerald-400 hover:to-teal-400"
               >
-                Create my free workspace
+                Book my session — {formatHrisPrice(HRIS_ENTRY.price)}
               </a>
               <p className="mt-4 text-sm text-slate-600">
-                Takes about a minute. You choose a name and a password — everything else is
-                already set up. Your own employee database, on your own address, not a shared
-                demo.
-              </p>
-              <p className="mt-4 border-t border-slate-100 pt-4 text-sm text-slate-600">
-                Want to be walked through it first? The free two-hour session runs{" "}
-                <span className="font-semibold">every other Tuesday</span> — mention it on any
-                enquiry below and we&apos;ll send the joining link.
+                The workspace takes about a minute to create. You choose an address and a
+                password — everything else is already set up. We confirm the session time by
+                email.
               </p>
             </div>
           </div>
@@ -223,7 +229,7 @@ export default function HrisPage() {
           <div className="mx-auto max-w-7xl px-4">
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold tracking-wide text-emerald-600 uppercase">
-                After the free session
+                After the session
               </p>
               <p className="mt-3 font-serif text-3xl font-light text-slate-900 sm:text-4xl">
                 Then take it as far as you need.

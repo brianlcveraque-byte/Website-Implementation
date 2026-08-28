@@ -119,7 +119,7 @@ export const HRIS_PATHS: HrisPath[] = [
       "The failure modes that get HR systems abandoned in year two",
       "The recording and the slide pack afterwards",
     ],
-    bestWhen: "The free session left you wanting the whole picture rather than one module.",
+    bestWhen: "The hour left you wanting the whole picture rather than one module.",
     cta: "Book a seat",
     photo: "/photos/facilitation-workshop.jpg",
     accent: {
@@ -210,3 +210,38 @@ export function formatHrisPrice(price: number | null): string {
   if (price === null) return "By inquiry";
   return price === 0 ? "Free" : `₱${price.toLocaleString()}`;
 }
+
+/**
+ * The way in: one hour of practical HR training, and the HRIS with it.
+ *
+ * This replaces "free, no card" as the first thing a visitor is asked to do.
+ * The system itself is still free — ₱250 buys the hour of training, not the
+ * software — but routing everyone through one small paid step changes who
+ * arrives: someone who has paid ₱250 turns up to the session, and someone who
+ * clicked a free button mostly does not.
+ *
+ * THE CHECKOUT AT /hris/start TAKES NO MONEY. PayMongo is written but not
+ * verified, so the step exists to prove the funnel end to end — offer, sign-up,
+ * a workspace of their own — while the payment half is still off. It says so on
+ * the page, in as many words, because a checkout that looks real and quietly
+ * charges nothing is worse than no checkout at all: someone would believe they
+ * had paid.
+ *
+ * When PayMongo is switched on, this is the one page that changes.
+ */
+export const HRIS_ENTRY = {
+  price: 250,
+  /** Where the offer is accepted. Not a payment page yet — see above. */
+  href: "/hris/start",
+  name: "Practical HR Session",
+  duration: "1 hour, live online",
+  summary:
+    "One hour of practical HR training, and your own HR system to put it into — employee records and new-hire onboarding, yours to keep.",
+  includes: [
+    "One hour live online with an HR practitioner, worked through your own situation rather than slides",
+    "Your own HRIS workspace — the 201 file and new-hire onboarding, on your own address",
+    "Onboarding journeys you customise: your tasks, your checkpoints, your orientation course",
+    "Logins for your staff, so the new hire works through their own checklist",
+    "The workspace stays yours afterwards. No trial timer, nothing switched off later",
+  ],
+} as const;
