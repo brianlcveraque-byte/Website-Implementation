@@ -61,13 +61,37 @@ export default function HrisPage() {
           />
 
           <div className="relative mx-auto max-w-3xl px-4 text-center">
-            <div className="funnel-float inline-flex rotate-1 items-center gap-4 rounded-2xl bg-gradient-to-r from-lime-300 via-yellow-300 to-amber-400 px-7 py-3.5 shadow-2xl ring-4 ring-white/50">
-              <span className="font-display text-6xl leading-none font-black tracking-tight text-slate-900 sm:text-7xl">
-                ₱250
-              </span>
-              <span className="max-w-[11rem] text-left text-xs leading-tight font-extrabold tracking-wide text-slate-900 uppercase sm:text-sm">
-                1-hour practical HR training + your own HR system
-              </span>
+            {/* Two rows, not one line.
+                The offer has two halves and they were competing inside a single
+                badge — ₱250 won on size and the free system read as small print
+                after it. Split apart, the price stops being the loudest thing
+                on the screen and FREE gets its own row, its own colour and its
+                own weight. What people are being asked for is ₱250; what they
+                are being offered is a system. The second is the reason to
+                accept the first. */}
+            <div className="funnel-float mx-auto inline-block max-w-md overflow-hidden rounded-2xl rotate-1 shadow-2xl ring-4 ring-white/50">
+              <div className="flex items-center gap-4 bg-gradient-to-r from-lime-300 via-yellow-300 to-amber-400 px-6 py-3">
+                <span className="font-display text-5xl leading-none font-black tracking-tight text-slate-900 sm:text-6xl">
+                  ₱250
+                </span>
+                <span className="text-left text-xs leading-tight font-extrabold tracking-wide text-slate-900 uppercase sm:text-sm">
+                  1-hour practical
+                  <br />
+                  HR training
+                </span>
+              </div>
+              <div className="flex items-center gap-4 bg-gradient-to-r from-fuchsia-600 via-violet-600 to-indigo-600 px-6 py-3">
+                <span className="font-display text-5xl leading-none font-black tracking-tight text-white sm:text-6xl">
+                  FREE
+                </span>
+                <span className="text-left text-xs leading-tight font-extrabold tracking-wide text-white uppercase sm:text-sm">
+                  your own HR system
+                  <br />
+                  <span className="text-fuchsia-100 normal-case">
+                    201 file + customisable onboarding
+                  </span>
+                </span>
+              </div>
             </div>
 
             <h1 className="font-display mt-9 text-4xl leading-[1.08] font-extrabold tracking-tight text-white sm:text-6xl">
@@ -134,7 +158,11 @@ export default function HrisPage() {
           <div className="mx-auto max-w-5xl px-4">
             <Reveal>
               <p className="font-display text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                What you get free, and what you don&apos;t
+                What you get{" "}
+                <span className="funnel-sheen bg-gradient-to-r from-emerald-600 via-teal-500 to-fuchsia-600">
+                  free
+                </span>
+                , and what you don&apos;t
               </p>
               <p className="mx-auto mt-3 max-w-2xl text-center text-base text-slate-600">
                 We are not hiding the good bits behind a trial timer. The free modules are the ones
@@ -143,35 +171,50 @@ export default function HrisPage() {
               </p>
             </Reveal>
 
-            <div className="mt-10 grid gap-6 lg:grid-cols-2">
-              <div className="rounded-2xl border-2 border-emerald-400 bg-white p-6 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <span className="rounded-lg bg-emerald-500 px-3 py-1 text-sm font-black text-white">
+            {/* Not a two-column comparison of equals.
+                Side by side at the same size, the paid column read as the real
+                product and the free one as the trial. It is the other way
+                round: the free half is the offer, and the paid half is there to
+                prove the free half is not crippled. So the free card is wider,
+                brighter and lifted, and the paid card is deliberately quiet. */}
+            <div className="mt-10 grid gap-6 lg:grid-cols-5">
+              <div className="funnel-glow relative overflow-hidden rounded-2xl border-4 border-emerald-400 bg-white p-6 shadow-2xl lg:col-span-3 lg:p-8">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-lime-300/40 blur-3xl"
+                />
+                <div className="relative flex flex-wrap items-center gap-3">
+                  <span className="font-display rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 px-4 py-1.5 text-2xl font-black tracking-tight text-white shadow-lg">
                     FREE
                   </span>
-                  <p className="font-display text-xl font-bold text-slate-900">Yours, free, forever</p>
+                  <p className="font-display text-2xl font-extrabold tracking-tight text-slate-900">
+                    Yours, free, forever
+                  </p>
                 </div>
-                <ul className="mt-5 space-y-4">
+                <ul className="relative mt-6 space-y-4">
                   {FREE_MODULES.map(([name, detail]) => (
                     <li key={name} className="flex gap-3">
                       <span
                         aria-hidden
-                        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700"
+                        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-xs font-black text-white shadow"
                       >
                         ✓
                       </span>
                       <div>
-                        <p className="text-sm font-semibold text-slate-900">{name}</p>
+                        <p className="font-display text-base font-bold text-slate-900">{name}</p>
                         <p className="mt-0.5 text-sm text-slate-600">{detail}</p>
                       </div>
                     </li>
                   ))}
                 </ul>
+                <p className="relative mt-6 rounded-xl border-2 border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-bold text-emerald-900">
+                  Free for the first {HRIS_FREE_SEATS} enrolled — and it stays yours afterwards
+                </p>
               </div>
 
-              <div className="rounded-2xl border border-slate-300 bg-white/70 p-6">
+              <div className="rounded-2xl border border-slate-300 bg-white/60 p-6 lg:col-span-2">
                 <div className="flex items-center gap-3">
-                  <span className="rounded-lg bg-slate-700 px-3 py-1 text-sm font-bold text-white">
+                  <span className="rounded-lg bg-slate-600 px-3 py-1 text-sm font-bold text-white">
                     PAID
                   </span>
                   <p className="font-display text-xl font-bold text-slate-900">
@@ -206,9 +249,17 @@ export default function HrisPage() {
         >
           <div className="mx-auto max-w-2xl px-4">
             <div className="text-center">
-              <span className="inline-block -rotate-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2 text-3xl font-black tracking-tight text-white shadow-xl sm:text-4xl">
-                {formatHrisPrice(HRIS_ENTRY.price)}
-              </span>
+              {/* The same two-part split as the hero, so the offer reads the
+                  same way at the top of the page and at the point of decision. */}
+              <div className="inline-flex flex-wrap items-center justify-center gap-2">
+                <span className="font-display inline-block -rotate-1 rounded-xl bg-gradient-to-r from-amber-300 to-orange-400 px-5 py-2 text-3xl font-black tracking-tight text-slate-900 shadow-xl ring-2 ring-white/60 sm:text-4xl">
+                  {formatHrisPrice(HRIS_ENTRY.price)}
+                </span>
+                <span className="font-display text-2xl font-black text-slate-400">+</span>
+                <span className="font-display inline-block rotate-1 rounded-xl bg-gradient-to-r from-fuchsia-600 via-violet-600 to-indigo-600 px-5 py-2 text-3xl font-black tracking-tight text-white shadow-xl ring-2 ring-white/60 sm:text-4xl">
+                  FREE HRIS
+                </span>
+              </div>
               <p className="font-display mt-5 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 The training, and the system to use it in
               </p>
