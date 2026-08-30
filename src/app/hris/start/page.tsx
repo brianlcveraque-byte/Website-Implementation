@@ -86,6 +86,10 @@ export default function HrisStartPage() {
                 Next you will see what the session covers and the two ways to take the system
                 further. Nothing else is asked of you here.
               </p>
+              <p className="mt-3 rounded-xl bg-emerald-50 px-4 py-3 text-center text-sm font-medium text-emerald-900">
+                Sessions run in small groups, so dates are set as seats fill. We&apos;ll email you
+                the schedule once the next one is confirmed.
+              </p>
             </div>
           </div>
 

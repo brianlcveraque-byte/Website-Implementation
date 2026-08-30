@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ExplainerVideo } from "@/components/public/ExplainerVideo";
 import { HrisNextChoice } from "@/components/public/HrisNextChoice";
 import { SiteFooter } from "@/components/public/SiteFooter";
 import { SiteHeader } from "@/components/public/SiteHeader";
@@ -47,9 +48,12 @@ export default function HrisNextPage() {
               Your seat on the {HRIS_ENTRY.name} is booked.
             </h1>
             <p className="mt-4 text-lg text-slate-700">
-              We&apos;ll email the session time and joining link. Your HR workspace — the 201 file
-              and new-hire onboarding — is released when you attend, and it stays yours
-              afterwards.
+              Sessions run in small groups, so dates are set as seats fill.{" "}
+              <strong className="text-slate-900">
+                We&apos;ll email you the schedule and joining link once the next one is confirmed.
+              </strong>{" "}
+              Your HR workspace — the 201 file and new-hire onboarding — is released when you
+              attend, and it stays yours afterwards.
             </p>
             <p className="mx-auto mt-4 max-w-md rounded-xl border border-emerald-200 bg-white/70 px-4 py-3 text-sm text-slate-600">
               The workspace is included for the first{" "}
@@ -82,25 +86,9 @@ export default function HrisNextPage() {
                 a first frame rather than the whole 19MB — the file only lands
                 in full for someone who presses play, which on this page is
                 someone already deciding. */}
-            <div className="mt-12 overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-900 shadow-xl">
-              <video
-                controls
-                playsInline
-                preload="metadata"
-                className="block h-auto w-full"
-                aria-label="Short explainer: what the full HR system does"
-              >
-                <source src="/video/hris-explainer.mp4" type="video/mp4" />
-                Your browser cannot play this video.{" "}
-                <a href="/video/hris-explainer.mp4" className="underline">
-                  Download it instead
-                </a>
-                .
-              </video>
+            <div className="mt-12">
+              <ExplainerVideo caption="The full system, in about a minute and a half." />
             </div>
-            <p className="mt-3 text-center text-sm text-slate-500">
-              The full system, in about a minute and a half.
-            </p>
 
             <div className="mt-12">
               <HrisNextChoice />

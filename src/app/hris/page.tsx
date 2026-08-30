@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { ExplainerVideo } from "@/components/public/ExplainerVideo";
 import { HrisPaths } from "@/components/public/HrisPaths";
 import { Reveal } from "@/components/public/Reveal";
 import { SiteFooter } from "@/components/public/SiteFooter";
@@ -118,6 +119,13 @@ export default function HrisPage() {
               </span>{" "}
               <span className="mt-2 inline-block sm:mt-0">· released when you attend</span>
             </p>
+            {/* Said before the click, not after it. The dates are not fixed yet,
+                and someone who books expecting to pick a slot on the next screen
+                and finds none has been misled by omission. */}
+            <p className="mx-auto mt-3 max-w-md text-sm text-emerald-100/85">
+              Sessions run in small groups. Book your seat now and we&apos;ll email you the
+              schedule as soon as the next date is set.
+            </p>
           </div>
         </section>
 
@@ -168,8 +176,19 @@ export default function HrisPage() {
               <p className="mx-auto mt-3 max-w-2xl text-center text-base text-slate-600">
                 We are not hiding the good bits behind a trial timer. The free modules are the ones
                 you run every week; the paid ones are the strategic work we would otherwise be
-                consulting on.
+                consulting on. Here is the whole thing, in about a minute and a half.
               </p>
+            </Reveal>
+
+            {/* The video sits with the free-versus-paid split rather than in the
+                hero. Someone who has not yet decided to read does not want a
+                video; someone weighing what is behind the paid column does.
+                Safe on an ad landing page only because the file was remuxed to
+                stream from the front — see scripts/faststart.mjs. */}
+            <Reveal>
+              <div className="mx-auto mt-8 max-w-3xl">
+                <ExplainerVideo caption="Everything the system does — the free half and the paid half." />
+              </div>
             </Reveal>
 
             {/* Not a two-column comparison of equals.
@@ -290,8 +309,11 @@ export default function HrisPage() {
               </a>
               <p className="mt-4 text-sm text-slate-600">
                 The workspace takes about a minute to create. You choose an address and a
-                password — everything else is already set up. We confirm the session time by
-                email.
+                password — everything else is already set up.
+              </p>
+              <p className="mt-3 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900">
+                Sessions run in small groups, so dates are set as seats fill. We&apos;ll email you
+                the schedule once the next one is confirmed.
               </p>
             </div>
           </div>
