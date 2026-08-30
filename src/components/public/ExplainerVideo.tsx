@@ -13,12 +13,20 @@
 export function ExplainerVideo({ caption }: { caption?: string }) {
   return (
     <figure className="m-0">
-      <div className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-900 shadow-xl">
+      {/* The file is 1080x1920 — shot vertical, for Reels and TikTok. Left to
+          fill the column it would render about 1365px tall on desktop, taller
+          than the screen it is being watched on, and push everything else off
+          the page. So it is framed at phone width and centred, which is also
+          the shape the footage was composed for.
+
+          aspect-[9/16] holds the space before the metadata arrives, so the
+          section does not jump as the video loads. */}
+      <div className="mx-auto aspect-[9/16] w-full max-w-[19rem] overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-900 shadow-xl">
         <video
           controls
           playsInline
           preload="metadata"
-          className="block h-auto w-full"
+          className="block h-full w-full object-contain"
           aria-label="Short explainer: what the full HR system does"
         >
           <source src="/video/hris-explainer.mp4" type="video/mp4" />
