@@ -32,27 +32,24 @@ const sourceSerif = Source_Serif_4({
 // behind it. Kept to the funnels deliberately: if it spreads to the service
 // pages the site stops looking like a consultancy and starts looking like a
 // product launch.
-// Outfit has no peso sign, in any subset — measured, not assumed: rendering ₱
-// in "Outfit, monospace" comes out at exactly the monospace width, which only
-// happens when the first font has nothing to contribute. Adding latin-ext did
-// not help and only doubled the download, so it is not requested here. The
-// substitution is handled in globals.css instead, where --font-display names
-// Geist after Outfit.
+//
+// Outfit contains no peso sign. Measured, not assumed: render ₱ in
+// "Outfit, monospace" and it comes back at exactly the monospace width, which
+// only happens when the first font has nothing to give. latin-ext does not
+// carry it either — that only doubled the download.
+//
+// Nor can it be fixed by naming a font after Outfit. next/font composes the
+// variable as `Outfit, "Outfit Fallback"` — a local Arial matched to Outfit's
+// metrics — and adjustFontFallback:false does not remove it on Next 16, so the
+// Arial always reached the glyph first.
+//
+// So prices are simply set in Geist, which has the symbol and the digits both.
+// Outfit keeps the headlines. One font per number beats a headline face with a
+// borrowed currency sign in it.
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
   weight: ["500", "600", "700", "800", "900"],
-  // Without this, --font-outfit expands to `Outfit, "Outfit Fallback"` — a
-  // local Arial adjusted to Outfit's metrics — and that fallback sits ahead of
-  // anything globals.css appends. Arial HAS a peso sign, so it claimed the
-  // glyph before Geist could, and naming Geist afterwards changed nothing.
-  // Switching the generated fallback off lets Geist be the next font in line.
-  //
-  // The trade is Geist doing the anti-flash work instead of a metric-matched
-  // Arial, so a slower connection may shift the headline slightly as Outfit
-  // arrives. Worth it: the peso sign is on screen for the whole visit, the
-  // shift is over in a moment.
-  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {

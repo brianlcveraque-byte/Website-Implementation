@@ -53,7 +53,7 @@ export function HrisNextChoice() {
                   {tier.eyebrow}
                 </p>
                 <p className="mt-2 font-display text-2xl font-bold tracking-tight text-slate-900">{tier.name}</p>
-                <p className="font-display mt-3 text-4xl font-black tracking-tight text-slate-900">
+                <p className="font-sans mt-3 text-4xl font-black tracking-tight text-slate-900">
                   {formatHrisPrice(tier.price)}
                 </p>
                 <p className="mt-1 text-xs text-slate-500">{tier.priceNote}</p>

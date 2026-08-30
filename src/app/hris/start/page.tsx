@@ -49,7 +49,7 @@ export default function HrisStartPage() {
                 </p>
                 <p className="mt-1 text-sm text-slate-600">{HRIS_ENTRY.duration}</p>
               </div>
-              <p className="font-display rounded-xl bg-gradient-to-r from-amber-300 to-orange-400 px-4 py-2 text-3xl font-black tracking-tight text-slate-900 shadow-lg ring-2 ring-white/60">
+              <p className="font-sans rounded-xl bg-gradient-to-r from-amber-300 to-orange-400 px-4 py-2 text-3xl font-black tracking-tight text-slate-900 shadow-lg ring-2 ring-white/60">
                 {formatHrisPrice(HRIS_ENTRY.price)}
               </p>
             </div>

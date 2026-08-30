@@ -71,7 +71,7 @@ export default function HrisPage() {
                 accept the first. */}
             <div className="funnel-float mx-auto inline-block max-w-md overflow-hidden rounded-2xl rotate-1 shadow-2xl ring-4 ring-white/50">
               <div className="flex items-center gap-4 bg-gradient-to-r from-lime-300 via-yellow-300 to-amber-400 px-6 py-3">
-                <span className="font-display text-5xl leading-none font-black tracking-tight text-slate-900 sm:text-6xl">
+                <span className="font-sans text-5xl leading-none font-black tracking-tight text-slate-900 sm:text-6xl">
                   ₱250
                 </span>
                 <span className="text-left text-xs leading-tight font-extrabold tracking-wide text-slate-900 uppercase sm:text-sm">
@@ -109,7 +109,8 @@ export default function HrisPage() {
               href={HRIS_ENTRY.href}
               className="funnel-glow font-display mt-10 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 px-12 py-5 text-xl font-black tracking-tight text-slate-900 ring-4 ring-white/40 transition-all hover:-translate-y-1 hover:from-amber-200 hover:to-orange-300 sm:text-2xl"
             >
-              Book my session — {formatHrisPrice(HRIS_ENTRY.price)}
+              Book my session —{" "}
+              <span className="font-sans">{formatHrisPrice(HRIS_ENTRY.price)}</span>
             </a>
             <p className="mt-5 text-sm font-semibold text-emerald-50">
               <span className="rounded-full bg-white/15 px-3 py-1 ring-1 ring-white/25 backdrop-blur">
@@ -252,7 +253,7 @@ export default function HrisPage() {
               {/* The same two-part split as the hero, so the offer reads the
                   same way at the top of the page and at the point of decision. */}
               <div className="inline-flex flex-wrap items-center justify-center gap-2">
-                <span className="font-display inline-block -rotate-1 rounded-xl bg-gradient-to-r from-amber-300 to-orange-400 px-5 py-2 text-3xl font-black tracking-tight text-slate-900 shadow-xl ring-2 ring-white/60 sm:text-4xl">
+                <span className="font-sans inline-block -rotate-1 rounded-xl bg-gradient-to-r from-amber-300 to-orange-400 px-5 py-2 text-3xl font-black tracking-tight text-slate-900 shadow-xl ring-2 ring-white/60 sm:text-4xl">
                   {formatHrisPrice(HRIS_ENTRY.price)}
                 </span>
                 <span className="font-display text-2xl font-black text-slate-400">+</span>
