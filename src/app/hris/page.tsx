@@ -5,7 +5,13 @@ import { HrisPaths } from "@/components/public/HrisPaths";
 import { Reveal } from "@/components/public/Reveal";
 import { SiteFooter } from "@/components/public/SiteFooter";
 import { SiteHeader } from "@/components/public/SiteHeader";
-import { FREE_MODULES, HRIS_ENTRY, PAID_MODULES, formatHrisPrice } from "@/lib/hris-funnel";
+import {
+  FREE_MODULES,
+  HRIS_ENTRY,
+  HRIS_FREE_SEATS,
+  PAID_MODULES,
+  formatHrisPrice,
+} from "@/lib/hris-funnel";
 
 // The HRIS funnel, structured like /succession-planning on purpose. Ends on the
 // priced ladder rather than the site-wide consultation offer — a third option
@@ -71,7 +77,8 @@ export default function HrisPage() {
               Book my session — {formatHrisPrice(HRIS_ENTRY.price)}
             </a>
             <p className="mt-4 text-sm font-medium text-emerald-50">
-              The system is free and stays yours · your own database, not a shared demo
+              System included free for the first {HRIS_FREE_SEATS} enrolled · released when you
+              attend
             </p>
           </div>
         </section>
@@ -193,8 +200,9 @@ export default function HrisPage() {
                 The training, and the system to use it in
               </p>
               <p className="mx-auto mt-3 max-w-md text-base text-slate-700">
-                One hour live with an HR practitioner, worked through your own situation. Your
-                workspace opens the same day — your own employee database, nobody else&apos;s.
+                One hour live with an HR practitioner, worked through your own situation. Attend,
+                and the workspace is yours — your own employee database, nobody else&apos;s.
+                Included for the first {HRIS_FREE_SEATS} enrolments.
               </p>
             </div>
             <div className="mt-8 rounded-2xl border-2 border-emerald-200 bg-white p-6 text-center shadow-xl sm:p-8">

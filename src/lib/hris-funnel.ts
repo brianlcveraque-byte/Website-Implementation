@@ -229,14 +229,28 @@ export function formatHrisPrice(price: number | null): string {
  *
  * When PayMongo is switched on, this is the one page that changes.
  */
+/**
+ * How many enrolments carry the free workspace.
+ *
+ * NOTHING ENFORCES THIS. It is copy, not a counter — there is no enrolment
+ * store on the site to count against, and payments are not live yet. It is a
+ * promise with a number in it, so somebody has to keep count by hand until
+ * checkout is real. Written here rather than inline so that when the hundredth
+ * seat sells, one edit changes every place that says it.
+ */
+export const HRIS_FREE_SEATS = 100;
+
+/** Where a paid enrolment goes next: the two ways to take the system further. */
+export const HRIS_NEXT_URL = "/hris/next";
+
 export const HRIS_ENTRY = {
   price: 250,
-  /** Where the offer is accepted. Not a payment page yet — see above. */
+  /** Where the offer is accepted. Not a payment page yet — see below. */
   href: "/hris/start",
   name: "Practical HR Session",
   duration: "1 hour, live online",
   summary:
-    "One hour of practical HR training, and your own HR system to put it into — employee records and new-hire onboarding, yours to keep.",
+    "One hour of practical HR training, and — for the first 100 enrolled — your own HR system to put it into, released when you attend.",
   includes: [
     "One hour live online with an HR practitioner, worked through your own situation rather than slides",
     "Your own HRIS workspace — the 201 file and new-hire onboarding, on your own address",

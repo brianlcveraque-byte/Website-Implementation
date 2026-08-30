@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/public/SiteFooter";
 import { SiteHeader } from "@/components/public/SiteHeader";
-import { HRIS_ENTRY, HRIS_SIGNUP_URL, formatHrisPrice } from "@/lib/hris-funnel";
+import { HRIS_ENTRY, HRIS_FREE_SEATS, HRIS_NEXT_URL, formatHrisPrice } from "@/lib/hris-funnel";
 
 // The step between the offer and the workspace.
 //
@@ -68,22 +68,22 @@ export default function HrisStartPage() {
               </p>
               <p className="mt-1.5 text-sm text-amber-900/90">
                 Card payments are not switched on yet, so nothing will be charged and you will not
-                be asked for card details. Continue and your workspace is created straight away —
-                we will contact you about the session and the ₱250 afterwards.
+                be asked for card details. Continue and your seat is held — we will contact you
+                about the session and the ₱250 afterwards. The workspace is released when you
+                attend, and is included for the first {HRIS_FREE_SEATS} enrolments.
               </p>
             </div>
 
             <div className="px-6 py-6">
               <a
-                href={HRIS_SIGNUP_URL}
+                href={HRIS_NEXT_URL}
                 className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-4 text-lg font-black text-white shadow-lg transition-all hover:-translate-y-0.5 hover:from-emerald-400 hover:to-teal-400"
               >
-                Continue — create my workspace
+                Continue — confirm my seat
               </a>
               <p className="mt-4 text-center text-sm text-slate-600">
-                Takes about a minute. You choose a workspace address and a password; everything
-                else is already set up. Your own employee database, on your own address, not a
-                shared demo.
+                Next you will see what the session covers and the two ways to take the system
+                further. Nothing else is asked of you here.
               </p>
             </div>
           </div>
