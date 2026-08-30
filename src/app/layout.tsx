@@ -34,7 +34,12 @@ const sourceSerif = Source_Serif_4({
 // product launch.
 const outfit = Outfit({
   variable: "--font-outfit",
-  subsets: ["latin"],
+  // latin-ext is what carries the peso sign. Google Fonts splits a face into
+  // unicode ranges, and U+20B1 sits inside U+20AD–20C0, which the plain latin
+  // subset stops short of. Without it ₱250 set the digits in Outfit and fell
+  // through to a system font for the ₱ alone — mismatched weight and width, on
+  // the one number the whole funnel turns on.
+  subsets: ["latin", "latin-ext"],
   weight: ["500", "600", "700", "800", "900"],
 });
 
