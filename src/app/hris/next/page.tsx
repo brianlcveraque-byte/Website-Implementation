@@ -72,9 +72,35 @@ export default function HrisNextPage() {
               <p className="mt-4 text-lg text-slate-600">
                 The workspace you get is the operational half — 201 files and onboarding. The
                 strategic half, competencies through succession, is the part that takes a build.
-                Two ways to have it.
+                Ninety seconds on what that looks like, then two ways to have it.
               </p>
             </div>
+
+            {/* The explainer sits before the prices, not after.
+                Nobody weighs ₱20,000 against ₱75,000 until they know what is
+                actually being built. preload="metadata" fetches the header and
+                a first frame rather than the whole 19MB — the file only lands
+                in full for someone who presses play, which on this page is
+                someone already deciding. */}
+            <div className="mt-12 overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-900 shadow-xl">
+              <video
+                controls
+                playsInline
+                preload="metadata"
+                className="block h-auto w-full"
+                aria-label="Short explainer: what the full HR system does"
+              >
+                <source src="/video/hris-explainer.mp4" type="video/mp4" />
+                Your browser cannot play this video.{" "}
+                <a href="/video/hris-explainer.mp4" className="underline">
+                  Download it instead
+                </a>
+                .
+              </video>
+            </div>
+            <p className="mt-3 text-center text-sm text-slate-500">
+              The full system, in about a minute and a half.
+            </p>
 
             <div className="mt-12">
               <HrisNextChoice />
