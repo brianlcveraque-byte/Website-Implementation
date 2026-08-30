@@ -42,6 +42,17 @@ const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
   weight: ["500", "600", "700", "800", "900"],
+  // Without this, --font-outfit expands to `Outfit, "Outfit Fallback"` — a
+  // local Arial adjusted to Outfit's metrics — and that fallback sits ahead of
+  // anything globals.css appends. Arial HAS a peso sign, so it claimed the
+  // glyph before Geist could, and naming Geist afterwards changed nothing.
+  // Switching the generated fallback off lets Geist be the next font in line.
+  //
+  // The trade is Geist doing the anti-flash work instead of a metric-matched
+  // Arial, so a slower connection may shift the headline slightly as Outfit
+  // arrives. Worth it: the peso sign is on screen for the whole visit, the
+  // shift is over in a moment.
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
