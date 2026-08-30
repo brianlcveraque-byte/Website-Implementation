@@ -4,8 +4,13 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-source-serif);
-  /* Campaign funnels only — see the note in layout.tsx. */
-  --font-display: var(--font-outfit);
+  /* Campaign funnels only — see the note in layout.tsx.
+     Geist is named second on purpose. Fallback resolves per glyph, not per
+     element, so the digits come from Outfit and the ₱ — which Outfit does not
+     contain — comes from Geist instead of next/font's Arial-metric substitute.
+     Arial's peso beside Outfit's numerals was the wrong weight and the wrong
+     width, on the one figure the whole funnel is built around. */
+  --font-display: var(--font-outfit), var(--font-geist-sans);
 }
 
 /* ── Funnel motion ────────────────────────────────────────────────────────

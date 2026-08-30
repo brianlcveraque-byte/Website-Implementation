@@ -32,14 +32,15 @@ const sourceSerif = Source_Serif_4({
 // behind it. Kept to the funnels deliberately: if it spreads to the service
 // pages the site stops looking like a consultancy and starts looking like a
 // product launch.
+// Outfit has no peso sign, in any subset — measured, not assumed: rendering ₱
+// in "Outfit, monospace" comes out at exactly the monospace width, which only
+// happens when the first font has nothing to contribute. Adding latin-ext did
+// not help and only doubled the download, so it is not requested here. The
+// substitution is handled in globals.css instead, where --font-display names
+// Geist after Outfit.
 const outfit = Outfit({
   variable: "--font-outfit",
-  // latin-ext is what carries the peso sign. Google Fonts splits a face into
-  // unicode ranges, and U+20B1 sits inside U+20AD–20C0, which the plain latin
-  // subset stops short of. Without it ₱250 set the digits in Outfit and fell
-  // through to a system font for the ₱ alone — mismatched weight and width, on
-  // the one number the whole funnel turns on.
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   weight: ["500", "600", "700", "800", "900"],
 });
 
