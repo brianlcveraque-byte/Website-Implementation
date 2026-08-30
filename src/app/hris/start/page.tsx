@@ -30,25 +30,26 @@ export default function HrisStartPage() {
   return (
     <>
       <SiteHeader />
-      <main className="flex-1 bg-slate-50 py-14 sm:py-20">
+      <main className="flex-1 bg-gradient-to-b from-emerald-50 via-slate-50 to-slate-50 py-14 sm:py-20">
         <div className="mx-auto max-w-2xl px-4">
-          <p className="text-xs font-semibold tracking-wide text-emerald-600 uppercase">
+          <p className="inline-flex items-center rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-3.5 py-1 text-xs font-extrabold tracking-wide text-white uppercase shadow">
             Step 1 of 2
           </p>
-          <h1 className="mt-3 font-serif text-3xl font-light text-slate-900 sm:text-4xl">
+          <h1 className="font-display mt-4 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
             {HRIS_ENTRY.name}
           </h1>
           <p className="mt-3 text-lg text-slate-600">{HRIS_ENTRY.summary}</p>
 
-          <div className="mt-8 overflow-hidden rounded-2xl border-2 border-emerald-200 bg-white shadow-xl">
-            <div className="flex items-baseline justify-between gap-4 border-b border-slate-100 bg-emerald-50/60 px-6 py-5">
+          <div className="mt-8 overflow-hidden rounded-2xl border-2 border-emerald-300 bg-white shadow-2xl">
+            <div className="h-2 bg-gradient-to-r from-lime-400 via-emerald-500 to-cyan-500" aria-hidden />
+            <div className="flex items-center justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-teal-50 px-6 py-5">
               <div>
-                <p className="font-serif text-xl font-light text-slate-900">
+                <p className="font-display text-xl font-bold text-slate-900">
                   {HRIS_ENTRY.name}
                 </p>
                 <p className="mt-1 text-sm text-slate-600">{HRIS_ENTRY.duration}</p>
               </div>
-              <p className="text-3xl font-black tracking-tight text-slate-900">
+              <p className="font-display rounded-xl bg-gradient-to-r from-amber-300 to-orange-400 px-4 py-2 text-3xl font-black tracking-tight text-slate-900 shadow-lg ring-2 ring-white/60">
                 {formatHrisPrice(HRIS_ENTRY.price)}
               </p>
             </div>
@@ -77,7 +78,7 @@ export default function HrisStartPage() {
             <div className="px-6 py-6">
               <a
                 href={HRIS_NEXT_URL}
-                className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-4 text-lg font-black text-white shadow-lg transition-all hover:-translate-y-0.5 hover:from-emerald-400 hover:to-teal-400"
+                className="funnel-glow font-display inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 px-8 py-5 text-xl font-black tracking-tight text-white ring-2 ring-emerald-200 transition-all hover:-translate-y-0.5 hover:from-emerald-400 hover:to-cyan-400"
               >
                 Continue — confirm my seat
               </a>

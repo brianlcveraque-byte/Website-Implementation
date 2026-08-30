@@ -4,4 +4,71 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-source-serif);
+  /* Campaign funnels only — see the note in layout.tsx. */
+  --font-display: var(--font-outfit);
+}
+
+/* ── Funnel motion ────────────────────────────────────────────────────────
+   Used on the campaign landing pages, where a page that arrives completely
+   still reads as a document rather than an offer. Every one of these is a
+   transform or an opacity, so nothing here forces layout while it runs.
+
+   All of it stops under prefers-reduced-motion. A pulsing price badge is a
+   nuisance to most people and genuinely a problem for some.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@keyframes funnel-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(1deg);
+  }
+}
+
+@keyframes funnel-glow {
+  0%,
+  100% {
+    box-shadow: 0 18px 45px -12px rgb(16 185 129 / 0.5);
+  }
+  50% {
+    box-shadow: 0 22px 60px -10px rgb(245 158 11 / 0.65);
+  }
+}
+
+@keyframes funnel-sheen {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.funnel-float {
+  animation: funnel-float 4.5s ease-in-out infinite;
+}
+
+.funnel-glow {
+  animation: funnel-glow 3.2s ease-in-out infinite;
+}
+
+/* Animated gradient across a headline word. background-clip:text needs the
+   text itself transparent, so the colour has to come entirely from the
+   gradient — there is no fallback shade to inherit. */
+.funnel-sheen {
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: funnel-sheen 6s linear infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .funnel-float,
+  .funnel-glow,
+  .funnel-sheen {
+    animation: none;
+  }
 }

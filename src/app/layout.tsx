@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
+import { Geist, Geist_Mono, Outfit, Source_Serif_4 } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
@@ -24,6 +24,20 @@ const sourceSerif = Source_Serif_4({
   weight: ["300", "400"],
 });
 
+// Display face for the campaign funnels only.
+//
+// The serif above is the consultancy voice — quiet, editorial, borrowed from how
+// the big firms typeset. That voice is wrong for an ad landing page, where the
+// job is to stop a thumb, so the funnels get a geometric sans with real weight
+// behind it. Kept to the funnels deliberately: if it spreads to the service
+// pages the site stops looking like a consultancy and starts looking like a
+// product launch.
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800", "900"],
+});
+
 export const metadata: Metadata = {
   // Absolute base for Open Graph and canonical URLs. Without it, a link shared
   // to Facebook or LinkedIn resolves relative paths against nothing and the
@@ -37,7 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} ${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
         <AuthProvider>{children}</AuthProvider>

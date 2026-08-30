@@ -47,13 +47,13 @@ export function HrisNextChoice() {
                   : "border-slate-200 hover:-translate-y-1 hover:shadow-xl"
               }`}
             >
-              <div className={`h-1.5 bg-gradient-to-r ${tier.accent.bar}`} aria-hidden />
+              <div className={`h-2.5 bg-gradient-to-r ${tier.accent.bar}`} aria-hidden />
               <div className="flex flex-1 flex-col p-6 sm:p-7">
                 <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
                   {tier.eyebrow}
                 </p>
-                <p className="mt-2 font-serif text-2xl font-light text-slate-900">{tier.name}</p>
-                <p className="mt-3 text-3xl font-black tracking-tight text-slate-900">
+                <p className="mt-2 font-display text-2xl font-bold tracking-tight text-slate-900">{tier.name}</p>
+                <p className="font-display mt-3 text-4xl font-black tracking-tight text-slate-900">
                   {formatHrisPrice(tier.price)}
                 </p>
                 <p className="mt-1 text-xs text-slate-500">{tier.priceNote}</p>
@@ -79,7 +79,7 @@ export function HrisNextChoice() {
                   <button
                     type="button"
                     onClick={() => setSelected(tier.id)}
-                    className={`inline-flex w-full items-center justify-center rounded-xl ${tier.accent.button} px-6 py-3.5 text-base font-bold text-white shadow transition-all hover:-translate-y-0.5`}
+                    className={`font-display inline-flex w-full items-center justify-center rounded-xl ${tier.accent.button} px-6 py-4 text-lg font-extrabold tracking-tight text-white shadow-lg transition-all hover:-translate-y-0.5`}
                   >
                     {tier.cta}
                   </button>
@@ -93,7 +93,7 @@ export function HrisNextChoice() {
       {chosen ? (
         <div ref={formRef} className="mt-12 scroll-mt-8">
           <div className="mx-auto max-w-xl rounded-2xl border-2 border-slate-200 bg-white p-6 shadow-lg sm:p-8">
-            <p className="font-serif text-xl font-light text-slate-900">{chosen.name}</p>
+            <p className="font-display text-xl font-bold text-slate-900">{chosen.name}</p>
             <p className="mt-1 text-sm text-slate-600">
               {formatHrisPrice(chosen.price)} · {chosen.priceNote}
             </p>

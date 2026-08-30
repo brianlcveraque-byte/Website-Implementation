@@ -41,44 +41,57 @@ export default function HrisPage() {
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-teal-700/95 via-emerald-700/95 to-cyan-800/95"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-800/95 via-teal-700/95 to-cyan-900/95"
+          />
+          {/* Colour that does not belong to the brand palette, on purpose. The
+              blobs are what stop the hero reading as another green SaaS header
+              — fuchsia and lime against teal is a jolt, and a jolt is the whole
+              job of the first screen someone sees after tapping an ad. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-32 -left-24 h-[28rem] w-[28rem] rounded-full bg-lime-300/35 blur-3xl"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute -top-32 -left-24 h-96 w-96 rounded-full bg-lime-300/25 blur-3xl"
+            className="pointer-events-none absolute -right-28 -bottom-36 h-[30rem] w-[30rem] rounded-full bg-fuchsia-500/25 blur-3xl"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-24 -bottom-32 h-96 w-96 rounded-full bg-sky-400/25 blur-3xl"
+            className="pointer-events-none absolute top-1/3 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-sky-400/20 blur-3xl"
           />
 
           <div className="relative mx-auto max-w-3xl px-4 text-center">
-            <div className="inline-flex rotate-1 items-center gap-4 rounded-2xl bg-gradient-to-r from-lime-300 via-yellow-300 to-amber-300 px-6 py-3 shadow-2xl ring-4 ring-white/40">
-              <span className="text-5xl leading-none font-black tracking-tight text-slate-900 sm:text-6xl">
+            <div className="funnel-float inline-flex rotate-1 items-center gap-4 rounded-2xl bg-gradient-to-r from-lime-300 via-yellow-300 to-amber-400 px-7 py-3.5 shadow-2xl ring-4 ring-white/50">
+              <span className="font-display text-6xl leading-none font-black tracking-tight text-slate-900 sm:text-7xl">
                 ₱250
               </span>
-              <span className="max-w-[11rem] text-left text-xs leading-tight font-bold tracking-wide text-slate-800 uppercase sm:text-sm">
+              <span className="max-w-[11rem] text-left text-xs leading-tight font-extrabold tracking-wide text-slate-900 uppercase sm:text-sm">
                 1-hour practical HR training + your own HR system
               </span>
             </div>
 
-            <h1 className="mt-8 font-serif text-4xl leading-tight font-light text-white sm:text-5xl">
-              Your last new hire spent their first week chasing forms, and nobody could say what
-              they had finished.
+            <h1 className="font-display mt-9 text-4xl leading-[1.08] font-extrabold tracking-tight text-white sm:text-6xl">
+              Your last new hire spent week one{" "}
+              <span className="funnel-sheen bg-gradient-to-r from-lime-300 via-amber-300 to-fuchsia-300">
+                chasing forms
+              </span>{" "}
+              — and nobody could say what they had finished.
             </h1>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-emerald-50">
+            <p className="mx-auto mt-6 max-w-xl text-lg text-emerald-50 sm:text-xl">
               One hour with an HR practitioner on how to fix that — and the system to fix it in.
               Your 201 files and new-hire onboarding, your own workspace, yours to keep.
             </p>
             <a
               href={HRIS_ENTRY.href}
-              className="mt-9 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-300 to-yellow-400 px-10 py-4 text-lg font-black text-slate-900 shadow-2xl ring-2 ring-white/30 transition-all hover:-translate-y-1 hover:from-amber-200 hover:to-yellow-300"
+              className="funnel-glow font-display mt-10 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 px-12 py-5 text-xl font-black tracking-tight text-slate-900 ring-4 ring-white/40 transition-all hover:-translate-y-1 hover:from-amber-200 hover:to-orange-300 sm:text-2xl"
             >
               Book my session — {formatHrisPrice(HRIS_ENTRY.price)}
             </a>
-            <p className="mt-4 text-sm font-medium text-emerald-50">
-              System included free for the first {HRIS_FREE_SEATS} enrolled · released when you
-              attend
+            <p className="mt-5 text-sm font-semibold text-emerald-50">
+              <span className="rounded-full bg-white/15 px-3 py-1 ring-1 ring-white/25 backdrop-blur">
+                System free for the first {HRIS_FREE_SEATS} enrolled
+              </span>{" "}
+              <span className="mt-2 inline-block sm:mt-0">· released when you attend</span>
             </p>
           </div>
         </section>
@@ -87,7 +100,7 @@ export default function HrisPage() {
         <section className="bg-white py-16 sm:py-20">
           <div className="mx-auto max-w-3xl px-4">
             <Reveal>
-              <p className="font-serif text-3xl font-light text-slate-900">
+              <p className="font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 HR systems fail for the same reason every time.
               </p>
               <div className="mt-6 space-y-4 text-lg text-slate-600">
@@ -120,7 +133,7 @@ export default function HrisPage() {
         <section className="border-y border-slate-200 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 py-16 sm:py-20">
           <div className="mx-auto max-w-5xl px-4">
             <Reveal>
-              <p className="text-center font-serif text-3xl font-light text-slate-900">
+              <p className="font-display text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 What you get free, and what you don&apos;t
               </p>
               <p className="mx-auto mt-3 max-w-2xl text-center text-base text-slate-600">
@@ -136,7 +149,7 @@ export default function HrisPage() {
                   <span className="rounded-lg bg-emerald-500 px-3 py-1 text-sm font-black text-white">
                     FREE
                   </span>
-                  <p className="font-serif text-xl font-light text-slate-900">Yours, free, forever</p>
+                  <p className="font-display text-xl font-bold text-slate-900">Yours, free, forever</p>
                 </div>
                 <ul className="mt-5 space-y-4">
                   {FREE_MODULES.map(([name, detail]) => (
@@ -161,7 +174,7 @@ export default function HrisPage() {
                   <span className="rounded-lg bg-slate-700 px-3 py-1 text-sm font-bold text-white">
                     PAID
                   </span>
-                  <p className="font-serif text-xl font-light text-slate-900">
+                  <p className="font-display text-xl font-bold text-slate-900">
                     Unlocked when you go further
                   </p>
                 </div>
@@ -196,7 +209,7 @@ export default function HrisPage() {
               <span className="inline-block -rotate-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2 text-3xl font-black tracking-tight text-white shadow-xl sm:text-4xl">
                 {formatHrisPrice(HRIS_ENTRY.price)}
               </span>
-              <p className="mt-5 font-serif text-3xl font-light text-slate-900">
+              <p className="font-display mt-5 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 The training, and the system to use it in
               </p>
               <p className="mx-auto mt-3 max-w-md text-base text-slate-700">
@@ -239,7 +252,7 @@ export default function HrisPage() {
               <p className="text-xs font-semibold tracking-wide text-emerald-600 uppercase">
                 After the session
               </p>
-              <p className="mt-3 font-serif text-3xl font-light text-slate-900 sm:text-4xl">
+              <p className="font-display mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 Then take it as far as you need.
               </p>
               <p className="mt-4 text-lg text-slate-600">

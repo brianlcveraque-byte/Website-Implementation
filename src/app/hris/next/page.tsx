@@ -30,12 +30,20 @@ export default function HrisNextPage() {
       <SiteHeader />
       <main className="flex-1 bg-slate-50">
         {/* Confirmation */}
-        <section className="border-b-4 border-emerald-400 bg-gradient-to-br from-lime-50 via-emerald-50 to-teal-50 py-14 sm:py-16">
-          <div className="mx-auto max-w-2xl px-4 text-center">
-            <span className="inline-block -rotate-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2 text-2xl font-black tracking-tight text-white shadow-xl sm:text-3xl">
+        <section className="relative overflow-hidden border-b-4 border-emerald-400 bg-gradient-to-br from-lime-100 via-emerald-50 to-cyan-100 py-14 sm:py-16">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-24 -right-20 h-80 w-80 rounded-full bg-fuchsia-300/30 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-28 -left-16 h-80 w-80 rounded-full bg-amber-300/40 blur-3xl"
+          />
+          <div className="relative mx-auto max-w-2xl px-4 text-center">
+            <span className="funnel-float font-display inline-block -rotate-1 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 px-6 py-2.5 text-3xl font-black tracking-tight text-white shadow-2xl ring-4 ring-white/50 sm:text-4xl">
               You&apos;re in
             </span>
-            <h1 className="mt-5 font-serif text-3xl font-light text-slate-900 sm:text-4xl">
+            <h1 className="font-display mt-6 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
               Your seat on the {HRIS_ENTRY.name} is booked.
             </h1>
             <p className="mt-4 text-lg text-slate-700">
@@ -58,7 +66,7 @@ export default function HrisNextPage() {
               <p className="text-xs font-semibold tracking-wide text-emerald-600 uppercase">
                 While you wait for the session
               </p>
-              <p className="mt-3 font-serif text-3xl font-light text-slate-900 sm:text-4xl">
+              <p className="mt-3 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 The hour covers your onboarding. These cover everything after it.
               </p>
               <p className="mt-4 text-lg text-slate-600">
