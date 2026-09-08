@@ -336,11 +336,39 @@ Deno.serve(async () => {
 
 
   // 6. HRIS sandbox signups. A different funnel with a different promise, so a
-  //    different email — and an internal alert, because sandbox access has to be
-  //    provisioned by hand until the HRIS supports more than one organization.
+  //    different email — and an internal alert, because a workspace has to be
+  //    provisioned by hand and a session date still has to be set.
+  //
+  //    The seat count is read here rather than kept in anyone's head. "Free for
+  //    the first 100" was previously copy with nothing counting against it, so
+  //    the hundred-and-first enrolee would have been promised a workspace that
+  //    was no longer on offer. Counting at send time means the promise stops
+  //    making itself.
+  const { count: enrolledSoFar } = await supabase
+    .from("toolkit_leads")
+    .select("id", { count: "exact", head: true })
+    .eq("toolkit_slug", "hris-sandbox");
+
   for (const lead of leads ?? []) {
     if (lead.toolkit_slug !== "hris-sandbox") continue;
     const firstName = (lead.name ?? "").split(" ")[0] || "there";
+
+    // Their position in the queue. The count is of everyone enrolled including
+    // this batch, so it is a ceiling rather than an exact rank — good enough to
+    // decide which promise to make, and it errs towards not over-promising.
+    const seatsTaken = enrolledSoFar ?? 0;
+    const withinFreeSeats = seatsTaken <= HRIS_FREE_SEATS;
+
+    const systemParagraph = withinFreeSeats
+      ? `When you attend, your own HR system is released with it: the 201 file and new-hire
+         onboarding, on your own address, with logins for your staff. It stays yours afterwards -
+         no trial timer, nothing switched off later. That part is for the first
+         ${HRIS_FREE_SEATS} enrolled, and you are inside that.`
+      : `The session itself is unchanged, and it is still free. The free workspaces that came with
+         it were limited to the first ${HRIS_FREE_SEATS} enrolments and those are now taken, so we
+         will not pretend one is waiting for you. Come to the session anyway - what it covers
+         applies to whatever system you are running - and we will tell you on the day what the
+         options are if you want one.`;
 
     await deliver(
       "hris_sandbox_welcome",
@@ -361,10 +389,7 @@ Deno.serve(async () => {
            do until then.
          </p>
          <p style="font-size:15px;color:#475569;line-height:1.6;">
-           When you attend, your own HR system is released with it: the 201 file and new-hire
-           onboarding, on your own address, with logins for your staff. It stays yours afterwards -
-           no trial timer, nothing switched off later. That part is for the first
-           ${HRIS_FREE_SEATS} enrolled, and you are inside that.
+           ${systemParagraph}
          </p>
          <p style="font-size:15px;color:#475569;line-height:1.6;">
            Worth having to hand on the day: a rough headcount, and how leave credits currently work
@@ -392,6 +417,15 @@ Deno.serve(async () => {
              They have been told a date is being set and that you will contact them with it.
              That promise is now outstanding - nothing schedules itself, and nothing is
              provisioned automatically. Both need you.
+           </p>
+           <p style="font-size:14px;color:${withinFreeSeats ? "#475569" : "#b91c1c"};line-height:1.6;">
+             <strong>Enrolment ${seatsTaken} of ${HRIS_FREE_SEATS}.</strong>
+             ${
+               withinFreeSeats
+                 ? `They were promised a free workspace.`
+                 : `The free workspaces are gone, and their email says so rather than promising one.
+                    Decide what the offer is now - the page still advertises ${HRIS_FREE_SEATS}.`
+             }
            </p>`,
           "Internal alert - sent to you, not to them."
         )
