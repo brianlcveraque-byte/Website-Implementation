@@ -63,15 +63,19 @@ export default function HrisStartPage() {
               ))}
             </ul>
 
-            <div className="border-t-2 border-dashed border-amber-300 bg-amber-50 px-6 py-5">
-              <p className="text-sm font-bold text-amber-900">
-                No payment is being taken on this page.
+            {/* This panel used to exist to explain that the ₱250 checkout was
+                not really charging anything. The session is free now, so there
+                is nothing to explain away — it says what happens next instead,
+                which is the only thing still unresolved at this point. */}
+            <div className="border-t-2 border-dashed border-emerald-300 bg-emerald-50 px-6 py-5">
+              <p className="text-sm font-bold text-emerald-900">
+                Free. No card, no payment, nothing owed afterwards.
               </p>
-              <p className="mt-1.5 text-sm text-amber-900/90">
-                Card payments are not switched on yet, so nothing will be charged and you will not
-                be asked for card details. Continue and your seat is held — we will contact you
-                about the session and the ₱250 afterwards. The workspace is released when you
-                attend, and is included for the first {HRIS_FREE_SEATS} enrolments.
+              <p className="mt-1.5 text-sm text-emerald-900/90">
+                Continue and your seat is held. Sessions run in small groups so the date follows
+                who has enrolled — we will email you the schedule and the joining link before
+                anyone else hears it. The workspace is released when you attend, and is included
+                for the first {HRIS_FREE_SEATS} enrolments.
               </p>
             </div>
 

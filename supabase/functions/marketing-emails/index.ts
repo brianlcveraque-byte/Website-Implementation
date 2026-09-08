@@ -58,25 +58,19 @@ async function sendEmail(to: string, subject: string, html: string): Promise<{ o
   return { ok: res.ok, body: await res.text() };
 }
 
-// The free HRIS session: every other Tuesday from 2026-08-25, mirroring
-// HRIS_SESSION_RULE in src/lib/hris-funnel.ts. Duplicated rather than imported
-// because Edge Functions do not share the Next.js module graph — if the rule
-// changes there, change it here too.
-const HRIS_ANCHOR = Date.UTC(2026, 7, 25);
-const HRIS_INTERVAL_DAYS = 14;
+// How many enrolments carry the free workspace, mirroring HRIS_FREE_SEATS in
+// src/lib/hris-funnel.ts. Duplicated rather than imported because Edge
+// Functions do not share the Next.js module graph — if it changes there, change
+// it here too, or the site and the welcome email will promise different things.
+//
+// NOTHING ENFORCES IT. There is no enrolment counter, so this is a promise with
+// a number in it that somebody keeps by hand.
+const HRIS_FREE_SEATS = 100;
 
-function nextHrisSessionLabel(): string {
-  const day = 86_400_000;
-  const now = new Date();
-  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  const when =
-    today <= HRIS_ANCHOR
-      ? HRIS_ANCHOR
-      : HRIS_ANCHOR + Math.ceil((today - HRIS_ANCHOR) / day / HRIS_INTERVAL_DAYS) * HRIS_INTERVAL_DAYS * day;
-  return new Date(when).toLocaleDateString("en-PH", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC",
-  });
-}
+// The fortnightly-Tuesday session label used to be computed here. The session
+// is now scheduled around who has enrolled rather than on a fixed cadence, so
+// the welcome email promises contact instead of a date. If a standing schedule
+// returns, the helper is in the history of this file.
 
 Deno.serve(async () => {
   if (!RESEND_API_KEY) {
@@ -347,30 +341,37 @@ Deno.serve(async () => {
   for (const lead of leads ?? []) {
     if (lead.toolkit_slug !== "hris-sandbox") continue;
     const firstName = (lead.name ?? "").split(" ")[0] || "there";
-    const sessionLabel = nextHrisSessionLabel();
 
     await deliver(
       "hris_sandbox_welcome",
       "toolkit_leads",
       lead.id,
       lead.email,
-      "Your HRIS access and session details",
+      "Your seat is reserved - free HR session, and your own HR system",
       shell(
-        `<h2 style="font-size:20px;font-weight:normal;">You are booked in, ${firstName}.</h2>
+        `<h2 style="font-size:20px;font-weight:normal;">Your seat is reserved, ${firstName}.</h2>
          <p style="font-size:15px;color:#475569;line-height:1.6;">
-           Your session is <strong>${sessionLabel}</strong>, 6:00-8:00 PM Philippine time, online.
-           We will send the joining link a day before.
+           One hour, live and online, with an HR practitioner - worked through your situation
+           rather than slides. It is free, and there is nothing to pay afterwards.
          </p>
          <p style="font-size:15px;color:#475569;line-height:1.6;">
-           Your sandbox login follows separately — we set each one up by hand so we can point it at
-           examples that look like your organization rather than a generic demo.
+           <strong>The date is being set now.</strong> These run in small batches so that everyone
+           gets to ask their own question, which means the schedule follows who has enrolled. You
+           will hear from us with the date and the joining link, and there is nothing you need to
+           do until then.
          </p>
          <p style="font-size:15px;color:#475569;line-height:1.6;">
-           Worth bringing: a rough headcount, and how leave credits currently work where you are.
-           The session runs through your situation rather than a made-up one.
+           When you attend, your own HR system is released with it: the 201 file and new-hire
+           onboarding, on your own address, with logins for your staff. It stays yours afterwards -
+           no trial timer, nothing switched off later. That part is for the first
+           ${HRIS_FREE_SEATS} enrolled, and you are inside that.
+         </p>
+         <p style="font-size:15px;color:#475569;line-height:1.6;">
+           Worth having to hand on the day: a rough headcount, and how leave credits currently work
+           where you are.
          </p>
          <p style="font-size:15px;color:#475569;">- Strategnosis Solutions OPC</p>`,
-        "You are receiving this because you requested free HRIS access on our website."
+        "You are receiving this because you enrolled in the free HR session on our website."
       )
     );
 
@@ -388,8 +389,9 @@ Deno.serve(async () => {
              ${esc(lead.email)}
            </p>
            <p style="font-size:14px;color:#475569;line-height:1.6;">
-             They are expecting a sandbox login and a seat on the ${sessionLabel} session.
-             Nothing is provisioned automatically - this one needs you.
+             They have been told a date is being set and that you will contact them with it.
+             That promise is now outstanding - nothing schedules itself, and nothing is
+             provisioned automatically. Both need you.
            </p>`,
           "Internal alert - sent to you, not to them."
         )

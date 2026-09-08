@@ -19,9 +19,9 @@ import {
 // at the point of decision is how a funnel leaks.
 
 export const metadata: Metadata = {
-  title: "₱250 HR training + your own HR system | Strategnosis",
+  title: "Free 1-hour HR training + your own HR system | Strategnosis",
   description:
-    "A real HR information system with employee records and new-hire onboarding, free. Your own workspace in about a minute, plus a live session with an HR expert.",
+    "A free hour of live HR training with an HR practitioner, and — for the first 100 enrolled — your own HR system to put it into: 201 files and new-hire onboarding, on your own address, yours to keep.",
 };
 
 export default function HrisPage() {
@@ -63,20 +63,20 @@ export default function HrisPage() {
 
           <div className="relative mx-auto max-w-3xl px-4 text-center">
             {/* Two rows, not one line.
-                The offer has two halves and they were competing inside a single
-                badge — ₱250 won on size and the free system read as small print
-                after it. Split apart, the price stops being the loudest thing
-                on the screen and FREE gets its own row, its own colour and its
-                own weight. What people are being asked for is ₱250; what they
-                are being offered is a system. The second is the reason to
-                accept the first. */}
+                The offer has two halves and they compete when crammed into one
+                badge. Split apart, each gets its own row, colour and weight.
+                The top row is what the visitor GIVES — an hour — and the bottom
+                is what they GET. That asymmetry is the whole pitch, and it only
+                reads if the two are not both shouting the same word: when this
+                was a paid entry the top row said ₱250, and putting FREE in both
+                rows now would flatten it back into noise. */}
             <div className="funnel-float mx-auto inline-block max-w-md overflow-hidden rounded-2xl rotate-1 shadow-2xl ring-4 ring-white/50">
               <div className="flex items-center gap-4 bg-gradient-to-r from-lime-300 via-yellow-300 to-amber-400 px-6 py-3">
                 <span className="font-sans text-5xl leading-none font-black tracking-tight text-slate-900 sm:text-6xl">
-                  ₱250
+                  1 HOUR
                 </span>
                 <span className="text-left text-xs leading-tight font-extrabold tracking-wide text-slate-900 uppercase sm:text-sm">
-                  1-hour practical
+                  free live
                   <br />
                   HR training
                 </span>
@@ -110,7 +110,7 @@ export default function HrisPage() {
               href={HRIS_ENTRY.href}
               className="funnel-glow font-display mt-10 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-400 px-12 py-5 text-xl font-black tracking-tight text-slate-900 ring-4 ring-white/40 transition-all hover:-translate-y-1 hover:from-amber-200 hover:to-orange-300 sm:text-2xl"
             >
-              Book my session —{" "}
+              Reserve my seat —{" "}
               <span className="font-sans">{formatHrisPrice(HRIS_ENTRY.price)}</span>
             </a>
             <p className="mt-5 text-sm font-semibold text-emerald-50">
@@ -273,7 +273,7 @@ export default function HrisPage() {
                   same way at the top of the page and at the point of decision. */}
               <div className="inline-flex flex-wrap items-center justify-center gap-2">
                 <span className="font-sans inline-block -rotate-1 rounded-xl bg-gradient-to-r from-amber-300 to-orange-400 px-5 py-2 text-3xl font-black tracking-tight text-slate-900 shadow-xl ring-2 ring-white/60 sm:text-4xl">
-                  {formatHrisPrice(HRIS_ENTRY.price)}
+                  1 HOUR
                 </span>
                 <span className="font-display text-2xl font-black text-slate-400">+</span>
                 <span className="font-display inline-block rotate-1 rounded-xl bg-gradient-to-r from-fuchsia-600 via-violet-600 to-indigo-600 px-5 py-2 text-3xl font-black tracking-tight text-white shadow-xl ring-2 ring-white/60 sm:text-4xl">
@@ -284,9 +284,9 @@ export default function HrisPage() {
                 The training, and the system to use it in
               </p>
               <p className="mx-auto mt-3 max-w-md text-base text-slate-700">
-                One hour live with an HR practitioner, worked through your own situation. Attend,
-                and the workspace is yours — your own employee database, nobody else&apos;s.
-                Included for the first {HRIS_FREE_SEATS} enrolments.
+                One free hour, live with an HR practitioner, worked through your own situation.
+                Attend, and the workspace is yours — your own employee database, nobody
+                else&apos;s. Included for the first {HRIS_FREE_SEATS} enrolments.
               </p>
             </div>
             <div className="mt-8 rounded-2xl border-2 border-emerald-200 bg-white p-6 text-center shadow-xl sm:p-8">

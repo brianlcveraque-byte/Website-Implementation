@@ -212,45 +212,53 @@ export function formatHrisPrice(price: number | null): string {
 }
 
 /**
- * The way in: one hour of practical HR training, and the HRIS with it.
- *
- * This replaces "free, no card" as the first thing a visitor is asked to do.
- * The system itself is still free — ₱250 buys the hour of training, not the
- * software — but routing everyone through one small paid step changes who
- * arrives: someone who has paid ₱250 turns up to the session, and someone who
- * clicked a free button mostly does not.
- *
- * THE CHECKOUT AT /hris/start TAKES NO MONEY. PayMongo is written but not
- * verified, so the step exists to prove the funnel end to end — offer, sign-up,
- * a workspace of their own — while the payment half is still off. It says so on
- * the page, in as many words, because a checkout that looks real and quietly
- * charges nothing is worse than no checkout at all: someone would believe they
- * had paid.
- *
- * When PayMongo is switched on, this is the one page that changes.
- */
-/**
  * How many enrolments carry the free workspace.
  *
  * NOTHING ENFORCES THIS. It is copy, not a counter — there is no enrolment
- * store on the site to count against, and payments are not live yet. It is a
- * promise with a number in it, so somebody has to keep count by hand until
- * checkout is real. Written here rather than inline so that when the hundredth
- * seat sells, one edit changes every place that says it.
+ * store on the site to count against. It is a promise with a number in it, so
+ * somebody keeps count by hand. Written here rather than inline so that when
+ * the hundredth seat goes, one edit changes every place that says it.
+ *
+ * It is also duplicated in supabase/functions/marketing-emails/index.ts, which
+ * cannot import from here — change both, or the page and the welcome email will
+ * promise different numbers.
  */
 export const HRIS_FREE_SEATS = 100;
 
-/** Where a paid enrolment goes next: the two ways to take the system further. */
+/** Where an enrolment goes next: the two ways to take the system further. */
 export const HRIS_NEXT_URL = "/hris/next";
 
+/**
+ * The way in: one hour of practical HR training, and the HRIS with it.
+ *
+ * FREE as of 2026-09-07, and the reasoning it replaces is worth keeping,
+ * because that reasoning was sound and is being traded away on purpose.
+ *
+ * The entry used to be ₱250 — never for the software, which was always free,
+ * but because one small paid step changes who arrives. Someone who has paid
+ * turns up to the session; someone who clicked a free button mostly does not.
+ * What that costs is volume, and volume is what a business with no audience
+ * needs first. Expect the show-up rate to fall and the list to grow faster.
+ * That is the right trade only while the list matters more than the room, so
+ * revisit it once there is a list worth the name.
+ *
+ * It also removes a live hazard. The checkout at /hris/start never took money —
+ * PayMongo is written but unverified — so the page had to say so in as many
+ * words, because a checkout that looks real and quietly charges nothing is
+ * worse than no checkout at all: someone would believe they had paid. There is
+ * now nothing to explain away.
+ *
+ * THE ASK IS NO LONGER MONEY, IT IS AN HOUR. The copy is priced accordingly:
+ * the hour is what the visitor gives, the system is what they get.
+ */
 export const HRIS_ENTRY = {
-  price: 250,
-  /** Where the offer is accepted. Not a payment page yet — see below. */
+  price: 0,
+  /** Where the offer is accepted. An enrolment form, not a payment page. */
   href: "/hris/start",
   name: "Practical HR Session",
   duration: "1 hour, live online",
   summary:
-    "One hour of practical HR training, and — for the first 100 enrolled — your own HR system to put it into, released when you attend.",
+    "One free hour of practical HR training, and — for the first 100 enrolled — your own HR system to put it into, released when you attend.",
   includes: [
     "One hour live online with an HR practitioner, worked through your own situation rather than slides",
     "Your own HRIS workspace — the 201 file and new-hire onboarding, on your own address",

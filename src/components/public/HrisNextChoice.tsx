@@ -8,17 +8,17 @@ import { HRIS_PATHS, formatHrisPrice, type HrisTier } from "@/lib/hris-funnel";
 //
 // Same interaction as HrisPaths — pick a rung, get a prefilled inquiry — so it
 // behaves the way the rest of the site does. Trimmed to two rungs because this
-// is not the ladder: the ₱250 has been paid, the workshop is beside the point,
-// and consulting is a link at the foot of the page rather than a third card.
+// is not the ladder: they are already in, the workshop is beside the point, and
+// consulting is a link at the foot of the page rather than a third card.
 //
-// The enquiry says the session is already paid for. Whoever picks it up should
-// not open with a pitch for something this person has already bought.
+// The enquiry names the session so whoever picks it up knows this person is
+// already enrolled, and does not open by selling them the way in.
 
 const MESSAGES: Partial<Record<HrisTier, string>> = {
   "diy-system":
-    "I have enrolled in the ₱250 Practical HR Session and I'd like the guided self-build HRIS (₱20,000). Here's our situation:\n\nRoughly how many employees: ",
+    "I have enrolled in the free Practical HR Session and I'd like the guided self-build HRIS (₱20,000). Here's our situation:\n\nRoughly how many employees: ",
   "done-for-you":
-    "I have enrolled in the ₱250 Practical HR Session and I'd like the HRIS built and handed over (₱75,000). Here's our situation:\n\nRoughly how many employees: ",
+    "I have enrolled in the free Practical HR Session and I'd like the HRIS built and handed over (₱75,000). Here's our situation:\n\nRoughly how many employees: ",
 };
 
 const TIERS = HRIS_PATHS.filter((p) => p.id === "diy-system" || p.id === "done-for-you");
