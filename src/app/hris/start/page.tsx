@@ -2,28 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/public/SiteFooter";
 import { SiteHeader } from "@/components/public/SiteHeader";
-import { HRIS_ENTRY, HRIS_FREE_SEATS, HRIS_NEXT_URL, formatHrisPrice } from "@/lib/hris-funnel";
+import { HrisEnrolForm } from "@/components/public/HrisEnrolForm";
+import { HRIS_ENTRY, HRIS_FREE_SEATS, formatHrisPrice } from "@/lib/hris-funnel";
 
-// The step between the offer and the workspace.
+// Where a visitor becomes an enrolment.
 //
-// It takes no money. PayMongo is written but unverified, and the point of this
-// page today is to prove the rest of the path works — offer, sign-up, an
-// isolated workspace on its own subdomain — without waiting for the payment
-// half.
+// It takes no money and never did — the session is free, so there is no card
+// field because there is nothing to put in one.
 //
-// So it says so, plainly, above the button. A checkout that looks real and
-// charges nothing is worse than no checkout: someone would leave believing they
-// had paid and expecting a receipt. Everything here is either true now or
-// clearly marked as not yet running. There is no card field, because there is
-// nothing to put in it.
+// Until September 2026 this page ended in a link rather than a form, which
+// meant the whole funnel captured nobody: someone could read the offer, click
+// "confirm my seat", and leave without a row being written, an email being
+// sent, or anyone being told. The form is the page.
 
 export const metadata: Metadata = {
   title: "Start — Practical HR Session | Strategnosis",
   description:
     "One hour of practical HR training and your own HR system for 201 files and new-hire onboarding.",
-  // Not somewhere a search result should land while the payment step is a
-  // placeholder.
-  robots: { index: false, follow: false },
 };
 
 export default function HrisStartPage() {
@@ -79,20 +74,17 @@ export default function HrisStartPage() {
               </p>
             </div>
 
+            {/* The actual gate. This page used to end in a link to /hris/next,
+                which meant a visitor could read the entire offer, click
+                "confirm my seat", and leave without anyone knowing they had
+                been — no row, no welcome email, no alert. Three fields is the
+                most that can be asked for before a free session without the
+                asking becoming the reason people leave. */}
             <div className="px-6 py-6">
-              <a
-                href={HRIS_NEXT_URL}
-                className="funnel-glow font-display inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 px-8 py-5 text-xl font-black tracking-tight text-white ring-2 ring-emerald-200 transition-all hover:-translate-y-0.5 hover:from-emerald-400 hover:to-cyan-400"
-              >
-                Continue — confirm my seat
-              </a>
+              <HrisEnrolForm source="hris-start" />
               <p className="mt-4 text-center text-sm text-slate-600">
-                Next you will see what the session covers and the two ways to take the system
-                further. Nothing else is asked of you here.
-              </p>
-              <p className="mt-3 rounded-xl bg-emerald-50 px-4 py-3 text-center text-sm font-medium text-emerald-900">
-                Sessions run in small groups, so dates are set as seats fill. We&apos;ll email you
-                the schedule once the next one is confirmed.
+                Sessions run in small groups, so the date follows who has enrolled. We&apos;ll email
+                you the schedule and the joining link before anyone else hears it.
               </p>
             </div>
           </div>
