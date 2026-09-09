@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { HRIS_FREE_SEATS } from "@/lib/hris-funnel";
+import { HRIS_FREE_SEATS, HRIS_NEXT_URL } from "@/lib/hris-funnel";
 
 /**
  * The enrolment gate for the free HR session.
@@ -84,6 +84,18 @@ export function HrisEnrolForm({ source = "hris-funnel" }: { source?: string }) {
           Your HR system — the 201 file and new-hire onboarding — is released when you attend, and
           it stays yours. That part is for the first {HRIS_FREE_SEATS} enrolled.
         </p>
+
+        {/* The upsell, offered once and quietly. Replacing the old link to
+            /hris/next with this form orphaned that page, and with it the two
+            ways someone can take the system further. Someone who has just said
+            yes is the most likely person to want more — but they have already
+            got what they came for, so this is a link and not a pitch. */}
+        <a
+          href={HRIS_NEXT_URL}
+          className="mt-5 inline-block text-sm font-semibold text-emerald-800 underline underline-offset-4 hover:text-emerald-700"
+        >
+          While you wait — the two ways to take the system further
+        </a>
       </div>
     );
   }
