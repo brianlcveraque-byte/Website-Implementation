@@ -7,6 +7,7 @@ import { formatDateTime, titleCase } from "@/lib/utils";
 import { Button, Card, EmptyState, ErrorBlock, LoadingBlock, Select } from "@/components/ui/Primitives";
 import { StatusBadge } from "@/components/ui/Badge";
 import { StatTile } from "@/components/ui/StatTile";
+import { HRIS_FREE_SEATS } from "@/lib/hris-funnel";
 
 // The triage surface for everything the public funnel produces.
 //
@@ -35,9 +36,22 @@ export default function LeadsPage() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("new");
   const [busyId, setBusyId] = useState<string | null>(null);
+  // Which funnel a lead came from. Both write to toolkit_leads, so without this
+  // a course enrolment and a workbook download are indistinguishable — and the
+  // whole page was labelled "Workbook downloads", which is what a course
+  // enrolment looked like the first time one arrived.
+  const FUNNEL_LABEL: Record<string, string> = {
+    "hris-sandbox": "Free HR session",
+    "succession-planning-toolkit": "Succession workbook",
+  };
+  const funnelOf = (slug: string | null | undefined) =>
+    FUNNEL_LABEL[slug ?? ""] ?? (slug ? slug : "Unknown");
+
   // Derived at load time rather than during render: "7 days ago" depends on the
   // clock, and reading it while rendering is an impure render.
   const [leadsThisWeek, setLeadsThisWeek] = useState(0);
+  const [enrolmentsThisWeek, setEnrolmentsThisWeek] = useState(0);
+  const [enrolmentsAllTime, setEnrolmentsAllTime] = useState(0);
 
   async function load() {
     setLoading(true);
@@ -58,7 +72,10 @@ export default function LeadsPage() {
     const weekAgo = new Date(Date.now() - 7 * 86_400_000).toISOString();
     setInquiries((inqRes.data as PublicInquiry[]) ?? []);
     setLeads(leadRows);
+    const enrolments = leadRows.filter((l) => l.toolkit_slug === "hris-sandbox");
     setLeadsThisWeek(leadRows.filter((l) => l.downloaded_at >= weekAgo).length);
+    setEnrolmentsThisWeek(enrolments.filter((l) => l.downloaded_at >= weekAgo).length);
+    setEnrolmentsAllTime(enrolments.length);
     setLoading(false);
   }
 
@@ -96,10 +113,17 @@ export default function LeadsPage() {
 
       {error && <ErrorBlock message={error} />}
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile label="Inquiries awaiting reply" value={String(newCount)} />
-        <StatTile label="Workbook downloads (7 days)" value={String(leadsThisWeek)} />
-        <StatTile label="Downloads all time" value={String(leads.length)} />
+        <StatTile label="Course enrolments (7 days)" value={String(enrolmentsThisWeek)} />
+        {/* The seat count, where it gets looked at. "Free for the first 100" is
+            a promise with a number in it and nothing counts it automatically —
+            this is where somebody notices it running out. */}
+        <StatTile
+          label="Free seats claimed"
+          value={`${enrolmentsAllTime} of ${HRIS_FREE_SEATS}`}
+        />
+        <StatTile label="All leads (7 days)" value={String(leadsThisWeek)} />
       </div>
 
       <section>
@@ -189,19 +213,21 @@ export default function LeadsPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold">Workbook downloads</h2>
+        <h2 className="mb-3 text-sm font-semibold">Leads</h2>
         <p className="mb-3 text-sm text-slate-500">
-          People who took the free toolkit. No reply expected — they are the pool the paid tiers
-          are sold to.
+          Course enrolments and workbook downloads, newest first. No reply expected — they are the
+          pool the paid tiers are sold to. Enrolments have been sent a confirmation already and are
+          waiting on a session date from you.
         </p>
         {leads.length === 0 ? (
-          <EmptyState title="No downloads yet" />
+          <EmptyState title="No leads yet" />
         ) : (
           <Card>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead className="text-slate-500">
                   <tr>
+                    <th className="py-2 pr-4 font-medium">Funnel</th>
                     <th className="py-2 pr-4 font-medium">Name</th>
                     <th className="py-2 pr-4 font-medium">Email</th>
                     <th className="py-2 pr-4 font-medium">Organization</th>
@@ -212,6 +238,11 @@ export default function LeadsPage() {
                 <tbody>
                   {leads.map((l) => (
                     <tr key={l.id} className="border-t border-slate-100 dark:border-slate-800">
+                      <td className="py-2 pr-4">
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                          {funnelOf(l.toolkit_slug)}
+                        </span>
+                      </td>
                       <td className="py-2 pr-4">{l.name || "—"}</td>
                       <td className="py-2 pr-4">
                         <a href={`mailto:${l.email}`} className="text-indigo-600 hover:underline">
