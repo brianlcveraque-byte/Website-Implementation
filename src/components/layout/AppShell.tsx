@@ -6,16 +6,25 @@ import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { LoadingBlock } from "@/components/ui/Primitives";
 
-// Monitoring first, above Dashboard, because it is the screen this app gets
-// opened for. Clients, Projects and Tasks stay for contract amounts, billing
-// and assignment — the daily view no longer routes anyone through them just to
-// record a line of work.
-const FULL_NAV = [
+/**
+ * Three things, and everything else folded away.
+ *
+ * There were ten tabs. The tool went unused and the work stayed in a Google
+ * Sheet, and ten tabs is a large part of why: recording one line of work meant
+ * choosing between Clients, Projects and Tasks before typing anything.
+ *
+ * NOTHING IS DELETED. Clients, Projects, Opportunities, Consultants, Billing
+ * and Expenses still exist and still work — they are behind "More", because
+ * they are occasional and the daily view no longer routes through them. A tab
+ * removed from a nav can come back in one line; a page deleted cannot.
+ */
+const PRIMARY_NAV = [
   { href: "/app/monitoring", label: "Monitoring" },
-  { href: "/app/dashboard", label: "Dashboard" },
-  // Sits above Clients because it is upstream of them: this is where people
-  // arrive before they are anything else.
   { href: "/app/leads", label: "Leads" },
+  { href: "/app/dashboard", label: "Money" },
+];
+
+const SECONDARY_NAV = [
   { href: "/app/clients", label: "Clients" },
   { href: "/app/opportunities", label: "Opportunities" },
   { href: "/app/projects", label: "Projects" },
@@ -26,9 +35,10 @@ const FULL_NAV = [
   { href: "/app/settings", label: "Settings" },
 ];
 
+const FULL_NAV = [...PRIMARY_NAV, ...SECONDARY_NAV];
+
 const TEMP_NAV = [
   { href: "/app/monitoring", label: "Monitoring" },
-  { href: "/app/dashboard", label: "My Work" },
   { href: "/app/tasks", label: "Tasks" },
 ];
 
@@ -70,29 +80,53 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const nav = profile.role === "temp_consultant" ? TEMP_NAV : FULL_NAV;
+  const isTemp = profile.role === "temp_consultant";
+  const primary = isTemp ? TEMP_NAV : PRIMARY_NAV;
+  const secondary = isTemp ? [] : SECONDARY_NAV;
+  const nav = isTemp ? TEMP_NAV : FULL_NAV;
+  const inSecondary = secondary.some((item) => pathname?.startsWith(item.href));
+
+  const linkClass = (active: boolean) =>
+    `block rounded-lg px-3 py-2 text-sm font-medium transition ${
+      active
+        ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+        : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+    }`;
 
   return (
     <div className="flex flex-1">
       <aside className="hidden w-56 shrink-0 border-r border-slate-200 bg-white px-3 py-6 dark:border-slate-800 dark:bg-slate-900 md:block">
         <div className="mb-6 px-2 text-sm font-semibold">Strategnosis Hub</div>
         <nav className="space-y-1">
-          {nav.map((item) => {
-            const active = pathname?.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`block rounded-md px-2.5 py-2 text-sm font-medium ${
-                  active
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                    : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+          {primary.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={linkClass(Boolean(pathname?.startsWith(item.href)))}
+            >
+              {item.label}
+            </Link>
+          ))}
+
+          {secondary.length > 0 && (
+            // Open when you are inside one, so it never hides where you are.
+            <details className="mt-4" open={inSecondary}>
+              <summary className="cursor-pointer px-3 py-1.5 text-xs font-semibold tracking-wide text-slate-400 uppercase select-none hover:text-slate-600">
+                More
+              </summary>
+              <div className="mt-1 space-y-1">
+                {secondary.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={linkClass(Boolean(pathname?.startsWith(item.href)))}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </details>
+          )}
         </nav>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
