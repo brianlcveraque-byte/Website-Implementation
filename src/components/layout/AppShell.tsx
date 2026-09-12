@@ -6,7 +6,12 @@ import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { LoadingBlock } from "@/components/ui/Primitives";
 
+// Monitoring first, above Dashboard, because it is the screen this app gets
+// opened for. Clients, Projects and Tasks stay for contract amounts, billing
+// and assignment — the daily view no longer routes anyone through them just to
+// record a line of work.
 const FULL_NAV = [
+  { href: "/app/monitoring", label: "Monitoring" },
   { href: "/app/dashboard", label: "Dashboard" },
   // Sits above Clients because it is upstream of them: this is where people
   // arrive before they are anything else.
@@ -22,6 +27,7 @@ const FULL_NAV = [
 ];
 
 const TEMP_NAV = [
+  { href: "/app/monitoring", label: "Monitoring" },
   { href: "/app/dashboard", label: "My Work" },
   { href: "/app/tasks", label: "Tasks" },
 ];
